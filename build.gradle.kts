@@ -48,6 +48,7 @@ modstitch {
 
         replacementProperties.populate {
             put("mod_issue_tracker", "https://github.com/Bawnorton/Trimica/issues")
+            put("minecraft_version", minecraft)
             put(
                 "pack_format", when (property("deps.minecraft")) {
                     "1.21.5" -> 46
@@ -83,6 +84,8 @@ modstitch {
         fabricLoaderVersion = "0.16.10"
 
         configureLoom {
+            accessWidenerPath.set(rootProject.file("src/main/resources/$minecraft.accesswidener"))
+
             runConfigs.all {
                 ideConfigGenerated(true)
                 runDir = "../../run"
@@ -114,6 +117,8 @@ modstitch {
         defaultRuns()
 
         configureNeoforge {
+            validateAccessTransformers = true
+
             runs.all {
                 gameDirectory = file("../../run")
             }
@@ -128,6 +133,8 @@ modstitch {
                     applyMixinDebugConfig(this, configurations)
                 }
             }
+
+            accessTransformers.from(rootProject.file("src/main/resources/$minecraft-accesstransformer.cfg"))
         }
     }
 

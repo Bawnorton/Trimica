@@ -5,6 +5,7 @@
   "version": "${mod_version}",
   "description": "${mod_description}",
   "environment": "*",
+  "accessWidener": "${minecraft_version}.accesswidener",
   "entrypoints": {
     "main": [
       "com.bawnorton.trimica.platform.fabric.FabricEntrypoint"
