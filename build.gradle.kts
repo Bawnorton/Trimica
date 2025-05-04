@@ -1,3 +1,6 @@
+import net.fabricmc.loom.configuration.ide.RunConfigSettings
+import net.neoforged.moddevgradle.dsl.RunModel
+
 plugins {
     id("dev.isxander.modstitch.base") version "0.5.12"
 }
@@ -54,10 +57,51 @@ modstitch {
         }
     }
 
+    val applyMixinDebugConfig: (Any, ConfigurationContainer) -> Unit = { runConfig, configurations ->
+        val mixinJarFile = configurations.named("runtimeClasspath").get().incoming.artifactView {
+            componentFilter {
+                it is ModuleComponentIdentifier && it.group == "net.fabricmc" && it.module == "sponge-mixin"
+            }
+        }.files.singleFile
+        val agentArg = "-javaagent:$mixinJarFile"
+        when (runConfig) {
+            is RunConfigSettings -> {
+                runConfig.vmArg(agentArg)
+                runConfig.property("mixin.hotSwap", "true")
+                runConfig.property("mixin.debug.export", "true")
+            }
+            is RunModel -> {
+                runConfig.jvmArgument(agentArg)
+                runConfig.systemProperty("mixin.hotSwap", "true")
+                runConfig.systemProperty("mixin.debug.export", "true")
+            }
+            else -> throw IllegalArgumentException("Unknown run config type: ${runConfig::class.java}")
+        }
+    }
+
     loom {
         fabricLoaderVersion = "0.16.10"
 
         configureLoom {
+            runConfigs.all {
+                ideConfigGenerated(true)
+                runDir = "../../run"
+            }
+
+            runConfigs["client"].apply {
+                programArgs("--username=Bawnorton", "--uuid=17c06cab-bf05-4ade-a8d6-ed14aaf70545")
+                name = "Fabric Client"
+            }
+
+            runConfigs["server"].apply {
+                name = "Fabric Server"
+            }
+
+            afterEvaluate {
+                this@configureLoom.runs.configureEach {
+                    applyMixinDebugConfig(this, configurations)
+                }
+            }
         }
     }
 
@@ -71,7 +115,18 @@ modstitch {
 
         configureNeoforge {
             runs.all {
-                disableIdeRun()
+                gameDirectory = file("../../run")
+            }
+
+            runs["client"].apply {
+                programArgument("--username=Bawnorton")
+                programArgument("--uuid=17c06cab-bf05-4ade-a8d6-ed14aaf70545")
+            }
+
+            afterEvaluate {
+                this@configureNeoforge.runs.configureEach {
+                    applyMixinDebugConfig(this, configurations)
+                }
             }
         }
     }
