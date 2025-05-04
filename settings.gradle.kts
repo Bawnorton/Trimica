@@ -38,12 +38,21 @@ gradle.beforeProject {
             hooksDir.mkdirs()
             preCommitHook.writeText(
                 """
-                |#!/bin/bash
-                |
-                |echo "Setting Stonecutter Branch To VCS Branch"
-                |./gradlew "Reset active project"
-                |
-                """.trimMargin()
+                #!/bin/bash
+                
+                vcs_version=$(ggrep -oP 'vcsVersion\s*=\s*"\K[^"]+' settings.gradle.kts)
+                active_version=$(ggrep -oP 'stonecutter\s+active\s+"\K[^"]+' stonecutter.gradle.kts)
+                
+                echo "Detected vcsVersion: ${'$'}vcs_version"
+                echo "Detected active version: ${'$'}active_version"
+                
+                if [ "${'$'}vcs_version" != "${'$'}active_version" ]; then
+                  echo "Please run './gradlew \"Reset active project\"' to set the stonecutter branch to the version control version."
+                  exit 1
+                else
+                  echo "Versions match. No action needed."
+                fi
+                """.trimIndent()
             )
             preCommitHook.setExecutable(true)
             println("Git pre-commit hook installed.")
