@@ -18,7 +18,7 @@ public final class RuntimeTrimMaterials {
     public static TrimMaterial getOrCreate(ItemStack stack) {
         ResourceLocation model = stack.getOrDefault(DataComponents.ITEM_MODEL, BuiltInRegistries.ITEM.getKey(stack.getItem()));
         return MATERIALS.computeIfAbsent(model, key -> {
-            MaterialAssetGroup id = MaterialAssetGroup.create("%s-%s".formatted(key.getNamespace(), key.getPath()));
+            MaterialAssetGroup id = MaterialAssetGroup.create("/%s-%s".formatted(key.getNamespace(), key.getPath()));
             TrimMaterial runtimeMaterial = new TrimMaterial(id, Component.translatable("trimica.material", stack.getHoverName().getString()));
             MATERIAL_PROVIDERS.computeIfAbsent(id, material -> stack.getItem());
             return runtimeMaterial;

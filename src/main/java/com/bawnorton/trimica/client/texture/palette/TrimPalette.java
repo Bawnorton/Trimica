@@ -1,7 +1,6 @@
 package com.bawnorton.trimica.client.texture.palette;
 
 import com.bawnorton.trimica.client.texture.colour.OkLabHelper;
-import com.mojang.blaze3d.platform.NativeImage;
 import javax.imageio.ImageIO;
 import net.minecraft.Util;
 import net.minecraft.util.ARGB;

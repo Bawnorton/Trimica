@@ -1,6 +1,5 @@
 package com.bawnorton.trimica.client.texture;
 
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.equipment.trim.ArmorTrim;
 import org.jetbrains.annotations.NotNull;

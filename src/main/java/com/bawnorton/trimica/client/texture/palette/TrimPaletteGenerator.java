@@ -2,6 +2,7 @@ package com.bawnorton.trimica.client.texture.palette;
 
 import com.bawnorton.trimica.Trimica;
 import com.bawnorton.trimica.client.mixin.accessor.SpriteContentsAccessor;
+import com.bawnorton.trimica.client.texture.colour.ColourGroup;
 import com.bawnorton.trimica.client.texture.colour.ColourHSB;
 import com.bawnorton.trimica.client.texture.colour.OkLabHelper;
 import com.mojang.blaze3d.platform.NativeImage;
@@ -26,37 +27,55 @@ public final class TrimPaletteGenerator {
                 Trimica.LOGGER.warn("Trim palette colour could not determined for {}", location);
                 return TrimPalette.DEFAULT;
             }
-            colours = generateVibrantPalette(colours);
-            colours = stretchPalette(colours);
+            colours = getDominantColours(colours);
             colours = sortPalette(colours);
+            colours = stretchPalette(colours);
             return new TrimPalette(colours);
         });
     }
 
-    private List<Integer> generateVibrantPalette(List<Integer> colours) {
+    private List<Integer> getDominantColours(List<Integer> colours) {
         List<ColourHSB> hsbColours = ColourHSB.fromRGB(colours);
 
-        hsbColours = hsbColours.stream()
-                               .distinct()
-                               .sorted(Comparator.comparing(ColourHSB::saturation)
-                                                 .thenComparing(ColourHSB::brightness)
-                                                 .reversed())
-                               .toList();
-
-        List<Integer> vibrantPalette = new ArrayList<>();
-        for (int i = 0; i < Math.min(TrimPalette.PALETTE_SIZE, hsbColours.size()); i++) {
-            vibrantPalette.add(hsbColours.get(i).colour());
+        List<ColourGroup> groups = new ArrayList<>();
+        for (ColourHSB colour : hsbColours) {
+            boolean foundGroup = false;
+            for (ColourGroup group : groups) {
+                if (group.isSimilar(colour)) {
+                    group.addMember(colour);
+                    foundGroup = true;
+                    break;
+                }
+            }
+            if (!foundGroup) {
+                groups.add(new ColourGroup(colour));
+            }
         }
-
-        return vibrantPalette;
+        groups.sort(Comparator.comparingInt(ColourGroup::getWeight).reversed());
+        List<ColourHSB> dominantColours = new ArrayList<>();
+        int count = 0;
+        for (ColourGroup group : groups) {
+            if(count < TrimPalette.PALETTE_SIZE) {
+                dominantColours.add(group.getRepresentative());
+                count++;
+            } else {
+                break;
+            }
+        }
+        List<Integer> dominantRGB = new ArrayList<>();
+        for (ColourHSB colour : dominantColours) {
+            dominantRGB.add(colour.colour());
+        }
+        return dominantRGB;
     }
 
     private List<Integer> sortPalette(List<Integer> colours) {
-        List<ColourHSB> toSort = ColourHSB.fromRGB(colours);
-        Comparator<ColourHSB> comparator = Comparator.comparing(ColourHSB::saturation);
-        comparator = comparator.reversed();
-        toSort.sort(comparator);
-        return toSort.stream().map(ColourHSB::colour).toList();
+        List<ColourHSB> hsbColours = ColourHSB.fromRGB(colours);
+
+        return hsbColours.stream()
+                         .sorted(Comparator.comparingDouble(ColourHSB::hue).thenComparing(ColourHSB::saturation).thenComparing(ColourHSB::brightness))
+                         .map(ColourHSB::colour)
+                         .toList();
     }
 
     private List<Integer> stretchPalette(List<Integer> palette) {
