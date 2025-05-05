@@ -142,6 +142,7 @@ modstitch {
         addMixinsToModManifest = true
 
         configs.register("trimica")
+        configs.register("trimica-client")
     }
 }
 

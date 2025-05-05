@@ -7,6 +7,6 @@ import net.minecraft.world.item.component.ProvidesTrimMaterial;
 
 public class RuntimeProvidesTrimMaterial extends ProvidesTrimMaterial {
     public RuntimeProvidesTrimMaterial(ItemStack stack) {
-        super(Holder.direct(RuntimeTrimMaterials.getOrCreate(stack.getItem())));
+        super(Holder.direct(RuntimeTrimMaterials.getOrCreate(stack)));
     }
 }

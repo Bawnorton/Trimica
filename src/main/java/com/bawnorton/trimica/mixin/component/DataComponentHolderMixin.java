@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.injection.At;
 
 @Mixin(DataComponentHolder.class)
 public interface DataComponentHolderMixin {
-    @SuppressWarnings("ConstantValue")
+    @SuppressWarnings({"ConstantValue", "unchecked"})
     @ModifyReturnValue(
             method = "get",
             at = @At("RETURN")
