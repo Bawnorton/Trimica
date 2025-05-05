@@ -143,6 +143,9 @@ modstitch {
 
         configs.register("trimica")
         configs.register("trimica-client")
+        if(modstitch.isLoom) {
+            configs.register("trimica-fabric")
+        }
     }
 }
 

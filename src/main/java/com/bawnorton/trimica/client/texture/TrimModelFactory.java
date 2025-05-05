@@ -44,33 +44,13 @@ public class TrimModelFactory implements RuntimeTrimSpriteFactory {
     }
 
     private NativeImage createImageForModel(TrimMaterial material, ResourceLocation location) {
-        ItemModelResolver modelResolver = Minecraft.getInstance().getItemModelResolver();
-        Item materialProvider = RuntimeTrimMaterials.getMaterialProvider(material);
-        if (materialProvider == null) {
-            return empty();
-        }
-        ItemModel model = ((ItemModelResolverAccessor) modelResolver).trimica$modelGetter().apply(BuiltInRegistries.ITEM.getKey(materialProvider));
-        List<BakedQuad> quads = getQuads(model);
-        return createImageFromQuads(location, quads);
-    }
-
-    private List<BakedQuad> getQuads(ItemModel model) {
-        return switch (model) {
-            case BlockModelWrapperAccessor blockModelWrapperAccessor -> blockModelWrapperAccessor.trimica$quads();
-            case SelectItemModelAccessor selectItemModelAccessor -> getQuads(selectItemModelAccessor.trimica$models().get(null, null));
-            // TODO: Handle other model types
-            case null, default -> List.of();
-        };
-    }
-
-    private NativeImage createImageFromQuads(ResourceLocation location, List<BakedQuad> quads) {
         ResourceLocation basePatternTexture = extractBaseTexture(location);
         if (basePatternTexture == null) return empty();
 
         Minecraft minecraft = Minecraft.getInstance();
         try {
             TextureContents contents = TextureContents.load(minecraft.getResourceManager(), basePatternTexture);
-            TrimPalette palette = TrimicaClient.getPaletteGenerator().generatePalette(location, quads);
+            TrimPalette palette = TrimicaClient.getTrimPalettes().getOrGeneratePalette(material, location);
             NativeImage coloured = createColouredPatternImage(contents.image(), palette);
             contents.close();
             return coloured;

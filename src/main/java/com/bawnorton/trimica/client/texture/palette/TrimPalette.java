@@ -1,15 +1,10 @@
 package com.bawnorton.trimica.client.texture.palette;
 
-import com.bawnorton.trimica.client.texture.colour.OkLabHelper;
-import javax.imageio.ImageIO;
+import com.bawnorton.trimica.client.texture.colour.ColourHSB;
 import net.minecraft.Util;
 import net.minecraft.util.ARGB;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -33,38 +28,18 @@ public final class TrimPalette {
         }));
     }
 
-    public BufferedImage toBufferedImage() {
-        BufferedImage image = new BufferedImage(PALETTE_SIZE, 1, BufferedImage.TYPE_INT_ARGB);
-        for (int i = 0; i < PALETTE_SIZE; i++) {
-            image.setRGB(i, 0, (255 << 24) | colours.get(i));
-        }
-        return image;
-    }
-
-    public InputStream toInputStream() {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        try {
-            BufferedImage bufferedImage = toBufferedImage();
-            ImageIO.write(bufferedImage, "png", baos);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        return new ByteArrayInputStream(baos.toByteArray());
-    }
-
     public List<Integer> getColours() {
         return colours;
     }
 
-    public int getAverageColour() {
-        double[][] okLabSpace = new double[PALETTE_SIZE][3];
-        for (int i = 0; i < PALETTE_SIZE; i++) {
-            int colour = colours.get(i);
-            double[] okLab = OkLabHelper.rgbToOklab(colour);
-            okLabSpace[i] = okLab;
+    public int getTooltipColour() {
+        List<ColourHSB> hsbColours = ColourHSB.fromRGB(colours);
+        hsbColours.removeIf(colour -> colour.saturation() < 0.25f || colour.brightness() < 0.5f);
+        if (hsbColours.isEmpty()) {
+            return ARGB.toABGR(colours.getFirst());
         }
-        double[] averaged = OkLabHelper.average(okLabSpace);
-        return OkLabHelper.oklabToRgb(averaged);
+        Collections.sort(hsbColours);
+        return ARGB.toABGR(hsbColours.getFirst().colour());
     }
 
     @Override

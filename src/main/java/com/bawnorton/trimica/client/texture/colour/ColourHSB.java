@@ -5,7 +5,7 @@ import java.awt.Color;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public record ColourHSB(Integer colour, float hue, float saturation, float brightness) {
+public record ColourHSB(Integer colour, float hue, float saturation, float brightness) implements Comparable<ColourHSB> {
     public static ColourHSB fromRGB(int rgb) {
         int red = rgb >> 16 & 255;
         int green = rgb >> 8 & 255;
@@ -19,6 +19,11 @@ public record ColourHSB(Integer colour, float hue, float saturation, float brigh
         return colours.stream().map(ColourHSB::fromRGB).collect(Collectors.toList());
     }
 
+    public static int toRGB(float hue, float saturation, float brightness) {
+        int rgb = Color.HSBtoRGB(hue, saturation, brightness);
+        return (rgb & 0x00FFFFFF) | (0xFF << 24);
+    }
+
     @Override
     public @NotNull String toString() {
         return "ColourHSB[%s, (%.2f, %.2f, %.2f)]".formatted(
@@ -27,5 +32,16 @@ public record ColourHSB(Integer colour, float hue, float saturation, float brigh
                 saturation,
                 brightness
         );
+    }
+
+    @Override
+    public int compareTo(@NotNull ColourHSB o) {
+        if (this.hue != o.hue) {
+            return Float.compare(this.hue, o.hue);
+        }
+        if (this.saturation != o.saturation) {
+            return Float.compare(this.saturation, o.saturation);
+        }
+        return Float.compare(this.brightness, o.brightness);
     }
 }

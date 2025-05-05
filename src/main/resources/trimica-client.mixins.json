@@ -10,8 +10,16 @@
     "EquipmentLayerRendererMixin",
     "MinecraftMixin",
     "accessor.BlockModelWrapperAccessor",
+    "accessor.CompositeModelAccessor",
+    "accessor.ConditionalItemModelAccessor",
     "accessor.ItemModelResolverAccessor",
+    "accessor.RangeSelectItemModelAccessor",
     "accessor.SelectItemModelAccessor",
+    "accessor.SpecialModelWrapperAccessor",
     "accessor.SpriteContentsAccessor"
+  ],
+  "mixins": [
+    "ArmorTrimMixin",
+    "accessor.TrimMaterialAccessor"
   ]
 }

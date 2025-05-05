@@ -1,9 +1,10 @@
 package com.bawnorton.trimica.client.texture.colour;
 
+import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
-public final class ColourGroup {
+public final class ColourGroup implements Comparable<ColourGroup> {
     private final ColourHSB representative;
     private final List<ColourHSB> colours;
 
@@ -30,6 +31,11 @@ public final class ColourGroup {
         boolean brightnessSimilar = Math.abs(colour.brightness() - representative.brightness()) < 0.1f;
         boolean hueSimilar = Math.abs(colour.hue() - representative.hue()) < 0.1f;
         return saturationSimilar && brightnessSimilar && hueSimilar;
+    }
+
+    @Override
+    public int compareTo(@NotNull ColourGroup o) {
+        return Integer.compare(this.getWeight(), o.getWeight());
     }
 
     @Override

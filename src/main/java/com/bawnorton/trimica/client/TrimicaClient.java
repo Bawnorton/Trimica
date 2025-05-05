@@ -1,11 +1,11 @@
 package com.bawnorton.trimica.client;
 
-import com.bawnorton.trimica.client.texture.palette.TrimPaletteGenerator;
+import com.bawnorton.trimica.client.texture.palette.TrimPalettes;
 
 public class TrimicaClient {
-    private static final TrimPaletteGenerator paletteGenerator = new TrimPaletteGenerator();
+    private static final TrimPalettes trimPalettes = new TrimPalettes();
 
-    public static TrimPaletteGenerator getPaletteGenerator() {
-        return paletteGenerator;
+    public static TrimPalettes getTrimPalettes() {
+        return trimPalettes;
     }
 }

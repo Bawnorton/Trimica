@@ -1,28 +1,70 @@
 package com.bawnorton.trimica.client.texture.palette;
 
 import com.bawnorton.trimica.Trimica;
-import com.bawnorton.trimica.client.mixin.accessor.SpriteContentsAccessor;
+import com.bawnorton.trimica.client.mixin.accessor.*;
 import com.bawnorton.trimica.client.texture.colour.ColourGroup;
 import com.bawnorton.trimica.client.texture.colour.ColourHSB;
 import com.bawnorton.trimica.client.texture.colour.OkLabHelper;
+import com.bawnorton.trimica.trim.material.RuntimeTrimMaterials;
 import com.mojang.blaze3d.platform.NativeImage;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.BakedQuad;
+import net.minecraft.client.renderer.item.ItemModel;
+import net.minecraft.client.renderer.item.ItemModelResolver;
+import net.minecraft.client.renderer.item.ModelRenderProperties;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.ARGB;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.equipment.trim.TrimMaterial;
 import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
-import java.util.Comparator;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+//? if fabric {
+import com.bawnorton.trimica.platform.fabric.mixin.accessor.WrapperBakedItemModelAccessor;
+//?}
+
 public final class TrimPaletteGenerator {
     private static final Map<ResourceLocation, TrimPalette> TRIM_PALETTES = new HashMap<>();
 
-    public TrimPalette generatePalette(ResourceLocation location, List<BakedQuad> quads) {
+    public TrimPalette generatePalette(TrimMaterial material, ResourceLocation location) {
+        ItemModelResolver modelResolver = Minecraft.getInstance().getItemModelResolver();
+        Item materialProvider = RuntimeTrimMaterials.getMaterialProvider(material);
+        if (materialProvider == null) {
+            return TrimPalette.DEFAULT;
+        }
+        ItemModel model = ((ItemModelResolverAccessor) modelResolver).trimica$modelGetter().apply(BuiltInRegistries.ITEM.getKey(materialProvider));
+        return generatePaletteFromModel(location, model);
+    }
+
+    private List<Integer> getColoursFromModel(ItemModel model) {
+        return switch (model) {
+            case BlockModelWrapperAccessor blockModelWrapperAccessor -> getColoursFromQuads(blockModelWrapperAccessor.trimica$quads());
+            case SelectItemModelAccessor selectItemModelAccessor -> getColoursFromModel(selectItemModelAccessor.trimica$models().get(null, null));
+            case SpecialModelWrapperAccessor specialModelWrapperAccessor -> {
+                ModelRenderProperties properties = specialModelWrapperAccessor.trimica$properties();
+                int[] colours = extractColours(properties.particleIcon());
+                yield Arrays.stream(colours).boxed().toList();
+            }
+            case CompositeModelAccessor compositeModelAccessor -> getColoursFromModel(compositeModelAccessor.trimica$models().getFirst());
+            case ConditionalItemModelAccessor conditionalItemModelAccessor -> getColoursFromModel(conditionalItemModelAccessor.trimica$onFalse());
+            case RangeSelectItemModelAccessor rangeSelectItemModelAccessor -> getColoursFromModel(rangeSelectItemModelAccessor.trimica$fallback());
+            //? if fabric {
+            case WrapperBakedItemModelAccessor wrapperBakedItemModelAccessor -> getColoursFromModel(wrapperBakedItemModelAccessor.trimica$wrapped());
+            //?}
+            case null, default -> Collections.emptyList();
+        };
+    }
+
+    private TrimPalette generatePaletteFromModel(ResourceLocation location, ItemModel model) {
         return TRIM_PALETTES.computeIfAbsent(location, key -> {
-            List<Integer> colours = getColoursFromQuads(quads);
+            List<Integer> colours = getColoursFromModel(model);
             if(colours.isEmpty()) {
                 Trimica.LOGGER.warn("Trim palette colour could not determined for {}", location);
                 return TrimPalette.DEFAULT;
@@ -51,7 +93,7 @@ public final class TrimPaletteGenerator {
                 groups.add(new ColourGroup(colour));
             }
         }
-        groups.sort(Comparator.comparingInt(ColourGroup::getWeight).reversed());
+        Collections.sort(groups);
         List<ColourHSB> dominantColours = new ArrayList<>();
         int count = 0;
         for (ColourGroup group : groups) {
@@ -73,9 +115,10 @@ public final class TrimPaletteGenerator {
         List<ColourHSB> hsbColours = ColourHSB.fromRGB(colours);
 
         return hsbColours.stream()
-                         .sorted(Comparator.comparingDouble(ColourHSB::hue).thenComparing(ColourHSB::saturation).thenComparing(ColourHSB::brightness))
+                         .sorted()
                          .map(ColourHSB::colour)
-                         .toList();
+                         .toList()
+                         .reversed();
     }
 
     private List<Integer> stretchPalette(List<Integer> palette) {
