@@ -1,6 +1,7 @@
 package com.bawnorton.trimica.client.texture;
 
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.equipment.trim.ArmorTrim;
 import org.jetbrains.annotations.NotNull;
 import java.util.HashMap;
@@ -18,6 +19,10 @@ public final class RuntimeTrimAtlas {
     }
 
     public @NotNull DynamicTextureAtlasSprite getSprite(ResourceLocation location) {
-        return sprites.computeIfAbsent(location, key -> spriteFactory.apply(trim, key));
+        return sprites.computeIfAbsent(location, key -> spriteFactory.apply(trim, null, key));
+    }
+
+    public @NotNull DynamicTextureAtlasSprite getSprite(ItemStack stack, ResourceLocation location) {
+        return sprites.computeIfAbsent(location, key -> spriteFactory.apply(trim, stack, key));
     }
 }

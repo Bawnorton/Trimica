@@ -1,8 +1,8 @@
 package com.bawnorton.trimica.client.mixin;
 
+import com.bawnorton.trimica.client.TrimicaClient;
 import com.bawnorton.trimica.client.texture.DynamicTextureAtlasSprite;
 import com.bawnorton.trimica.client.texture.RuntimeTrimAtlas;
-import com.bawnorton.trimica.client.texture.RuntimeTrimAtlases;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
@@ -31,7 +31,7 @@ public abstract class EquipmentLayerRendererMixin {
             TextureAtlasSprite sprite = textureGetter.apply(trimSpriteKey);
             if (!sprite.contents().name().equals(MissingTextureAtlasSprite.getLocation())) return sprite;
 
-            RuntimeTrimAtlas atlas = RuntimeTrimAtlases.getModelAtlas(trimSpriteKey.trim());
+            RuntimeTrimAtlas atlas = TrimicaClient.getRuntimeAtlases().getModelAtlas(trimSpriteKey.trim());
             if (atlas == null) return sprite;
 
             return atlas.getSprite(trimSpriteKey.spriteId());

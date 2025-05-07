@@ -5,7 +5,6 @@ import com.bawnorton.trimica.client.mixin.accessor.*;
 import com.bawnorton.trimica.client.texture.colour.ColourGroup;
 import com.bawnorton.trimica.client.texture.colour.ColourHSB;
 import com.bawnorton.trimica.client.texture.colour.OkLabHelper;
-import com.bawnorton.trimica.trim.material.RuntimeTrimMaterials;
 import com.mojang.blaze3d.platform.NativeImage;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.BakedQuad;
@@ -35,7 +34,7 @@ public final class TrimPaletteGenerator {
 
     public TrimPalette generatePalette(TrimMaterial material, ResourceLocation location) {
         ItemModelResolver modelResolver = Minecraft.getInstance().getItemModelResolver();
-        Item materialProvider = RuntimeTrimMaterials.getMaterialProvider(material);
+        Item materialProvider = Trimica.MATERIAL_REGISTRY.getMaterialProvider(material);
         if (materialProvider == null) {
             return TrimPalette.DEFAULT;
         }

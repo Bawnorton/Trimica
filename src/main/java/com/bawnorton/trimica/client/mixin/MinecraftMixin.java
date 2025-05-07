@@ -1,6 +1,6 @@
 package com.bawnorton.trimica.client.mixin;
 
-import com.bawnorton.trimica.client.texture.RuntimeTrimAtlases;
+import com.bawnorton.trimica.client.TrimicaClient;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.ReceivingLevelScreen;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -16,6 +16,6 @@ public abstract class MinecraftMixin {
             at = @At("TAIL")
     )
     private void initTrimAtlases(ClientLevel clientLevel, ReceivingLevelScreen.Reason reason, CallbackInfo ci) {
-        RuntimeTrimAtlases.init(clientLevel.registryAccess());
+        TrimicaClient.getRuntimeAtlases().init(clientLevel.registryAccess());
     }
 }

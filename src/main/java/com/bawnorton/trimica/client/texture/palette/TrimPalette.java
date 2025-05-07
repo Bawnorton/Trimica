@@ -17,7 +17,7 @@ public final class TrimPalette {
         if (colours.size() != PALETTE_SIZE) {
             throw new IllegalArgumentException("Trim palette requires exactly %s colours, but %s were found.".formatted(PALETTE_SIZE, colours.size()));
         }
-        this.colours = colours;
+        this.colours = new ArrayList<>(colours);
     }
 
     public TrimPalette(int singleColour) {
@@ -40,6 +40,10 @@ public final class TrimPalette {
         }
         Collections.sort(hsbColours);
         return ARGB.toABGR(hsbColours.getFirst().colour());
+    }
+
+    public void reverseColours() {
+        Collections.reverse(colours);
     }
 
     @Override

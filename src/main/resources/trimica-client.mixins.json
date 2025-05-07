@@ -7,19 +7,29 @@
   },
   "compatibilityLevel": "JAVA_17",
   "client": [
+    "BlockModelWrapperMixin",
     "EquipmentLayerRendererMixin",
+    "ItemStackRenderState$LayerRenderStateMixin",
     "MinecraftMixin",
+    "ModelManagerMixin",
     "accessor.BlockModelWrapperAccessor",
     "accessor.CompositeModelAccessor",
     "accessor.ConditionalItemModelAccessor",
     "accessor.ItemModelResolverAccessor",
+    "accessor.ModelBakery$ModelBakerImplAccessor",
+    "accessor.ModelDiscover$ModelWrapperAccessor",
+    "accessor.ModelManagerAccessor",
     "accessor.RangeSelectItemModelAccessor",
     "accessor.SelectItemModelAccessor",
     "accessor.SpecialModelWrapperAccessor",
-    "accessor.SpriteContentsAccessor"
+    "accessor.SpriteContentsAccessor",
+    "accessor.TextureAtlasAccessor",
+    "accessor.TextureAtlasSpriteAccessor",
+    "accessor.TextureSlots$ValueAccessor"
   ],
   "mixins": [
     "ArmorTrimMixin",
+    "SelectItemModelMixin",
     "accessor.TrimMaterialAccessor"
   ]
 }
