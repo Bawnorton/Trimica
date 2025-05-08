@@ -78,9 +78,11 @@ public class TrimItemSpriteFactory extends AbstractTrimSpriteFactory {
         ResourceKey<TrimPattern> patternKey = trim.pattern().unwrapKey().orElse(null);
         if (patternKey == null) return null;
 
-        return Trimica.rl("textures/trims/items/%s/%s_trim.png".formatted(
-                patternKey.location().getPath(),
-                armourType.getName()
+        ResourceLocation location = patternKey.location();
+        return Trimica.rl("textures/trims/items/%s/%s-%s.png".formatted(
+                armourType.getName(),
+                location.getNamespace(),
+                location.getPath()
         ));
     }
 
