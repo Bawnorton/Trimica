@@ -12,12 +12,18 @@ public final class TrimPalette {
     public static final TrimPalette DEFAULT = new TrimPalette(ARGB.color(255, 255, 255, 255));
     public static final int PALETTE_SIZE = 8;
     private final List<Integer> colours;
+    private final boolean builtin;
 
-    public TrimPalette(List<Integer> colours) {
+    public TrimPalette(List<Integer> colours, boolean builtin) {
         if (colours.size() != PALETTE_SIZE) {
             throw new IllegalArgumentException("Trim palette requires exactly %s colours, but %s were found.".formatted(PALETTE_SIZE, colours.size()));
         }
         this.colours = new ArrayList<>(colours);
+        this.builtin = builtin;
+    }
+
+    public TrimPalette(List<Integer> colours) {
+        this(colours, false);
     }
 
     public TrimPalette(int singleColour) {
@@ -32,6 +38,10 @@ public final class TrimPalette {
         return colours;
     }
 
+    public boolean isBuiltin() {
+        return builtin;
+    }
+
     public int getTooltipColour() {
         List<ColourHSB> hsbColours = ColourHSB.fromRGB(colours);
         hsbColours.removeIf(colour -> colour.saturation() < 0.25f || colour.brightness() < 0.5f);
@@ -40,10 +50,6 @@ public final class TrimPalette {
         }
         Collections.sort(hsbColours);
         return ARGB.toABGR(hsbColours.getFirst().colour());
-    }
-
-    public void reverseColours() {
-        Collections.reverse(colours);
     }
 
     @Override

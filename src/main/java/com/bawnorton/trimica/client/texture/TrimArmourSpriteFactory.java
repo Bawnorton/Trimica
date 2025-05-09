@@ -28,8 +28,8 @@ public class TrimArmourSpriteFactory extends AbstractTrimSpriteFactory {
         Minecraft minecraft = Minecraft.getInstance();
         try {
             TextureContents contents = TextureContents.load(minecraft.getResourceManager(), basePatternTexture);
-            TrimPalette palette = TrimicaClient.getPalettes().getOrGeneratePalette(material, location);
-            NativeImage coloured = createColouredPatternImage(contents.image(), palette);
+            TrimPalette palette = TrimicaClient.getPalettes().getOrGeneratePalette(material, null, location);
+            NativeImage coloured = createColouredPatternImage(contents.image(), palette.getColours(), palette.isBuiltin());
             contents.close();
             return coloured;
         } catch (IOException e) {

@@ -12,6 +12,7 @@ import org.jetbrains.annotations.Nullable;
 import org.joml.Vector2i;
 import java.util.Comparator;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -40,9 +41,9 @@ public abstract class AbstractTrimSpriteFactory implements RuntimeTrimSpriteFact
 
     protected abstract NativeImage createImageFromMaterial(TrimMaterial material, @Nullable ItemStack stack, ResourceLocation location);
     
-    protected NativeImage createColouredPatternImage(NativeImage greyscalePatternImage, TrimPalette palette) {
+    protected NativeImage createColouredPatternImage(NativeImage greyscalePatternImage, List<Integer> colours, boolean builtin) {
         NativeImage coloured = new NativeImage(width, height, false);
-        Map<Integer, Set<Vector2i>> colourPositions = new Int2ObjectAVLTreeMap<>(Comparator.comparingInt(i -> i));
+        Map<Integer, Set<Vector2i>> colourPositions = new Int2ObjectAVLTreeMap<>(Comparator.<Integer>comparingInt(i -> i).reversed());
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
                 int pixel = greyscalePatternImage.getPixel(x, y);
@@ -56,13 +57,13 @@ public abstract class AbstractTrimSpriteFactory implements RuntimeTrimSpriteFact
             if (colour == 0 || index >= TrimPalette.PALETTE_SIZE) {
                 paletteColour = 0;
             } else {
-                paletteColour = ARGB.toABGR(0xFF000000 | palette.getColours().get(index));
+                paletteColour = ARGB.toABGR(0xFF000000 | colours.get(index));
             }
             Set<Vector2i> positions = entry.getValue();
             for (Vector2i position : positions) {
                 int x = position.x();
                 int y = position.y();
-                coloured.setPixel(x, y, applyGrayscaleMask(paletteColour, colour));
+                coloured.setPixel(x, y, builtin ? paletteColour : applyGrayscaleMask(paletteColour, colour));
             }
             index++;
         }

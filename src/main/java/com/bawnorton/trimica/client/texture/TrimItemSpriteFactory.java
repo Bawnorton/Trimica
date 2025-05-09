@@ -15,6 +15,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.equipment.ArmorType;
+import net.minecraft.world.item.equipment.EquipmentAsset;
 import net.minecraft.world.item.equipment.Equippable;
 import net.minecraft.world.item.equipment.trim.ArmorTrim;
 import net.minecraft.world.item.equipment.trim.TrimMaterial;
@@ -46,9 +47,12 @@ public class TrimItemSpriteFactory extends AbstractTrimSpriteFactory {
                 ResourceLocation defaultTexture = getDefaultTrimOverlay(armourType);
                 contents = TextureContents.load(Minecraft.getInstance().getResourceManager(), defaultTexture);
             }
-            TrimPalette palette = TrimicaClient.getPalettes().getOrGeneratePalette(material, location);
-            palette.reverseColours();
-            NativeImage coloured = createColouredPatternImage(contents.image(), palette);
+            Equippable equippable = stack.get(DataComponents.EQUIPPABLE);
+            assert equippable != null; // verified above
+
+            ResourceKey<EquipmentAsset> assetResourceKey = equippable.assetId().orElse(null);
+            TrimPalette palette = TrimicaClient.getPalettes().getOrGeneratePalette(material, assetResourceKey, location);
+            NativeImage coloured = createColouredPatternImage(contents.image(), palette.getColours(), palette.isBuiltin());
             contents.close();
             return coloured;
         } catch (IOException e) {
@@ -79,7 +83,7 @@ public class TrimItemSpriteFactory extends AbstractTrimSpriteFactory {
         if (patternKey == null) return null;
 
         ResourceLocation location = patternKey.location();
-        return Trimica.rl("textures/trims/items/%s/%s-%s.png".formatted(
+        return Trimica.rl("textures/trims/items/%s/%s/%s.png".formatted(
                 armourType.getName(),
                 location.getNamespace(),
                 location.getPath()

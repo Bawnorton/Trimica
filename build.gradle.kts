@@ -2,7 +2,7 @@ import net.fabricmc.loom.configuration.ide.RunConfigSettings
 import net.neoforged.moddevgradle.dsl.RunModel
 
 plugins {
-    id("dev.isxander.modstitch.base") version "0.5.12"
+    id("dev.isxander.modstitch.base") version "0.5.14-unstable"
 }
 
 fun prop(name: String, consumer: (prop: String) -> Unit) {
@@ -179,5 +179,9 @@ tasks {
         from(modstitch.finalJarTask.flatMap { it.archiveFile })
         into(rootProject.layout.buildDirectory.file("libs/${modstitch.metadata.modVersion.get()}"))
         dependsOn(modstitch.finalJarTask)
+    }
+
+    processResources {
+        outputs.upToDateWhen { false } // work around modstitch mixin cache issue
     }
 }

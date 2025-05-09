@@ -30,7 +30,7 @@ public abstract class SelectItemModelMixin<T> {
             )
     )
     private ItemModel provideRuntimeModel(SelectItemModel.ModelSelector<T> instance, T t, ClientLevel clientLevel, Operation<ItemModel> original, @Local(argsOnly = true) ItemStack stack) {
-        if(property instanceof TrimMaterialProperty && stack.has(DataComponents.TRIM) && t == null) {
+        if(property instanceof TrimMaterialProperty && stack.has(DataComponents.TRIM)) {
             ItemModel base = original.call(instance, null, clientLevel);
             ArmorTrim trim = stack.get(DataComponents.TRIM);
             return TrimicaClient.getItemModelFactory().getOrCreateModel(base, stack, trim);

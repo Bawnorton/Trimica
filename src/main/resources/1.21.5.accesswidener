@@ -1,5 +1,4 @@
 accessWidener   v2  named
-extendable  class   net/minecraft/world/item/component/ProvidesTrimMaterial
 accessible  class   net/minecraft/client/renderer/entity/layers/EquipmentLayerRenderer$TrimSpriteKey
 accessible  class   net/minecraft/core/registries/BuiltInRegistries$RegistryBootstrap
 accessible  class   net/minecraft/client/resources/model/ModelBakery$ModelBakerImpl

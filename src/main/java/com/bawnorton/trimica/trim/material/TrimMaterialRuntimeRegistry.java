@@ -12,17 +12,16 @@ import java.util.HashMap;
 import java.util.Map;
 
 public final class TrimMaterialRuntimeRegistry {
-    private final Map<MaterialAssetGroup, Item> materialProviders = new HashMap<>();
+    private final Map<String, Item> materialProviders = new HashMap<>();
     private final Map<ResourceLocation, TrimMaterial> materials = new HashMap<>();
 
-    public Item getMaterialProvider(TrimMaterial material) {
-        return materialProviders.computeIfAbsent(material.assets(), k -> {
-            String trimicaId = k.base().suffix();
-            int trimicaStartIndex = trimicaId.indexOf("trimica/");
+    public Item getMaterialProvider(String suffix) {
+        return materialProviders.computeIfAbsent(suffix, k -> {
+            int trimicaStartIndex = k.indexOf("trimica/");
             if (trimicaStartIndex == -1) {
                 return null;
             }
-            String materialId = trimicaId.substring(trimicaStartIndex + "trimica/".length()).replace("-", ":");
+            String materialId = k.substring(trimicaStartIndex + "trimica/".length()).replace("-", ":");
             ResourceLocation id = ResourceLocation.tryParse(materialId);
             if (id == null) {
                 return null;
@@ -34,8 +33,9 @@ public final class TrimMaterialRuntimeRegistry {
     public TrimMaterial getOrCreate(ItemStack stack) {
         ResourceLocation key = stack.getOrDefault(DataComponents.ITEM_MODEL, BuiltInRegistries.ITEM.getKey(stack.getItem()));
         return materials.computeIfAbsent(key, k -> {
-            MaterialAssetGroup id = MaterialAssetGroup.create("trimica/%s-%s".formatted(key.getNamespace(), key.getPath()));
-            materialProviders.computeIfAbsent(id, material -> stack.getItem());
+            String suffix = "trimica/%s-%s".formatted(key.getNamespace(), key.getPath());
+            MaterialAssetGroup id = MaterialAssetGroup.create(suffix);
+            materialProviders.computeIfAbsent(suffix, material -> stack.getItem());
             return new TrimMaterial(id, Component.translatable("trimica.material", stack.getHoverName().getString()));
         });
     }

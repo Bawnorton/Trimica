@@ -9,7 +9,11 @@ import org.spongepowered.asm.mixin.injection.At;
 @Mixin(ModelManager.class)
 public abstract class ModelManagerMixin {
     @ModifyReturnValue(
+            //? if neoforge {
+            /*method = "discoverModelDependencies(Ljava/util/Map;Lnet/minecraft/client/resources/model/BlockStateModelLoader$LoadedModels;Lnet/minecraft/client/resources/model/ClientItemInfoLoader$LoadedClientInfos;Lnet/neoforged/neoforge/client/model/standalone/StandaloneModelLoader$LoadedModels;)Lnet/minecraft/client/resources/model/ModelManager$ResolvedModels;",
+            *///?} else {
             method = "discoverModelDependencies",
+            //?}
             at = @At("RETURN")
     )
     private static ModelManager.ResolvedModels captureResolvedModels(ModelManager.ResolvedModels resolvedModels) {
