@@ -46,15 +46,17 @@ public final class TrimItemModelFactory {
         if (assetId.isEmpty()) {
             return base;
         }
-        ResourceLocation modelId = stack.getOrDefault(DataComponents.ITEM_MODEL, BuiltInRegistries.ITEM.getKey(stack.getItem()));
-        ResourceLocation materialId = Trimica.rl(trim.material().value().assets().assetId(assetId.get()).suffix());
-        ResourceLocation patternId = trim.pattern().value().assetId();
-        return models.computeIfAbsent(new TrimModelId(modelId, materialId, patternId), k -> createModel(k, base, stack, trim));
+        TrimModelId trimModelId = TrimModelId.fromTrim(stack, trim, stack.getItem(), assetId.get());
+        return models.computeIfAbsent(trimModelId, k -> createModel(k, base, stack, trim));
     }
 
     private ItemModel createModel(TrimModelId modelId, ItemModel base, ItemStack stack, ArmorTrim trim) {
         ResourceLocation baseModelLocation = stack.getOrDefault(DataComponents.ITEM_MODEL, BuiltInRegistries.ITEM.getKey(stack.getItem()));
         ResolvedModel baseResolved = resolvedModels.models().get(baseModelLocation.withPrefix("item/"));
+        if(baseResolved == null) {
+            Trimica.LOGGER.error("Failed to find base resolved model for trimmed item: {}", baseModelLocation);
+            return base;
+        }
         TextureSlots.Data slots = baseResolved.wrapped().textureSlots();
         Map<String, TextureSlots.SlotContents> baseContents = slots.values();
         String largestLayer = baseContents.keySet().stream()
@@ -115,11 +117,5 @@ public final class TrimItemModelFactory {
 
     public void setResolvedModels(ModelManager.ResolvedModels resolvedModels) {
         this.resolvedModels = resolvedModels;
-    }
-
-    private record TrimModelId(ResourceLocation modelId, ResourceLocation materialId, ResourceLocation patternId) {
-        public ResourceLocation asSingle() {
-            return ResourceLocation.fromNamespaceAndPath(modelId.getNamespace(), "%s/%s_%s".formatted(modelId.getPath(), patternId.getPath(), materialId.getPath()));
-        }
     }
 }

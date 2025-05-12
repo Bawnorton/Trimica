@@ -1,5 +1,6 @@
 package com.bawnorton.trimica.mixin.crafting;
 
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -17,11 +18,15 @@ public abstract class SmithingTrimRecipeMixin {
     @Shadow @Final @Mutable
     Ingredient addition;
 
+    @Shadow @Final @Mutable
+    Ingredient base;
+
     @Inject(
             method = "<init>",
             at = @At("TAIL")
     )
     private void allowAllItems(CallbackInfo ci) {
         addition = Ingredient.of(BuiltInRegistries.ITEM.stream().filter(item -> item != Items.AIR));
+        base = Ingredient.of(BuiltInRegistries.ITEM.stream().filter(item -> item.components().has(DataComponents.EQUIPPABLE)));
     }
 }

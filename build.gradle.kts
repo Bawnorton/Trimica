@@ -14,6 +14,12 @@ val minecraft = property("deps.minecraft") as String
 dependencies {
     modstitch.loom {
         modstitchModImplementation("net.fabricmc.fabric-api:fabric-api:0.122.0+1.21.5")
+
+        modstitchModRuntimeOnly("maven.modrinth:advanced-netherite:fabric-2.2.3-mc1.21.5")
+    }
+
+    modstitch.moddevgradle {
+        modstitchModRuntimeOnly("maven.modrinth:advanced-netherite:neoforge-2.2.3-mc1.21.5")
     }
 }
 
@@ -65,17 +71,15 @@ modstitch {
             }
         }.files.singleFile
         val agentArg = "-javaagent:$mixinJarFile"
+        val apply = fun (vmArg: (String) -> Unit, property: (String, String) -> Unit) {
+            vmArg(agentArg)
+            vmArg("-XX:+AllowEnhancedClassRefinition")
+            property("mixin.hotSwap", "true")
+            property("mixin.debug.export", "true")
+        }
         when (runConfig) {
-            is RunConfigSettings -> {
-                runConfig.vmArg(agentArg)
-                runConfig.property("mixin.hotSwap", "true")
-                runConfig.property("mixin.debug.export", "true")
-            }
-            is RunModel -> {
-                runConfig.jvmArgument(agentArg)
-                runConfig.systemProperty("mixin.hotSwap", "true")
-                runConfig.systemProperty("mixin.debug.export", "true")
-            }
+            is RunConfigSettings -> apply({ runConfig.vmArg(it) }, { k, v -> runConfig.property(k, v) })
+            is RunModel -> apply({ runConfig.jvmArgument(it) }, { k, v -> runConfig.systemProperty(k, v) })
             else -> throw IllegalArgumentException("Unknown run config type: ${runConfig::class.java}")
         }
     }

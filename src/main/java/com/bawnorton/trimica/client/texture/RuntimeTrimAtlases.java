@@ -13,10 +13,12 @@ import java.util.function.Function;
 public final class RuntimeTrimAtlases {
     private final Map<TrimPattern, RuntimeTrimAtlasFactory> modelAtlasFactories = new HashMap<>();
     private final Map<TrimPattern, RuntimeTrimAtlasFactory> itemAtlasFactories = new HashMap<>();
+    private final Map<TrimPattern, RuntimeTrimAtlasFactory> shieldAtlasFactories = new HashMap<>();
 
     public void init(RegistryAccess registryAccess) {
         modelAtlasFactories.clear();
         itemAtlasFactories.clear();
+        shieldAtlasFactories.clear();
 
         Registry<TrimPattern> patterns = registryAccess.lookup(Registries.TRIM_PATTERN).orElseThrow();
         Registry<TrimMaterial> materials = registryAccess.lookup(Registries.TRIM_MATERIAL).orElseThrow();
@@ -33,6 +35,12 @@ public final class RuntimeTrimAtlases {
                             new TrimItemSpriteFactory()
                     )
             );
+            shieldAtlasFactories.put(
+                    pattern, new RuntimeTrimAtlasFactory(
+                            material -> new ArmorTrim(materials.wrapAsHolder(material), patterns.wrapAsHolder(pattern)),
+                            new TrimShieldSpriteFactory()
+                    )
+            );
         }
     }
 
@@ -42,6 +50,10 @@ public final class RuntimeTrimAtlases {
 
     public RuntimeTrimAtlas getItemAtlas(ArmorTrim trim) {
         return itemAtlasFactories.get(trim.pattern().value()).getOrCreate(trim.material().value());
+    }
+
+    public RuntimeTrimAtlas getShieldAtlas(ArmorTrim trim) {
+        return shieldAtlasFactories.get(trim.pattern().value()).getOrCreate(trim.material().value());
     }
 
     private static class RuntimeTrimAtlasFactory {

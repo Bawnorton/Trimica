@@ -1,6 +1,8 @@
 package com.bawnorton.trimica.client.texture;
 
 import com.bawnorton.trimica.Trimica;
+import com.bawnorton.trimica.api.TrimmedType;
+import com.bawnorton.trimica.api.impl.TrimicaApiImpl;
 import com.bawnorton.trimica.client.TrimicaClient;
 import com.bawnorton.trimica.client.mixin.accessor.TextureAtlasAccessor;
 import com.bawnorton.trimica.client.mixin.accessor.TextureAtlasSpriteAccessor;
@@ -30,13 +32,14 @@ public class TrimItemSpriteFactory extends AbstractTrimSpriteFactory {
     }
 
     @Override
-    protected NativeImage createImageFromMaterial(TrimMaterial material, @Nullable ItemStack stack, ResourceLocation location) {
+    protected NativeImage createImageFromMaterial(ArmorTrim trim, ItemStack stack, ResourceLocation location) {
         if (stack == null) return empty();
 
         ArmorType armourType = getArmourType(stack);
         if (armourType == null) return empty();
 
-        ResourceLocation basePatternTexture = getPatternBasedTrimOverlay(armourType, stack);
+        ResourceLocation basePatternTexture = getPatternBasedTrimOverlay(armourType, trim);
+        basePatternTexture = TrimicaApiImpl.INSTANCE.applyBaseTextureIntercepters(basePatternTexture, stack, trim, TrimmedType.ITEM);
         if (basePatternTexture == null) return empty();
 
         try {
@@ -51,6 +54,7 @@ public class TrimItemSpriteFactory extends AbstractTrimSpriteFactory {
             assert equippable != null; // verified above
 
             ResourceKey<EquipmentAsset> assetResourceKey = equippable.assetId().orElse(null);
+            TrimMaterial material = trim.material().value();
             TrimPalette palette = TrimicaClient.getPalettes().getOrGeneratePalette(material, assetResourceKey, location);
             NativeImage coloured = createColouredPatternImage(contents.image(), palette.getColours(), palette.isBuiltin());
             contents.close();
@@ -75,10 +79,7 @@ public class TrimItemSpriteFactory extends AbstractTrimSpriteFactory {
         };
     }
 
-    private ResourceLocation getPatternBasedTrimOverlay(ArmorType armourType, ItemStack stack) {
-        ArmorTrim trim = stack.get(DataComponents.TRIM);
-        if (trim == null) return null;
-
+    private ResourceLocation getPatternBasedTrimOverlay(ArmorType armourType, ArmorTrim trim) {
         ResourceKey<TrimPattern> patternKey = trim.pattern().unwrapKey().orElse(null);
         if (patternKey == null) return null;
 

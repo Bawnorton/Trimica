@@ -18,10 +18,6 @@ public final class RuntimeTrimAtlas {
         this.sprites = new HashMap<>();
     }
 
-    public @NotNull DynamicTextureAtlasSprite getSprite(ResourceLocation location) {
-        return sprites.computeIfAbsent(location, key -> spriteFactory.apply(trim, null, key));
-    }
-
     public @NotNull DynamicTextureAtlasSprite getSprite(ItemStack stack, ResourceLocation location) {
         return sprites.computeIfAbsent(location, key -> spriteFactory.apply(trim, stack, key));
     }

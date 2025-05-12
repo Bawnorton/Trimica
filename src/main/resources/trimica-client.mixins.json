@@ -7,11 +7,7 @@
   },
   "compatibilityLevel": "JAVA_17",
   "client": [
-    "BlockModelWrapperMixin",
-    "EquipmentLayerRendererMixin",
-    "ItemStackRenderState$LayerRenderStateMixin",
     "MinecraftMixin",
-    "ModelManagerMixin",
     "accessor.BlockModelWrapperAccessor",
     "accessor.CompositeModelAccessor",
     "accessor.ConditionalItemModelAccessor",
@@ -25,11 +21,15 @@
     "accessor.SpriteContentsAccessor",
     "accessor.TextureAtlasAccessor",
     "accessor.TextureAtlasSpriteAccessor",
-    "accessor.TextureSlots$ValueAccessor"
+    "accessor.TextureSlots$ValueAccessor",
+    "model.BlockModelWrapperMixin",
+    "model.ModelManagerMixin",
+    "render.EquipmentLayerRendererMixin",
+    "render.ItemStackRenderState$LayerRenderStateMixin",
+    "render.ShieldSpecialRendererMixin"
   ],
   "mixins": [
     "ArmorTrimMixin",
-    "SelectItemModelMixin",
     "accessor.TrimMaterialAccessor"
   ]
 }

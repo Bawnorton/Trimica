@@ -33,8 +33,6 @@ public abstract class ArmorTrimMixin {
         ResourceKey<EquipmentAsset> equipmentAssetKey = Optional.ofNullable(componentGetter.get(DataComponents.EQUIPPABLE))
                 .flatMap(Equippable::assetId)
                 .orElse(null);
-        if (equipmentAssetKey == null) return;
-
         TrimPalette palette = TrimicaClient.getPalettes().getPalette(material().value(), equipmentAssetKey);
         if (palette == null) return;
 

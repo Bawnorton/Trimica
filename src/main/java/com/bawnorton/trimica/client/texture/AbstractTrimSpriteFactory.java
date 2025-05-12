@@ -7,8 +7,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.ARGB;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.equipment.trim.ArmorTrim;
-import net.minecraft.world.item.equipment.trim.TrimMaterial;
-import org.jetbrains.annotations.Nullable;
 import org.joml.Vector2i;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -28,10 +26,10 @@ public abstract class AbstractTrimSpriteFactory implements RuntimeTrimSpriteFact
     }
 
     @Override
-    public DynamicTextureAtlasSprite apply(ArmorTrim trim, @Nullable ItemStack stack, ResourceLocation location) {
+    public DynamicTextureAtlasSprite apply(ArmorTrim trim, ItemStack stack, ResourceLocation location) {
         return DynamicTextureAtlasSprite.create(
                 location,
-                createImageFromMaterial(trim.material().value(), stack, location),
+                createImageFromMaterial(trim, stack, location),
                 width,
                 height,
                 trim.pattern().value().decal(),
@@ -39,7 +37,7 @@ public abstract class AbstractTrimSpriteFactory implements RuntimeTrimSpriteFact
         );
     }
 
-    protected abstract NativeImage createImageFromMaterial(TrimMaterial material, @Nullable ItemStack stack, ResourceLocation location);
+    protected abstract NativeImage createImageFromMaterial(ArmorTrim trim, ItemStack stack, ResourceLocation location);
     
     protected NativeImage createColouredPatternImage(NativeImage greyscalePatternImage, List<Integer> colours, boolean builtin) {
         NativeImage coloured = new NativeImage(width, height, false);

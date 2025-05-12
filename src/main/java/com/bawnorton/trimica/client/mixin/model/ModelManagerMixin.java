@@ -1,4 +1,4 @@
-package com.bawnorton.trimica.client.mixin;
+package com.bawnorton.trimica.client.mixin.model;
 
 import com.bawnorton.trimica.client.TrimicaClient;
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;

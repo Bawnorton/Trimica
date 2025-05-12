@@ -1,7 +1,6 @@
-package com.bawnorton.trimica.client.mixin;
+package com.bawnorton.trimica.client.mixin.render;
 
 import com.bawnorton.trimica.client.extend.ItemStackRenderState$LayerRenderStateExtender;
-import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -10,6 +9,11 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.item.ItemStackRenderState;
 import net.minecraft.world.item.ItemDisplayContext;
+import org.joml.AxisAngle4f;
+import org.joml.Matrix3f;
+import org.joml.Matrix4f;
+import org.joml.Quaternionf;
+import org.joml.Vector3f;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -27,10 +31,18 @@ public abstract class ItemStackRenderState$LayerRenderStateMixin implements Item
                     target = "Lnet/minecraft/client/renderer/entity/ItemRenderer;renderItem(Lnet/minecraft/world/item/ItemDisplayContext;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;II[ILjava/util/List;Lnet/minecraft/client/renderer/RenderType;Lnet/minecraft/client/renderer/item/ItemStackRenderState$FoilType;)V"
             )
     )
-    private void moveOverlayLayerForward(ItemDisplayContext itemDisplayContext, PoseStack poseStack, MultiBufferSource multiBufferSource, int i, int j, int[] ints, List<BakedQuad> list, RenderType renderType, ItemStackRenderState.FoilType foilType, Operation<Void> original) {
+    private void scaleOverlay(ItemDisplayContext itemDisplayContext, PoseStack poseStack, MultiBufferSource multiBufferSource, int i, int j, int[] ints, List<BakedQuad> list, RenderType renderType, ItemStackRenderState.FoilType foilType, Operation<Void> original) {
         if (trimica$isTrimOverlayLayer) {
             poseStack.pushPose();
-            poseStack.translate(0, 0, 0.0001);
+            PoseStack.Pose lastPose = poseStack.last();
+            Matrix4f pose = lastPose.pose();
+            Vector3f translation = pose.getTranslation(new Vector3f());
+            pose.setTranslation(0, 0, 0);
+            float margin = 0.001f;
+            float scale = 1 + margin;
+            pose.scale(scale, scale, scale);
+            pose.setTranslation(translation);
+            pose.translate(-margin / 2, -margin / 2, margin);
             original.call(itemDisplayContext, poseStack, multiBufferSource, i, j, ints, list, renderType, foilType);
             poseStack.popPose();
             trimica$isTrimOverlayLayer = false;
