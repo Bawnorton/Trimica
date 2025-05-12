@@ -1,7 +1,6 @@
 package com.bawnorton.trimica.compat;
 
 import com.bawnorton.trimica.api.BaseTextureInterceptor;
-import com.bawnorton.trimica.api.TrimmedType;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -14,17 +13,18 @@ import org.jetbrains.annotations.Nullable;
  */
 public class ElytraBaseTextureInterceptor implements BaseTextureInterceptor {
     @Override
-    public ResourceLocation intercept(@Nullable ResourceLocation expectedBaseTexture, ItemStack itemWithTrim, ArmorTrim armourTrim, TrimmedType trimmedType) {
-        if (itemWithTrim != null && itemWithTrim.getItem() != Items.ELYTRA) return expectedBaseTexture;
+    public ResourceLocation interceptItemTexture(@Nullable ResourceLocation expectedBaseTexture, ItemStack itemWithTrim, ArmorTrim armourTrim) {
+        if (itemWithTrim.getItem() != Items.ELYTRA) return expectedBaseTexture;
 
-        return switch (trimmedType) {
-            case ITEM -> ResourceLocation.withDefaultNamespace("textures/trims/items/elytra/default.png");
-            case ARMOUR -> {
-                TrimPattern pattern = armourTrim.pattern().value();
-                String assetId = pattern.assetId().getPath();
-                yield  ResourceLocation.withDefaultNamespace("textures/trims/models/elytra/%s.png".formatted(assetId));
-            }
-            default -> expectedBaseTexture;
-        };
+        return ResourceLocation.withDefaultNamespace("textures/trims/items/elytra/default.png");
+    }
+
+    @Override
+    public ResourceLocation interceptArmourTexture(@Nullable ResourceLocation expectedBaseTexture, ItemStack itemWithTrim, ArmorTrim armourTrim) {
+        if (itemWithTrim.getItem() != Items.ELYTRA) return expectedBaseTexture;
+
+        TrimPattern pattern = armourTrim.pattern().value();
+        String assetId = pattern.assetId().getPath();
+        return ResourceLocation.withDefaultNamespace("textures/trims/models/elytra/%s.png".formatted(assetId));
     }
 }

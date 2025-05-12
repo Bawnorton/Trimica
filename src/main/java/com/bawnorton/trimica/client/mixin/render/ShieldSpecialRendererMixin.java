@@ -44,7 +44,7 @@ public abstract class ShieldSpecialRendererMixin {
         if (trim == null) return;
 
         TrimModelId trimModelId = TrimModelId.fromTrim(dataComponentMap, trim, Items.SHIELD, null);
-        DynamicTextureAtlasSprite sprite = TrimicaClient.getRuntimeAtlases().getShieldAtlas(trim).getSprite(null, trimModelId.asSingle());
+        DynamicTextureAtlasSprite sprite = TrimicaClient.getRuntimeAtlases().getShieldAtlas(trim).getSprite(dataComponentMap, trimModelId.asSingle());
         VertexConsumer vertexConsumer = sprite.wrap(ItemRenderer.getFoilBuffer(multiBufferSource, sprite.getRenderType(), itemDisplayContext == ItemDisplayContext.GUI, bl));
         this.model.plate().render(poseStack, vertexConsumer, i, j);
     }

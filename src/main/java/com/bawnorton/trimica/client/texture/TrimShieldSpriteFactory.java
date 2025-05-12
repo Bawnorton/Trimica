@@ -1,7 +1,6 @@
 package com.bawnorton.trimica.client.texture;
 
 import com.bawnorton.trimica.Trimica;
-import com.bawnorton.trimica.api.TrimmedType;
 import com.bawnorton.trimica.api.impl.TrimicaApiImpl;
 import com.bawnorton.trimica.client.TrimicaClient;
 import com.bawnorton.trimica.client.mixin.accessor.TextureAtlasAccessor;
@@ -11,11 +10,10 @@ import com.mojang.blaze3d.platform.NativeImage;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Sheets;
 import net.minecraft.client.renderer.texture.TextureContents;
+import net.minecraft.core.component.DataComponentGetter;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.equipment.ArmorType;
 import net.minecraft.world.item.equipment.trim.ArmorTrim;
 import net.minecraft.world.item.equipment.trim.TrimMaterial;
 import net.minecraft.world.item.equipment.trim.TrimPattern;
@@ -28,9 +26,9 @@ public class TrimShieldSpriteFactory extends AbstractTrimSpriteFactory {
     }
 
     @Override
-    protected NativeImage createImageFromMaterial(ArmorTrim trim, ItemStack stack, ResourceLocation location) {
+    protected NativeImage createImageFromMaterial(ArmorTrim trim, DataComponentGetter componentGetter, ResourceLocation location) {
         ResourceLocation basePatternTexture = getPatternBasedTrimOverlay(trim);
-        TrimicaApiImpl.INSTANCE.applyBaseTextureIntercepters(basePatternTexture, null, trim, TrimmedType.SHIELD);
+        basePatternTexture = TrimicaApiImpl.INSTANCE.applyBaseTextureInterceptorsForShield(basePatternTexture, componentGetter, trim);
         if (basePatternTexture == null) return empty();
 
         try {

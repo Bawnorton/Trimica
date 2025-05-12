@@ -1,7 +1,6 @@
 package com.bawnorton.trimica.client.texture;
 
 import com.bawnorton.trimica.Trimica;
-import com.bawnorton.trimica.api.TrimmedType;
 import com.bawnorton.trimica.api.impl.TrimicaApiImpl;
 import com.bawnorton.trimica.client.TrimicaClient;
 import com.bawnorton.trimica.client.mixin.accessor.TextureAtlasAccessor;
@@ -11,6 +10,7 @@ import com.mojang.blaze3d.platform.NativeImage;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureContents;
+import net.minecraft.core.component.DataComponentGetter;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -32,14 +32,14 @@ public class TrimItemSpriteFactory extends AbstractTrimSpriteFactory {
     }
 
     @Override
-    protected NativeImage createImageFromMaterial(ArmorTrim trim, ItemStack stack, ResourceLocation location) {
-        if (stack == null) return empty();
+    protected NativeImage createImageFromMaterial(ArmorTrim trim, DataComponentGetter componentGetter, ResourceLocation location) {
+        if (!(componentGetter instanceof ItemStack stack)) return empty();
 
-        ArmorType armourType = getArmourType(stack);
+        ArmorType armourType = getArmourType(componentGetter);
         if (armourType == null) return empty();
 
         ResourceLocation basePatternTexture = getPatternBasedTrimOverlay(armourType, trim);
-        basePatternTexture = TrimicaApiImpl.INSTANCE.applyBaseTextureIntercepters(basePatternTexture, stack, trim, TrimmedType.ITEM);
+        basePatternTexture = TrimicaApiImpl.INSTANCE.applyBaseTextureInterceptorsForItem(basePatternTexture, stack, trim);
         if (basePatternTexture == null) return empty();
 
         try {
@@ -65,8 +65,8 @@ public class TrimItemSpriteFactory extends AbstractTrimSpriteFactory {
         return empty();
     }
 
-    private @Nullable ArmorType getArmourType(ItemStack stack) {
-        Equippable equippable = stack.get(DataComponents.EQUIPPABLE);
+    private @Nullable ArmorType getArmourType(DataComponentGetter componentGetter) {
+        Equippable equippable = componentGetter.get(DataComponents.EQUIPPABLE);
         if (equippable == null) return null;
 
         EquipmentSlot slot = equippable.slot();

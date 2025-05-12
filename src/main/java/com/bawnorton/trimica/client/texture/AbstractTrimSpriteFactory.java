@@ -3,10 +3,11 @@ package com.bawnorton.trimica.client.texture;
 import com.bawnorton.trimica.client.texture.palette.TrimPalette;
 import com.mojang.blaze3d.platform.NativeImage;
 import it.unimi.dsi.fastutil.ints.Int2ObjectAVLTreeMap;
+import net.minecraft.core.component.DataComponentGetter;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.ARGB;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.equipment.trim.ArmorTrim;
+import org.jetbrains.annotations.Nullable;
 import org.joml.Vector2i;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -26,10 +27,10 @@ public abstract class AbstractTrimSpriteFactory implements RuntimeTrimSpriteFact
     }
 
     @Override
-    public DynamicTextureAtlasSprite apply(ArmorTrim trim, ItemStack stack, ResourceLocation location) {
+    public DynamicTextureAtlasSprite apply(ArmorTrim trim, @Nullable DataComponentGetter componentGetter, ResourceLocation location) {
         return DynamicTextureAtlasSprite.create(
                 location,
-                createImageFromMaterial(trim, stack, location),
+                createImageFromMaterial(trim, componentGetter, location),
                 width,
                 height,
                 trim.pattern().value().decal(),
@@ -37,7 +38,7 @@ public abstract class AbstractTrimSpriteFactory implements RuntimeTrimSpriteFact
         );
     }
 
-    protected abstract NativeImage createImageFromMaterial(ArmorTrim trim, ItemStack stack, ResourceLocation location);
+    protected abstract NativeImage createImageFromMaterial(ArmorTrim trim, DataComponentGetter componentGetter, ResourceLocation location);
     
     protected NativeImage createColouredPatternImage(NativeImage greyscalePatternImage, List<Integer> colours, boolean builtin) {
         NativeImage coloured = new NativeImage(width, height, false);

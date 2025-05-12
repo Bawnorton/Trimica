@@ -2,7 +2,7 @@ package com.bawnorton.trimica.api.impl;
 
 import com.bawnorton.trimica.api.BaseTextureInterceptor;
 import com.bawnorton.trimica.api.TrimicaApi;
-import com.bawnorton.trimica.api.TrimmedType;
+import net.minecraft.core.component.DataComponentGetter;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.equipment.trim.ArmorTrim;
@@ -21,9 +21,23 @@ public final class TrimicaApiImpl implements TrimicaApi {
         baseTextureInterceptors.add(baseTextureInterceptor);
     }
 
-    public ResourceLocation applyBaseTextureIntercepters(ResourceLocation expectedBaseTexture, ItemStack itemWithTrim, ArmorTrim armourTrim, TrimmedType trimmedType) {
+    public ResourceLocation applyBaseTextureInterceptorsForItem(ResourceLocation expectedBaseTexture, ItemStack itemWithTrim, ArmorTrim armourTrim) {
         for (BaseTextureInterceptor intercepter : baseTextureInterceptors) {
-            expectedBaseTexture = intercepter.intercept(expectedBaseTexture, itemWithTrim, armourTrim, trimmedType);
+            expectedBaseTexture = intercepter.interceptItemTexture(expectedBaseTexture, itemWithTrim, armourTrim);
+        }
+        return expectedBaseTexture;
+    }
+
+    public ResourceLocation applyBaseTextureInterceptorsForArmour(ResourceLocation expectedBaseTexture, ItemStack itemWithTrim, ArmorTrim armourTrim) {
+        for (BaseTextureInterceptor intercepter : baseTextureInterceptors) {
+            expectedBaseTexture = intercepter.interceptArmourTexture(expectedBaseTexture, itemWithTrim, armourTrim);
+        }
+        return expectedBaseTexture;
+    }
+
+    public ResourceLocation applyBaseTextureInterceptorsForShield(ResourceLocation expectedBaseTexture, DataComponentGetter componentGetter, ArmorTrim armourTrim) {
+        for (BaseTextureInterceptor intercepter : baseTextureInterceptors) {
+            expectedBaseTexture = intercepter.interceptShieldTexture(expectedBaseTexture, componentGetter, armourTrim);
         }
         return expectedBaseTexture;
     }
