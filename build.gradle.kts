@@ -5,27 +5,23 @@ plugins {
     id("dev.isxander.modstitch.base") version "0.5.14-unstable"
 }
 
-fun prop(name: String, consumer: (prop: String) -> Unit) {
-    (findProperty(name) as? String?)?.let(consumer)
-}
+fun deps(name: String): String? = findProperty("deps.${name}") as String?
+fun deps(name: String, consumer: (prop: String) -> Unit) = deps(name)?.let(consumer)
 
-val minecraft = property("deps.minecraft") as String
+val minecraft = deps("minecraft")
+var loader: String = name.split("-")[1]
 
 dependencies {
     modstitch.loom {
-        modstitchModImplementation("net.fabricmc.fabric-api:fabric-api:0.122.0+1.21.5")
-
-        modstitchModRuntimeOnly("maven.modrinth:advanced-netherite:fabric-2.2.3-mc1.21.5")
-        modstitchModRuntimeOnly("maven.modrinth:sodium:mc1.21.5-0.6.13-fabric")
-        modstitchModRuntimeOnly("maven.modrinth:iris:1.8.11+1.21.5-fabric")
-        modstitchModRuntimeOnly("maven.modrinth:spark:1.10.128-fabric")
+        modstitchModImplementation("net.fabricmc.fabric-api:fabric-api:${deps("fabric_api")}+1.21.5")
     }
 
     modstitch.moddevgradle {
-        modstitchModRuntimeOnly("maven.modrinth:advanced-netherite:neoforge-2.2.3-mc1.21.5")
-        modstitchModRuntimeOnly("maven.modrinth:sodium:mc1.21.5-0.6.13-neoforge")
-        modstitchModRuntimeOnly("maven.modrinth:iris:1.8.11+1.21.5-neoforge")
     }
+
+    modstitchModRuntimeOnly("maven.modrinth:sodium:mc$minecraft-${deps("sodium")}-$loader")
+    modstitchModRuntimeOnly("maven.modrinth:iris:${deps("iris")}+$minecraft-$loader")
+    modstitchModRuntimeOnly("maven.modrinth:advanced-netherite:$loader-${deps("advanced_netherite")}-mc$minecraft")
 }
 
 modstitch {
@@ -33,11 +29,11 @@ modstitch {
 
     javaTarget = when (minecraft) {
         "1.21.5" -> 21
-        else -> throw IllegalArgumentException("Unsupported Minecraft version: ${property("deps.minecraft")}")
+        else -> throw IllegalArgumentException("Unsupported Minecraft version: ${deps("minecraft")}")
     }
 
     parchment {
-        prop("deps.parchment") { mappingsVersion = it }
+        deps("parchment") { mappingsVersion = it }
     }
 
     metadata {
@@ -61,9 +57,9 @@ modstitch {
             put("mod_issue_tracker", "https://github.com/Bawnorton/Trimica/issues")
             put("minecraft_version", minecraft)
             put(
-                "pack_format", when (property("deps.minecraft")) {
+                "pack_format", when (deps("minecraft")) {
                     "1.21.5" -> 46
-                    else -> throw IllegalArgumentException("Unsupported Minecraft version: ${property("deps.minecraft")}")
+                    else -> throw IllegalArgumentException("Unsupported Minecraft version: ${deps("minecraft")}")
                 }.toString()
             )
         }
@@ -119,8 +115,8 @@ modstitch {
 
     moddevgradle {
         enable {
-            prop("deps.neoform") { neoFormVersion = it }
-            prop("deps.neoforge") { neoForgeVersion = it }
+            deps("neoform") { neoFormVersion = it }
+            deps("neoforge") { neoForgeVersion = it }
         }
 
         defaultRuns()
@@ -158,12 +154,10 @@ modstitch {
     }
 }
 
-
-var constraint: String = name.split("-")[1]
 stonecutter {
     consts(
-        "fabric" to (constraint == "fabric"),
-        "neoforge" to (constraint == "neoforge")
+        "fabric" to (loader == "fabric"),
+        "neoforge" to (loader == "neoforge")
     )
 }
 
