@@ -24,6 +24,9 @@ public class DynamicTextureAtlasSprite extends TextureAtlasSprite {
         DynamicTextureAtlasSprite sprite = new DynamicTextureAtlasSprite(location, dummyContents, width, height, mimicSize);
         DynamicTexture texture = new DynamicTexture(location::toString, image);
         Minecraft.getInstance().getTextureManager().register(location, texture);
+        // Note: Creating a new RenderType for each sprite is not ideal as it can lead to performance issues if too many are on screen at once
+        // however, its rare that there will be many of these sprites on screen at once so it should be ok for 99.9% of cases.
+        // Additionally render types will be :crab:'d in future so this will have to be changed later anyway.
         sprite.renderType = decal ? RenderType.createArmorDecalCutoutNoCull(location) : RenderType.armorCutoutNoCull(location);
         return sprite;
     }

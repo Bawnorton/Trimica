@@ -17,6 +17,8 @@ import net.minecraft.client.renderer.item.ModelRenderProperties;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.profiling.Profiler;
+import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
@@ -54,8 +56,12 @@ public abstract class BlockModelWrapperMixin {
             return;
         }
 
+        ProfilerFiller profiler = Profiler.get();
+        profiler.push("trimica:item_runtime_atlas");
         ArmorTrim trim = stack.get(DataComponents.TRIM);
         ItemModel newModel = TrimicaClient.getItemModelFactory().getOrCreateModel((ItemModel) this, stack, trim);
+        profiler.pop();
+        profiler.push("trimica:item_overlay");
         List<ItemTintSource> originalTints = new ArrayList<>(tints);
         List<BakedQuad> originalQuads = new ArrayList<>(quads);
         Vector3f[] originalExtents = extents.get();
@@ -106,5 +112,6 @@ public abstract class BlockModelWrapperMixin {
         overlayRenderState.prepareQuadList().addAll(overlayQuads);
 
         quads = originalQuads;
+        profiler.pop();
     }
 }

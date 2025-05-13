@@ -14,6 +14,8 @@ import net.minecraft.client.renderer.entity.layers.EquipmentLayerRenderer;
 import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.component.DataComponentType;
+import net.minecraft.util.profiling.Profiler;
+import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -50,10 +52,14 @@ public abstract class EquipmentLayerRendererMixin {
             TextureAtlasSprite sprite = textureGetter.apply(trimSpriteKey);
             if (!sprite.contents().name().equals(MissingTextureAtlasSprite.getLocation())) return sprite;
 
+            ProfilerFiller profiler = Profiler.get();
+            profiler.push("trimica:armour_runtime_atlas");
             RuntimeTrimAtlas atlas = TrimicaClient.getRuntimeAtlases().getModelAtlas(trimSpriteKey.trim());
             if (atlas == null) return sprite;
 
-            return atlas.getSprite(ITEM_WITH_TRIM_CAPTURE.get(), trimSpriteKey.spriteId());
+            DynamicTextureAtlasSprite dynamicSprite = atlas.getSprite(ITEM_WITH_TRIM_CAPTURE.get(), trimSpriteKey.spriteId());
+            profiler.pop();
+            return dynamicSprite;
         });
     }
 

@@ -16,10 +16,15 @@ dependencies {
         modstitchModImplementation("net.fabricmc.fabric-api:fabric-api:0.122.0+1.21.5")
 
         modstitchModRuntimeOnly("maven.modrinth:advanced-netherite:fabric-2.2.3-mc1.21.5")
+        modstitchModRuntimeOnly("maven.modrinth:sodium:mc1.21.5-0.6.13-fabric")
+        modstitchModRuntimeOnly("maven.modrinth:iris:1.8.11+1.21.5-fabric")
+        modstitchModRuntimeOnly("maven.modrinth:spark:1.10.128-fabric")
     }
 
     modstitch.moddevgradle {
         modstitchModRuntimeOnly("maven.modrinth:advanced-netherite:neoforge-2.2.3-mc1.21.5")
+        modstitchModRuntimeOnly("maven.modrinth:sodium:mc1.21.5-0.6.13-neoforge")
+        modstitchModRuntimeOnly("maven.modrinth:iris:1.8.11+1.21.5-neoforge")
     }
 }
 
