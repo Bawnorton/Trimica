@@ -8,6 +8,7 @@ import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import net.minecraft.Util;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.layers.EquipmentLayerRenderer;
@@ -17,13 +18,19 @@ import net.minecraft.core.component.DataComponentType;
 import net.minecraft.util.profiling.Profiler;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.NotNull;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Mutable;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import java.util.function.Function;
 
 @Mixin(EquipmentLayerRenderer.class)
 public abstract class EquipmentLayerRendererMixin {
+    @Mutable
+    @Shadow @Final private Function<EquipmentLayerRenderer.TrimSpriteKey, TextureAtlasSprite> trimSpriteLookup;
     @Unique
     private static final ThreadLocal<ItemStack> ITEM_WITH_TRIM_CAPTURE = ThreadLocal.withInitial(() -> null);
 
@@ -48,19 +55,25 @@ public abstract class EquipmentLayerRendererMixin {
             )
     )
     private Function<EquipmentLayerRenderer.TrimSpriteKey, TextureAtlasSprite> provideRuntimeTextures(Function<EquipmentLayerRenderer.TrimSpriteKey, TextureAtlasSprite> textureGetter, Operation<Function<EquipmentLayerRenderer.TrimSpriteKey, TextureAtlasSprite>> original) {
-        return original.call((Function<EquipmentLayerRenderer.TrimSpriteKey, TextureAtlasSprite>) trimSpriteKey -> {
+        TrimicaClient.getRuntimeAtlases().registerModelAtlasModifiedListener(() -> trimSpriteLookup = Util.memoize(trimica$dynamicProvider(textureGetter)));
+        return original.call(trimica$dynamicProvider(textureGetter));
+    }
+
+    @Unique
+    private static @NotNull Function<EquipmentLayerRenderer.TrimSpriteKey, TextureAtlasSprite> trimica$dynamicProvider(Function<EquipmentLayerRenderer.TrimSpriteKey, TextureAtlasSprite> textureGetter) {
+        return trimSpriteKey -> {
             TextureAtlasSprite sprite = textureGetter.apply(trimSpriteKey);
             if (!sprite.contents().name().equals(MissingTextureAtlasSprite.getLocation())) return sprite;
 
             ProfilerFiller profiler = Profiler.get();
             profiler.push("trimica:armour_runtime_atlas");
-            RuntimeTrimAtlas atlas = TrimicaClient.getRuntimeAtlases().getModelAtlas(trimSpriteKey.trim());
+            RuntimeTrimAtlas atlas = TrimicaClient.getRuntimeAtlases().getModelAtlas(trimSpriteKey.trim().pattern().value());
             if (atlas == null) return sprite;
 
-            DynamicTextureAtlasSprite dynamicSprite = atlas.getSprite(ITEM_WITH_TRIM_CAPTURE.get(), trimSpriteKey.spriteId());
+            TextureAtlasSprite dynamicSprite = atlas.getSprite(ITEM_WITH_TRIM_CAPTURE.get(), trimSpriteKey.trim().material().value(), trimSpriteKey.spriteId());
             profiler.pop();
             return dynamicSprite;
-        });
+        };
     }
 
     @WrapOperation(

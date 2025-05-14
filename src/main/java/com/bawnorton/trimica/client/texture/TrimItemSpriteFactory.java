@@ -65,7 +65,7 @@ public class TrimItemSpriteFactory extends AbstractTrimSpriteFactory {
         return empty();
     }
 
-    private @Nullable ArmorType getArmourType(DataComponentGetter componentGetter) {
+    public static @Nullable ArmorType getArmourType(DataComponentGetter componentGetter) {
         Equippable equippable = componentGetter.get(DataComponents.EQUIPPABLE);
         if (equippable == null) return null;
 

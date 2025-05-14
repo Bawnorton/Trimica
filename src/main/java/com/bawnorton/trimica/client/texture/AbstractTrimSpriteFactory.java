@@ -3,8 +3,11 @@ package com.bawnorton.trimica.client.texture;
 import com.bawnorton.trimica.client.texture.palette.TrimPalette;
 import com.mojang.blaze3d.platform.NativeImage;
 import it.unimi.dsi.fastutil.ints.Int2ObjectAVLTreeMap;
+import net.minecraft.client.renderer.texture.SpriteContents;
+import net.minecraft.client.resources.metadata.animation.FrameSize;
 import net.minecraft.core.component.DataComponentGetter;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.resources.ResourceMetadata;
 import net.minecraft.util.ARGB;
 import net.minecraft.world.item.equipment.trim.ArmorTrim;
 import org.jetbrains.annotations.Nullable;
@@ -27,15 +30,17 @@ public abstract class AbstractTrimSpriteFactory implements RuntimeTrimSpriteFact
     }
 
     @Override
-    public DynamicTextureAtlasSprite apply(ArmorTrim trim, @Nullable DataComponentGetter componentGetter, ResourceLocation location) {
-        return DynamicTextureAtlasSprite.create(
-                location,
-                createImageFromMaterial(trim, componentGetter, location),
-                width,
-                height,
-                trim.pattern().value().decal(),
-                mimicSize
-        );
+    public SpriteContents create(ResourceLocation texture, ArmorTrim trim, @Nullable DataComponentGetter componentGetter) {
+        if(trim == null) {
+            return new SpriteContents(texture, new FrameSize(width, height), empty(), ResourceMetadata.EMPTY);
+        }
+        NativeImage image = createImageFromMaterial(trim, componentGetter, texture);
+        return new SpriteContents(texture, new FrameSize(width, height), image, ResourceMetadata.EMPTY);
+    }
+
+    @Override
+    public float getMimicSize() {
+        return mimicSize;
     }
 
     protected abstract NativeImage createImageFromMaterial(ArmorTrim trim, DataComponentGetter componentGetter, ResourceLocation location);

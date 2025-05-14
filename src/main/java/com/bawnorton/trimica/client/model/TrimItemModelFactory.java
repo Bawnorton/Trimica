@@ -8,6 +8,7 @@ import com.bawnorton.trimica.client.mixin.accessor.ModelDiscover$ModelWrapperAcc
 import com.bawnorton.trimica.client.mixin.accessor.ModelManagerAccessor;
 import com.bawnorton.trimica.client.mixin.accessor.TextureSlots$ValueAccessor;
 import com.bawnorton.trimica.client.texture.DynamicTextureAtlasSprite;
+import com.bawnorton.trimica.client.texture.TrimItemSpriteFactory;
 import com.google.common.collect.ImmutableMap;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.geom.EntityModelSet;
@@ -23,6 +24,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.equipment.ArmorType;
 import net.minecraft.world.item.equipment.EquipmentAsset;
 import net.minecraft.world.item.equipment.Equippable;
 import net.minecraft.world.item.equipment.trim.ArmorTrim;
@@ -33,8 +35,7 @@ import java.util.Map;
 import java.util.Optional;
 
 public final class TrimItemModelFactory {
-    private final Map<TrimModelId, ItemModel> models = new HashMap<>();
-
+    private final Map<ResourceLocation, ItemModel> models = new HashMap<>();
     private ModelManager.ResolvedModels resolvedModels;
 
     public ItemModel getOrCreateModel(ItemModel base, ItemStack stack, ArmorTrim trim) {
@@ -43,32 +44,39 @@ public final class TrimItemModelFactory {
             return base;
         }
         Optional<ResourceKey<EquipmentAsset>> assetId = equippable.assetId();
-        if (assetId.isEmpty()) {
+        ArmorType armourType = TrimItemSpriteFactory.getArmourType(stack);
+        if (armourType == null) {
             return base;
         }
-        TrimModelId trimModelId = TrimModelId.fromTrim(stack, trim, stack.getItem(), assetId.get());
-        return models.computeIfAbsent(trimModelId, k -> createModel(k, base, stack, trim));
+        TrimModelId trimModelId = TrimModelId.fromTrim(armourType.getName(), trim, assetId.orElse(null));
+        ResourceLocation overlayLocation = trimModelId.asSingle();
+        ResourceLocation baseModelLocation = stack.getOrDefault(DataComponents.ITEM_MODEL, BuiltInRegistries.ITEM.getKey(stack.getItem()));
+        ResourceLocation newModelLocation = overlayLocation.withPrefix(baseModelLocation.toString().replace(":", "_") + "/");
+        if (models.containsKey(newModelLocation)) {
+            return models.get(newModelLocation);
+        }
+        ItemModel model = createModel(baseModelLocation, newModelLocation, overlayLocation, base, stack, trim);
+        models.put(newModelLocation, model);
+        return model;
     }
 
-    private ItemModel createModel(TrimModelId modelId, ItemModel base, ItemStack stack, ArmorTrim trim) {
-        ResourceLocation baseModelLocation = stack.getOrDefault(DataComponents.ITEM_MODEL, BuiltInRegistries.ITEM.getKey(stack.getItem()));
+    private ItemModel createModel(ResourceLocation baseModelLocation, ResourceLocation newModelLocation, ResourceLocation overlayLocation, ItemModel base, ItemStack stack, ArmorTrim trim) {
         ResolvedModel baseResolved = resolvedModels.models().get(baseModelLocation.withPrefix("item/"));
-        if(baseResolved == null) {
+        if (baseResolved == null) {
             Trimica.LOGGER.error("Failed to find base resolved model for trimmed item: {}", baseModelLocation);
             return base;
         }
         TextureSlots.Data slots = baseResolved.wrapped().textureSlots();
         Map<String, TextureSlots.SlotContents> baseContents = slots.values();
         String largestLayer = baseContents.keySet().stream()
-                .filter(key -> key.startsWith("layer"))
-                .max(Comparator.comparingInt(a -> Integer.parseInt(a.substring("layer".length()))))
-                .orElse("layer0");
+                                          .filter(key -> key.startsWith("layer"))
+                                          .max(Comparator.comparingInt(a -> Integer.parseInt(a.substring("layer".length()))))
+                                          .orElse("layer0");
         String nextLayer = "layer" + (Integer.parseInt(largestLayer.substring("layer".length())) + 1);
-        ResourceLocation newModelLocation = modelId.asSingle();
         Map<String, TextureSlots.SlotContents> contents = ImmutableMap.<String, TextureSlots.SlotContents>builder()
-                .putAll(slots.values())
-                .put(nextLayer, TextureSlots$ValueAccessor.trimica$init(new Material(newModelLocation, newModelLocation)))
-                .build();
+                                                                      .putAll(slots.values())
+                                                                      .put(nextLayer, TextureSlots$ValueAccessor.trimica$init(new Material(overlayLocation, overlayLocation)))
+                                                                      .build();
         UnbakedModel generatedModel = new BlockModel(
                 null,
                 UnbakedModel.GuiLight.FRONT,
@@ -86,16 +94,18 @@ public final class TrimItemModelFactory {
                 Map.of(newModelLocation, resolvedModel),
                 ModelDiscover$ModelWrapperAccessor.trimica$init(MissingBlockModel.LOCATION, MissingBlockModel.missingModel(), true)
         );
-        DynamicTextureAtlasSprite sprite = TrimicaClient.getRuntimeAtlases().getItemAtlas(trim).getSprite(stack, newModelLocation);
+        DynamicTextureAtlasSprite sprite = TrimicaClient.getRuntimeAtlases()
+                                                        .getItemAtlas(trim.pattern().value())
+                                                        .getSprite(stack, trim.material().value(), overlayLocation);
         Minecraft minecraft = Minecraft.getInstance();
         ModelManager modelManager = minecraft.getModelManager();
         SpriteGetter spriteGetter = new SpriteGetter() {
             @Override
             public @NotNull TextureAtlasSprite get(Material material, ModelDebugName modelDebugName) {
-                if(material.texture().equals(newModelLocation)) {
+                if (material.texture().equals(overlayLocation)) {
                     return sprite;
                 }
-                TextureAtlas atlas =  modelManager.getAtlas(material.atlasLocation());
+                TextureAtlas atlas = modelManager.getAtlas(material.atlasLocation());
                 return atlas.getSprite(material.texture());
             }
 
@@ -117,5 +127,9 @@ public final class TrimItemModelFactory {
 
     public void setResolvedModels(ModelManager.ResolvedModels resolvedModels) {
         this.resolvedModels = resolvedModels;
+    }
+
+    public void clear() {
+        models.clear();
     }
 }

@@ -1,19 +1,25 @@
 package com.bawnorton.trimica.client.texture;
 
+import com.bawnorton.trimica.Trimica;
+import com.bawnorton.trimica.client.TrimicaClient;
 import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.equipment.trim.ArmorTrim;
 import net.minecraft.world.item.equipment.trim.TrimMaterial;
 import net.minecraft.world.item.equipment.trim.TrimPattern;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
 
 public final class RuntimeTrimAtlases {
-    private final Map<TrimPattern, RuntimeTrimAtlasFactory> modelAtlasFactories = new HashMap<>();
-    private final Map<TrimPattern, RuntimeTrimAtlasFactory> itemAtlasFactories = new HashMap<>();
-    private final Map<TrimPattern, RuntimeTrimAtlasFactory> shieldAtlasFactories = new HashMap<>();
+    private final Map<TrimPattern, RuntimeTrimAtlas> modelAtlasFactories = new HashMap<>();
+    private final Map<TrimPattern, RuntimeTrimAtlas> itemAtlasFactories = new HashMap<>();
+    private final Map<TrimPattern, RuntimeTrimAtlas> shieldAtlasFactories = new HashMap<>();
+
+    private final List<Runnable> modelAtlasModifiedListeners = new ArrayList<>();
 
     public void init(RegistryAccess registryAccess) {
         modelAtlasFactories.clear();
@@ -22,56 +28,57 @@ public final class RuntimeTrimAtlases {
 
         Registry<TrimPattern> patterns = registryAccess.lookup(Registries.TRIM_PATTERN).orElseThrow();
         Registry<TrimMaterial> materials = registryAccess.lookup(Registries.TRIM_MATERIAL).orElseThrow();
+
         for (TrimPattern pattern : patterns) {
+            ResourceLocation patternId = pattern.assetId();
             modelAtlasFactories.put(
-                    pattern, new RuntimeTrimAtlasFactory(
-                            material -> new ArmorTrim(materials.wrapAsHolder(material), patterns.wrapAsHolder(pattern)),
-                            new TrimArmourSpriteFactory()
+                    pattern, new RuntimeTrimAtlas(
+                            Trimica.rl("%s/%s/model.png".formatted(patternId.getNamespace(), patternId.getPath())),
+                            new TrimArmourSpriteFactory(),
+                            (m) -> new ArmorTrim(materials.wrapAsHolder(m), patterns.wrapAsHolder(pattern)),
+                            () -> {
+                                for (Runnable listener : modelAtlasModifiedListeners) {
+                                    listener.run();
+                                }
+                            }
                     )
             );
             itemAtlasFactories.put(
-                    pattern, new RuntimeTrimAtlasFactory(
-                            material -> new ArmorTrim(materials.wrapAsHolder(material), patterns.wrapAsHolder(pattern)),
-                            new TrimItemSpriteFactory()
+                    pattern, new RuntimeTrimAtlas(
+                            Trimica.rl("%s/%s/item.png".formatted(patternId.getNamespace(), patternId.getPath())),
+                            new TrimItemSpriteFactory(),
+                            (m) -> new ArmorTrim(materials.wrapAsHolder(m), patterns.wrapAsHolder(pattern)),
+                            () -> TrimicaClient.getItemModelFactory().clear()
                     )
             );
             shieldAtlasFactories.put(
-                    pattern, new RuntimeTrimAtlasFactory(
-                            material -> new ArmorTrim(materials.wrapAsHolder(material), patterns.wrapAsHolder(pattern)),
-                            new TrimShieldSpriteFactory()
+                    pattern, new RuntimeTrimAtlas(
+                            Trimica.rl("%s/%s/shield.png".formatted(patternId.getNamespace(), patternId.getPath())),
+                            new TrimShieldSpriteFactory(),
+                            (m) -> new ArmorTrim(materials.wrapAsHolder(m), patterns.wrapAsHolder(pattern)),
+                            () -> {}
                     )
             );
         }
     }
 
-    public RuntimeTrimAtlas getModelAtlas(ArmorTrim trim) {
-        return modelAtlasFactories.get(trim.pattern().value()).getOrCreate(trim.material().value());
+    public RuntimeTrimAtlas getModelAtlas(TrimPattern pattern) {
+        return modelAtlasFactories.get(pattern);
     }
 
-    public RuntimeTrimAtlas getItemAtlas(ArmorTrim trim) {
-        return itemAtlasFactories.get(trim.pattern().value()).getOrCreate(trim.material().value());
+    public RuntimeTrimAtlas getItemAtlas(TrimPattern pattern) {
+        return itemAtlasFactories.get(pattern);
     }
 
-    public RuntimeTrimAtlas getShieldAtlas(ArmorTrim trim) {
-        return shieldAtlasFactories.get(trim.pattern().value()).getOrCreate(trim.material().value());
+    public RuntimeTrimAtlas getShieldAtlas(TrimPattern pattern) {
+        return shieldAtlasFactories.get(pattern);
     }
 
-    private static class RuntimeTrimAtlasFactory {
-        private final Map<TrimMaterial, RuntimeTrimAtlas> atlases = new HashMap<>();
-        private final RuntimeTrimSpriteFactory spriteFactory;
-        private final Function<TrimMaterial, ArmorTrim> trimFactory;
+    public void registerModelAtlasModifiedListener(Runnable runnable) {
+        modelAtlasModifiedListeners.add(runnable);
+    }
 
-        public RuntimeTrimAtlasFactory(Function<TrimMaterial, ArmorTrim> trimFactory, RuntimeTrimSpriteFactory spriteFactory) {
-            this.spriteFactory = spriteFactory;
-            this.trimFactory = trimFactory;
-        }
-
-        public RuntimeTrimAtlas getOrCreate(TrimMaterial material) {
-            return atlases.computeIfAbsent(material, this::createAtlas);
-        }
-
-        public RuntimeTrimAtlas createAtlas(TrimMaterial material) {
-            return new RuntimeTrimAtlas(trimFactory.apply(material), spriteFactory);
-        }
+    public interface TrimFactory {
+        ArmorTrim create(TrimMaterial material);
     }
 }

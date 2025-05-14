@@ -15,7 +15,7 @@ public class TrimicaClient {
     static {
         TrimicaApi api = TrimicaApi.getInstance();
         if(Platform.isModLoaded("elytratrims")) {
-            api.registerBaseTextureInterceptor(new ElytraBaseTextureInterceptor());
+            api.registerBaseTextureInterceptor(0, new ElytraBaseTextureInterceptor());
         }
     }
 

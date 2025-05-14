@@ -1,10 +1,13 @@
 package com.bawnorton.trimica.client.texture;
 
+import net.minecraft.client.renderer.texture.SpriteContents;
 import net.minecraft.core.component.DataComponentGetter;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.equipment.trim.ArmorTrim;
 import org.jetbrains.annotations.Nullable;
 
 public interface RuntimeTrimSpriteFactory {
-    DynamicTextureAtlasSprite apply(ArmorTrim trim, @Nullable DataComponentGetter componentGetter, ResourceLocation location);
+    SpriteContents create(ResourceLocation texture, ArmorTrim trim, @Nullable DataComponentGetter componentGetter);
+
+    float getMimicSize();
 }

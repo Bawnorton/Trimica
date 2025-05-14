@@ -8,6 +8,7 @@
   "compatibilityLevel": "JAVA_17",
   "client": [
     "MinecraftMixin",
+    "TextureAtlasMixin",
     "accessor.BlockModelWrapperAccessor",
     "accessor.CompositeModelAccessor",
     "accessor.ConditionalItemModelAccessor",

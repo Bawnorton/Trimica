@@ -14,7 +14,6 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.util.profiling.Profiler;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.item.ItemDisplayContext;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.item.equipment.trim.ArmorTrim;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -40,8 +39,8 @@ public abstract class ShieldSpecialRendererMixin {
         ArmorTrim trim = dataComponentMap != null ? dataComponentMap.get(DataComponents.TRIM) : null;
         if (trim == null) return;
 
-        TrimModelId trimModelId = TrimModelId.fromTrim(dataComponentMap, trim, Items.SHIELD, null);
-        DynamicTextureAtlasSprite sprite = TrimicaClient.getRuntimeAtlases().getShieldAtlas(trim).getSprite(dataComponentMap, trimModelId.asSingle());
+        TrimModelId trimModelId = TrimModelId.fromTrim("shield", trim, null);
+        DynamicTextureAtlasSprite sprite = TrimicaClient.getRuntimeAtlases().getShieldAtlas(trim.pattern().value()).getSprite(dataComponentMap, trim.material().value(), trimModelId.asSingle());
         VertexConsumer vertexConsumer = sprite.wrap(ItemRenderer.getFoilBuffer(multiBufferSource, sprite.getRenderType(), itemDisplayContext == ItemDisplayContext.GUI, bl));
         this.model.plate().render(poseStack, vertexConsumer, i, j);
         profiler.pop();

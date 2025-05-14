@@ -1,5 +1,7 @@
 package com.bawnorton.trimica;
 
+import com.bawnorton.trimica.api.TrimicaApi;
+import com.bawnorton.trimica.crafting.BaseCraftingRecipeInterceptor;
 import com.bawnorton.trimica.trim.material.TrimMaterialRuntimeRegistry;
 import net.minecraft.resources.ResourceLocation;
 import org.slf4j.Logger;
@@ -13,6 +15,7 @@ public class Trimica {
 
     public static void initialize() {
         LOGGER.info("Trimica Initialized");
+        TrimicaApi.getInstance().registerCraftingRecipeInterceptor(0, new BaseCraftingRecipeInterceptor());
     }
 
     public static ResourceLocation rl(String path) {

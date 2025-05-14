@@ -7,5 +7,13 @@ public interface TrimicaApi {
         return TrimicaApiImpl.INSTANCE;
     }
 
-    void registerBaseTextureInterceptor(BaseTextureInterceptor baseTextureInterceptor);
+    /**
+     * @param priority The priority of the interceptor. Lower numbers are called first.
+     */
+    void registerBaseTextureInterceptor(int priority, BaseTextureInterceptor baseTextureInterceptor);
+
+    /**
+     * @param priority The priority of the interceptor. Lower numbers are called first.
+     */
+    void registerCraftingRecipeInterceptor(int priority, CraftingRecipeInterceptor craftingRecipeInterceptor);
 }

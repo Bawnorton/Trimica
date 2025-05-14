@@ -7,6 +7,7 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.component.DataComponents;
@@ -16,13 +17,16 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.decoration.ArmorStand;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.component.ProvidesTrimMaterial;
 import net.minecraft.world.item.equipment.Equippable;
 import net.minecraft.world.item.equipment.trim.ArmorTrim;
 import net.minecraft.world.item.equipment.trim.TrimMaterial;
 import net.minecraft.world.item.equipment.trim.TrimPattern;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Stream;
 
 public class TrimicaCommandManager {
@@ -31,25 +35,38 @@ public class TrimicaCommandManager {
                                     .then(Commands.literal("debug")
                                                   .requires(source -> source.hasPermission(4))
                                                   .then(Commands.literal("summon")
-                                                                .executes(TrimicaCommandManager::summonArmourStands)
+                                                                .then(Commands.literal("all")
+                                                                              .executes(context -> {
+                                                                                  summonArmourStands(context, true);
+                                                                                  return 1;
+                                                                              }))
+                                                                .executes(context -> summonArmourStands(context, false))
                                                   )
                                     )
         );
     }
 
-    private static int summonArmourStands(CommandContext<CommandSourceStack> context) {
+    private static int summonArmourStands(CommandContext<CommandSourceStack> context, boolean allMaterials) {
         CommandSourceStack source = context.getSource();
         RegistryAccess registryAccess = source.registryAccess();
         HolderLookup.RegistryLookup<TrimPattern> patternLookup = registryAccess.lookupOrThrow(Registries.TRIM_PATTERN);
-        HolderLookup.RegistryLookup<TrimMaterial> materialLookup = registryAccess.lookupOrThrow(Registries.TRIM_MATERIAL);
         ServerLevel level = source.getLevel();
         BlockPos.MutableBlockPos pos = BlockPos.containing(source.getPosition()).mutable();
+        List<? extends Holder<TrimMaterial>> materials = allMaterials
+                ? registryAccess.lookupOrThrow(Registries.ITEM).listElements().map(itemRef -> {
+            Item item = itemRef.value();
+            ProvidesTrimMaterial trimMaterialProvider = item.getDefaultInstance().get(DataComponents.PROVIDES_TRIM_MATERIAL);
+            if (trimMaterialProvider == null) return null;
+
+            return trimMaterialProvider.material().unwrap(registryAccess).orElse(null);
+        }).filter(Objects::nonNull).toList()
+                : registryAccess.lookupOrThrow(Registries.TRIM_MATERIAL).listElements().toList();
         source.sendSystemMessage(Component.literal("Summoning %s armour stands at %s".formatted(
-                patternLookup.listElementIds().count() * materialLookup.listElementIds().count(), pos.toShortString()
+                patternLookup.listElementIds().count() * materials.size(), pos.toShortString()
         )));
         patternLookup.listElements()
                      .forEach(patternRef -> {
-                         materialLookup.listElements().forEach(materialRef -> {
+                         materials.forEach(materialRef -> {
                              ArmorTrim trim = new ArmorTrim(materialRef, patternRef);
                              List<ItemStack> toEquip = Stream.of(
                                      Items.DIAMOND_HELMET,
@@ -76,10 +93,12 @@ public class TrimicaCommandManager {
                                          });
                                      }, pos, EntitySpawnReason.MOB_SUMMONED, false, false
                              );
-                             level.addFreshEntity(stand);
+                             if (stand != null) {
+                                 level.addFreshEntity(stand);
+                             }
                              pos.move(Direction.EAST, 2);
                          });
-                         pos.move(Direction.WEST, (int) (2 * materialLookup.listElementIds().count()));
+                         pos.move(Direction.WEST, 2 * materials.size());
                          pos.move(Direction.NORTH, 2);
                      });
         return 1;

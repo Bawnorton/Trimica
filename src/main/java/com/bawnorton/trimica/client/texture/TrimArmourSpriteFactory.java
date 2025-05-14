@@ -27,11 +27,11 @@ public class TrimArmourSpriteFactory extends AbstractTrimSpriteFactory {
     }
 
     @Override
-    protected NativeImage createImageFromMaterial(ArmorTrim trim, DataComponentGetter componentGetter, ResourceLocation location) {
+    protected NativeImage createImageFromMaterial(ArmorTrim trim, DataComponentGetter componentGetter, ResourceLocation texture) {
         if (!(componentGetter instanceof ItemStack stack)) return empty();
 
-        ResourceLocation basePatternTexture = extractBaseTexture(location);
-        basePatternTexture = TrimicaApiImpl.INSTANCE.applyBaseTextureInterceptorsForArmour(basePatternTexture, (ItemStack) stack, trim);
+        ResourceLocation basePatternTexture = extractBaseTexture(texture);
+        basePatternTexture = TrimicaApiImpl.INSTANCE.applyBaseTextureInterceptorsForArmour(basePatternTexture, stack, trim);
         if (basePatternTexture == null) return empty();
 
         Minecraft minecraft = Minecraft.getInstance();
@@ -42,7 +42,7 @@ public class TrimArmourSpriteFactory extends AbstractTrimSpriteFactory {
             if(equippable == null) return empty();
 
             ResourceKey<EquipmentAsset> assetResourceKey = equippable.assetId().orElse(null);
-            TrimPalette palette = TrimicaClient.getPalettes().getOrGeneratePalette(material, assetResourceKey, location);
+            TrimPalette palette = TrimicaClient.getPalettes().getOrGeneratePalette(material, assetResourceKey, texture);
             NativeImage coloured = createColouredPatternImage(contents.image(), palette.getColours(), palette.isBuiltin());
             contents.close();
             return coloured;
