@@ -3,12 +3,9 @@ package com.bawnorton.trimica.client.texture;
 import com.bawnorton.trimica.Trimica;
 import com.bawnorton.trimica.api.impl.TrimicaApiImpl;
 import com.bawnorton.trimica.client.TrimicaClient;
-import com.bawnorton.trimica.client.mixin.accessor.TextureAtlasAccessor;
-import com.bawnorton.trimica.client.mixin.accessor.TextureAtlasSpriteAccessor;
 import com.bawnorton.trimica.client.texture.palette.TrimPalette;
 import com.mojang.blaze3d.platform.NativeImage;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureContents;
 import net.minecraft.core.component.DataComponentGetter;
 import net.minecraft.core.component.DataComponents;
@@ -28,7 +25,7 @@ import java.io.IOException;
 
 public class TrimItemSpriteFactory extends AbstractTrimSpriteFactory {
     public TrimItemSpriteFactory() {
-        super(16, 16, ((TextureAtlasSpriteAccessor) ((TextureAtlasAccessor) Minecraft.getInstance().getModelManager().getAtlas(TextureAtlas.LOCATION_BLOCKS)).trimica$missingSprite()).trimica$atlasSize());
+        super(16, 16);
     }
 
     @Override

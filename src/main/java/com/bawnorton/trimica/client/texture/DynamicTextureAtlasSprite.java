@@ -12,13 +12,11 @@ import org.jetbrains.annotations.Nullable;
 public class DynamicTextureAtlasSprite extends TextureAtlasSprite {
     private final RenderType renderType;
     private final TextureAtlasSprite delegate;
-    private final float mimicSize;
 
-    public DynamicTextureAtlasSprite(TextureAtlasSprite delegate, RenderType renderType, float mimicSize) {
+    public DynamicTextureAtlasSprite(TextureAtlasSprite delegate, RenderType renderType) {
         super(delegate.atlasLocation(), delegate.contents(), 1, 1, delegate.getX(), delegate.getY());
         this.delegate = delegate;
         this.renderType = renderType;
-        this.mimicSize = mimicSize;
     }
 
     public RenderType getRenderType() {

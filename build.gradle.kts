@@ -11,9 +11,19 @@ fun deps(name: String, consumer: (prop: String) -> Unit) = deps(name)?.let(consu
 val minecraft = deps("minecraft")
 var loader: String = name.split("-")[1]
 
+repositories {
+    maven("https://maven.quiltmc.org/repository/release/")
+    maven("https://api.modrinth.com/maven")
+}
+
 dependencies {
     modstitch.loom {
         modstitchModImplementation("net.fabricmc.fabric-api:fabric-api:${deps("fabric_api")}+1.21.5")
+        /*modstitchModRuntimeOnly("maven.modrinth:zoomify:2.14.2+1.21.3")
+        modstitchModRuntimeOnly("maven.modrinth:yacl:3.6.6+1.21.5-fabric")
+        modstitchModRuntimeOnly("net.fabricmc:fabric-language-kotlin:1.13.3+kotlin.2.1.21")
+        modstitchRuntimeOnly("org.quiltmc.parsers:gson:0.3.1")
+        modstitchRuntimeOnly("org.quiltmc.parsers:json:0.3.1")*/
     }
 
     modstitch.moddevgradle {

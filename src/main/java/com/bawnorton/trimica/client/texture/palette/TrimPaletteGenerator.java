@@ -5,6 +5,7 @@ import com.bawnorton.trimica.client.mixin.accessor.*;
 import com.bawnorton.trimica.client.texture.colour.ColourGroup;
 import com.bawnorton.trimica.client.texture.colour.ColourHSB;
 import com.bawnorton.trimica.client.texture.colour.OkLabHelper;
+import com.bawnorton.trimica.platform.fabric.mixin.accessor.WrapperBakedItemModelAccessor;
 import com.mojang.blaze3d.platform.NativeImage;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -30,9 +31,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-//? if fabric {
-import com.bawnorton.trimica.platform.fabric.mixin.accessor.WrapperBakedItemModelAccessor;
 //?}
 
 public final class TrimPaletteGenerator {

@@ -10,6 +10,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.RegistryAccess;
+import net.minecraft.core.Rotations;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
@@ -64,6 +65,9 @@ public class TrimicaCommandManager {
         source.sendSystemMessage(Component.literal("Summoning %s armour stands at %s".formatted(
                 patternLookup.listElementIds().count() * materials.size(), pos.toShortString()
         )));
+        var ref = new Object() {
+            boolean flag = false;
+        };
         patternLookup.listElements()
                      .forEach(patternRef -> {
                          materials.forEach(materialRef -> {
@@ -85,6 +89,7 @@ public class TrimicaCommandManager {
                                          armourStand.setNoBasePlate(true);
                                          armourStand.setShowArms(true);
                                          armourStand.absSnapRotationTo(0, 0);
+                                         armourStand.setLeftArmPose(new Rotations(-70, 80, -20));
                                          toEquip.forEach(stack -> {
                                              Equippable equippable = stack.get(DataComponents.EQUIPPABLE);
                                              assert equippable != null;
@@ -99,7 +104,14 @@ public class TrimicaCommandManager {
                              pos.move(Direction.EAST, 2);
                          });
                          pos.move(Direction.WEST, 2 * materials.size());
-                         pos.move(Direction.NORTH, 2);
+                         pos.move(Direction.UP);
+                         //noinspection AssignmentUsedAsCondition - Deliberate
+                         if (ref.flag = !ref.flag) {
+                             pos.move(Direction.WEST);
+                         } else {
+                             pos.move(Direction.EAST);
+                         }
+                         pos.move(Direction.NORTH);
                      });
         return 1;
     }

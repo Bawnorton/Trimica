@@ -8,6 +8,4 @@ import org.jetbrains.annotations.Nullable;
 
 public interface RuntimeTrimSpriteFactory {
     SpriteContents create(ResourceLocation texture, ArmorTrim trim, @Nullable DataComponentGetter componentGetter);
-
-    float getMimicSize();
 }

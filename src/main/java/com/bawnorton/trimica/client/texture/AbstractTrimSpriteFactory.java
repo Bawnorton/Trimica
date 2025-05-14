@@ -21,12 +21,10 @@ import java.util.Set;
 public abstract class AbstractTrimSpriteFactory implements RuntimeTrimSpriteFactory {
     protected final int width;
     protected final int height;
-    private final float mimicSize;
-    
-    protected AbstractTrimSpriteFactory(int width, int height, float mimicSize) {
+
+    protected AbstractTrimSpriteFactory(int width, int height) {
         this.width = width;
         this.height = height;
-        this.mimicSize = mimicSize;
     }
 
     @Override
@@ -36,11 +34,6 @@ public abstract class AbstractTrimSpriteFactory implements RuntimeTrimSpriteFact
         }
         NativeImage image = createImageFromMaterial(trim, componentGetter, texture);
         return new SpriteContents(texture, new FrameSize(width, height), image, ResourceMetadata.EMPTY);
-    }
-
-    @Override
-    public float getMimicSize() {
-        return mimicSize;
     }
 
     protected abstract NativeImage createImageFromMaterial(ArmorTrim trim, DataComponentGetter componentGetter, ResourceLocation location);

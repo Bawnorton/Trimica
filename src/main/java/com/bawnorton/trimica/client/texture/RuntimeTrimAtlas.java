@@ -50,7 +50,7 @@ public final class RuntimeTrimAtlas extends TextureAtlas {
         if (sprite == null) {
             sprite = createSprite(componentGetter, material, texture);
         }
-        return new DynamicTextureAtlasSprite(sprite, renderType, spriteFactory.getMimicSize());
+        return new DynamicTextureAtlasSprite(sprite, renderType);
     }
 
     private TextureAtlasSprite createSprite(DataComponentGetter componentGetter, TrimMaterial material, ResourceLocation texture) {
