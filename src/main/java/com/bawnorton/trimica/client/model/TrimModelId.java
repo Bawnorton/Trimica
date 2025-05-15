@@ -8,16 +8,15 @@ import net.minecraft.world.item.equipment.trim.ArmorTrim;
 import net.minecraft.world.item.equipment.trim.MaterialAssetGroup;
 import org.jetbrains.annotations.Nullable;
 
-public record TrimModelId(String equipment, ResourceLocation materialId, ResourceLocation patternId) {
+public record TrimModelId(String equipment, ResourceLocation materialId) {
     public ResourceLocation asSingle() {
-        return Trimica.rl("%s/%s_%s/%s".formatted(equipment, patternId.getNamespace(), patternId.getPath(), materialId.getPath()));
+        return Trimica.rl("%s/%s".formatted(equipment, materialId.getPath()));
     }
 
     public static TrimModelId fromTrim(String equipment, ArmorTrim trim, @Nullable ResourceKey<EquipmentAsset> assetKey) {
         MaterialAssetGroup assets = trim.material().value().assets();
         MaterialAssetGroup.AssetInfo assetInfo = assetKey == null ? assets.base() : assets.assetId(assetKey);
         ResourceLocation materialId = Trimica.rl(assetInfo.suffix());
-        ResourceLocation patternId = trim.pattern().value().assetId();
-        return new TrimModelId(equipment, materialId, patternId);
+        return new TrimModelId(equipment, materialId);
     }
 }

@@ -3,6 +3,7 @@ package com.bawnorton.trimica.client.mixin.render;
 import com.bawnorton.trimica.client.TrimicaClient;
 import com.bawnorton.trimica.client.texture.DynamicTextureAtlasSprite;
 import com.bawnorton.trimica.client.texture.RuntimeTrimAtlas;
+import com.bawnorton.trimica.client.texture.RuntimeTrimAtlases;
 import com.llamalad7.mixinextras.injector.ModifyReceiver;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
@@ -18,6 +19,7 @@ import net.minecraft.core.component.DataComponentType;
 import net.minecraft.util.profiling.Profiler;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.equipment.trim.TrimPattern;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -30,7 +32,9 @@ import java.util.function.Function;
 @Mixin(EquipmentLayerRenderer.class)
 public abstract class EquipmentLayerRendererMixin {
     @Mutable
-    @Shadow @Final private Function<EquipmentLayerRenderer.TrimSpriteKey, TextureAtlasSprite> trimSpriteLookup;
+    @Shadow
+    @Final
+    private Function<EquipmentLayerRenderer.TrimSpriteKey, TextureAtlasSprite> trimSpriteLookup;
     @Unique
     private static final ThreadLocal<ItemStack> ITEM_WITH_TRIM_CAPTURE = ThreadLocal.withInitial(() -> null);
 
@@ -67,7 +71,13 @@ public abstract class EquipmentLayerRendererMixin {
 
             ProfilerFiller profiler = Profiler.get();
             profiler.push("trimica:armour_runtime_atlas");
-            RuntimeTrimAtlas atlas = TrimicaClient.getRuntimeAtlases().getModelAtlas(trimSpriteKey.trim().pattern().value());
+            RuntimeTrimAtlases atlases = TrimicaClient.getRuntimeAtlases();
+            TrimPattern pattern = trimSpriteKey.trim().pattern().value();
+            RuntimeTrimAtlas atlas = switch(trimSpriteKey.layerType()) {
+                case HUMANOID -> atlases.getHumanoidModelAtlas(pattern);
+                case HUMANOID_LEGGINGS ->  atlases.getHumanoidLeggingsModelAtlas(pattern);
+                default -> null;
+            };
             if (atlas == null) return sprite;
 
             TextureAtlasSprite dynamicSprite = atlas.getSprite(ITEM_WITH_TRIM_CAPTURE.get(), trimSpriteKey.trim().material().value(), trimSpriteKey.spriteId());
@@ -84,7 +94,7 @@ public abstract class EquipmentLayerRendererMixin {
             )
     )
     private VertexConsumer useDynamicRenderType(MultiBufferSource instance, RenderType renderType, Operation<VertexConsumer> original, @Local TextureAtlasSprite textureAtlasSprite) {
-        if(textureAtlasSprite instanceof DynamicTextureAtlasSprite dynamicTextureAtlasSprite) {
+        if (textureAtlasSprite instanceof DynamicTextureAtlasSprite dynamicTextureAtlasSprite) {
             return original.call(instance, dynamicTextureAtlasSprite.getRenderType());
         }
         return original.call(instance, renderType);

@@ -40,7 +40,7 @@ public final class RuntimeTrimAtlas extends TextureAtlas {
     }
 
     @Override
-    public @NotNull TextureAtlasSprite getSprite(ResourceLocation texture) {
+    public @NotNull TextureAtlasSprite getSprite(@NotNull ResourceLocation texture) {
         throw new UnsupportedOperationException("Use getSprite(DataComponentGetter, TrimMaterial, ResourceLocation) instead");
     }
 

@@ -8,7 +8,7 @@ plugins {
 fun deps(name: String): String? = findProperty("deps.${name}") as String?
 fun deps(name: String, consumer: (prop: String) -> Unit) = deps(name)?.let(consumer)
 
-val minecraft = deps("minecraft")
+val minecraft: String = deps("minecraft")!!
 var loader: String = name.split("-")[1]
 
 repositories {
@@ -32,6 +32,10 @@ dependencies {
     modstitchModRuntimeOnly("maven.modrinth:sodium:mc$minecraft-${deps("sodium")}-$loader")
     modstitchModRuntimeOnly("maven.modrinth:iris:${deps("iris")}+$minecraft-$loader")
     modstitchModRuntimeOnly("maven.modrinth:advanced-netherite:$loader-${deps("advanced_netherite")}-mc$minecraft")
+
+    modstitchRuntimeOnly("org.antlr:antlr4-runtime:4.13.1")
+    modstitchRuntimeOnly("io.github.douira:glsl-transformer:2.0.1")
+    modstitchRuntimeOnly("org.anarres:jcpp:1.4.14")
 }
 
 modstitch {
