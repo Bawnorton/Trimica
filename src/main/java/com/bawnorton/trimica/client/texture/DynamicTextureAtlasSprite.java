@@ -95,7 +95,7 @@ public class DynamicTextureAtlasSprite extends TextureAtlasSprite {
     }
 
     @Override
-    public void uploadFirstFrame(GpuTexture gpuTexture) {
+    public void uploadFirstFrame(@NotNull GpuTexture gpuTexture) {
         delegate.uploadFirstFrame(gpuTexture);
     }
 
@@ -105,7 +105,7 @@ public class DynamicTextureAtlasSprite extends TextureAtlasSprite {
     }
 
     @Override
-    public @NotNull VertexConsumer wrap(VertexConsumer vertexConsumer) {
+    public @NotNull VertexConsumer wrap(@NotNull VertexConsumer vertexConsumer) {
         return delegate.wrap(vertexConsumer);
     }
 }

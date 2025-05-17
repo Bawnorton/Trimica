@@ -37,9 +37,9 @@ public abstract class ItemStackRenderState$LayerRenderStateMixin implements Item
             pose.setTranslation(0, 0, 0);
             float margin = 0.001f;
             float scale = 1 + margin;
-            pose.scale(scale, scale, scale);
+            pose.scale(scale, scale, scale + 0.05f);
             pose.setTranslation(translation);
-            pose.translate(-margin / 2, -margin / 2, margin);
+            pose.translate(-margin / 2, -margin / 2, -0.0245f);
             original.call(itemDisplayContext, poseStack, multiBufferSource, i, j, ints, list, renderType, foilType);
             poseStack.popPose();
             trimica$isTrimOverlayLayer = false;

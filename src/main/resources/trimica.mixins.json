@@ -9,6 +9,7 @@
   "mixins": [
     "command.CommadsMixin",
     "component.DataComponentHolderMixin",
-    "crafting.SmithingTrimRecipeMixin"
+    "crafting.SmithingTrimRecipeMixin",
+    "registry.ItemsMixin"
   ]
 }

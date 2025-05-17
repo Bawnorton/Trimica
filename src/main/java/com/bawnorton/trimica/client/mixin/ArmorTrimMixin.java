@@ -8,6 +8,7 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponentGetter;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextColor;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.equipment.EquipmentAsset;
@@ -36,7 +37,10 @@ public abstract class ArmorTrimMixin {
         TrimPalette palette = TrimicaClient.getPalettes().getPalette(material().value(), equipmentAssetKey);
         if (palette == null) return;
 
-        Component newDescription = material().value().description().copy().withColor(palette.getTooltipColour());
-        ((TrimMaterialAccessor) (Object) material().value()).trimica$description(newDescription);
+        Component oldDescription = material().value().description();
+        TextColor color = oldDescription.getStyle().getColor();
+        if(color == null) {
+            ((TrimMaterialAccessor) (Object) material().value()).trimica$description(oldDescription.copy().withColor(palette.getTooltipColour()));
+        }
     }
 }

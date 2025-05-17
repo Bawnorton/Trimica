@@ -9,6 +9,9 @@
   "entrypoints": {
     "main": [
       "com.bawnorton.trimica.platform.fabric.FabricEntrypoint"
+    ],
+    "fabric-datagen": [
+      "com.bawnorton.trimica.platform.fabric.data.FabricDataGeneratorEntrypoint"
     ]
   }
 }

@@ -20,7 +20,7 @@ public interface DataComponentHolderMixin {
     )
     default <T> T createRuntimeTrimMaterialProviderIfMissing(T original, DataComponentType<? extends T> type) {
         if (type == DataComponents.PROVIDES_TRIM_MATERIAL && original == null && (Object) this instanceof ItemStack stack) {
-            return (T) new ProvidesTrimMaterial(Holder.direct(Trimica.MATERIAL_REGISTRY.getOrCreate(stack)));
+            return (T) new ProvidesTrimMaterial(Holder.direct(Trimica.getMaterialRegistry().getOrCreate(stack)));
         }
         return original;
     }

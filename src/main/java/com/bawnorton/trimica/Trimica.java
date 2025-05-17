@@ -11,11 +11,15 @@ public class Trimica {
     public static final String MOD_ID = "trimica";
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
-    public static final TrimMaterialRuntimeRegistry MATERIAL_REGISTRY = new TrimMaterialRuntimeRegistry();
+    private static final TrimMaterialRuntimeRegistry MATERIAL_REGISTRY = new TrimMaterialRuntimeRegistry();
 
     public static void initialize() {
         LOGGER.info("Trimica Initialized");
         TrimicaApi.getInstance().registerCraftingRecipeInterceptor(0, new BaseCraftingRecipeInterceptor());
+    }
+
+    public static TrimMaterialRuntimeRegistry getMaterialRegistry() {
+        return MATERIAL_REGISTRY;
     }
 
     public static ResourceLocation rl(String path) {

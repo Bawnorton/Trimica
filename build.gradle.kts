@@ -1,3 +1,4 @@
+import net.fabricmc.loom.api.fabricapi.FabricApiExtension
 import net.fabricmc.loom.configuration.ide.RunConfigSettings
 import net.neoforged.moddevgradle.dsl.RunModel
 
@@ -103,6 +104,13 @@ modstitch {
         fabricLoaderVersion = "0.16.10"
 
         configureLoom {
+            (project.extensions.findByName("fabricApi") as? FabricApiExtension)?.configureDataGeneration {
+                createRunConfiguration = true
+                client = true
+                modId = "trimica"
+                outputDirectory = rootProject.file("src/main/generated")
+            }
+
             accessWidenerPath.set(rootProject.file("src/main/resources/$minecraft.accesswidener"))
 
             runConfigs.all {
@@ -131,6 +139,10 @@ modstitch {
         enable {
             deps("neoform") { neoFormVersion = it }
             deps("neoforge") { neoForgeVersion = it }
+        }
+
+        sourceSets.main {
+            resources.srcDirs("src/main/generated", "src/main/resources")
         }
 
         defaultRuns()

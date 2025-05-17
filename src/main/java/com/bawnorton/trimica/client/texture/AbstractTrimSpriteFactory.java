@@ -55,6 +55,7 @@ public abstract class AbstractTrimSpriteFactory implements RuntimeTrimSpriteFact
                 paletteColour = 0;
             } else {
                 paletteColour = ARGB.toABGR(0xFF000000 | colours.get(index));
+                index++;
             }
             Set<Vector2i> positions = entry.getValue();
             for (Vector2i position : positions) {
@@ -62,7 +63,6 @@ public abstract class AbstractTrimSpriteFactory implements RuntimeTrimSpriteFact
                 int y = position.y();
                 coloured.setPixel(x, y, builtin ? paletteColour : applyGrayscaleMask(paletteColour, colour));
             }
-            index++;
         }
         return coloured;
     }

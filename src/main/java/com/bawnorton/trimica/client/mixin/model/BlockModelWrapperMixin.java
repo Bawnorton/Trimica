@@ -1,5 +1,6 @@
 package com.bawnorton.trimica.client.mixin.model;
 
+import com.bawnorton.trimica.Trimica;
 import com.bawnorton.trimica.client.TrimicaClient;
 import com.bawnorton.trimica.client.extend.ItemStackRenderState$LayerRenderStateExtender;
 import com.bawnorton.trimica.client.mixin.accessor.BlockModelWrapperAccessor;
@@ -82,7 +83,7 @@ public abstract class BlockModelWrapperMixin {
         ResourceLocation overlayAtlas = null;
         for (int j = 0; j < quads.size(); j++) {
             BakedQuad quad = quads.get(j);
-            if (!quad.sprite().atlasLocation().equals(TextureAtlas.LOCATION_BLOCKS)) {
+            if (quad.sprite().atlasLocation().getNamespace().equals(Trimica.MOD_ID)) {
                 lastBaseTextureIndex = j;
                 overlayAtlas = quad.sprite().atlasLocation();
                 break;
