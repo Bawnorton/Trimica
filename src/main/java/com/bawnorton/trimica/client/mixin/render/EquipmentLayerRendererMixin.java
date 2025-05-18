@@ -1,5 +1,6 @@
 package com.bawnorton.trimica.client.mixin.render;
 
+import com.bawnorton.trimica.Trimica;
 import com.bawnorton.trimica.client.TrimicaClient;
 import com.bawnorton.trimica.client.texture.DynamicTextureAtlasSprite;
 import com.bawnorton.trimica.client.texture.RuntimeTrimAtlas;
@@ -19,6 +20,7 @@ import net.minecraft.core.component.DataComponentType;
 import net.minecraft.util.profiling.Profiler;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.equipment.trim.TrimMaterial;
 import net.minecraft.world.item.equipment.trim.TrimPattern;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.Final;
@@ -59,28 +61,25 @@ public abstract class EquipmentLayerRendererMixin {
             )
     )
     private Function<EquipmentLayerRenderer.TrimSpriteKey, TextureAtlasSprite> provideRuntimeTextures(Function<EquipmentLayerRenderer.TrimSpriteKey, TextureAtlasSprite> textureGetter, Operation<Function<EquipmentLayerRenderer.TrimSpriteKey, TextureAtlasSprite>> original) {
-        TrimicaClient.getRuntimeAtlases().registerModelAtlasModifiedListener(() -> trimSpriteLookup = Util.memoize(trimica$dynamicProvider(textureGetter)));
+        TrimicaClient.getRuntimeAtlases().registerModelAtlasModifiedListener(atlas -> trimSpriteLookup = Util.memoize(trimica$dynamicProvider(textureGetter)));
         return original.call(trimica$dynamicProvider(textureGetter));
     }
 
     @Unique
     private static @NotNull Function<EquipmentLayerRenderer.TrimSpriteKey, TextureAtlasSprite> trimica$dynamicProvider(Function<EquipmentLayerRenderer.TrimSpriteKey, TextureAtlasSprite> textureGetter) {
         return trimSpriteKey -> {
+            TrimMaterial material = trimSpriteKey.trim().material().value();
             TextureAtlasSprite sprite = textureGetter.apply(trimSpriteKey);
-            if (!sprite.contents().name().equals(MissingTextureAtlasSprite.getLocation())) return sprite;
+            if (!sprite.contents().name().equals(MissingTextureAtlasSprite.getLocation()) && !Trimica.getMaterialRegistry().getIsAnimated(material)) return sprite;
+
+            RuntimeTrimAtlases atlases = TrimicaClient.getRuntimeAtlases();
+            TrimPattern pattern = trimSpriteKey.trim().pattern().value();
+            RuntimeTrimAtlas atlas = atlases.getEquipmentAtlas(pattern, trimSpriteKey.layerType());
+            if (atlas == null) return sprite;
 
             ProfilerFiller profiler = Profiler.get();
             profiler.push("trimica:armour_runtime_atlas");
-            RuntimeTrimAtlases atlases = TrimicaClient.getRuntimeAtlases();
-            TrimPattern pattern = trimSpriteKey.trim().pattern().value();
-            RuntimeTrimAtlas atlas = switch(trimSpriteKey.layerType()) {
-                case HUMANOID -> atlases.getHumanoidModelAtlas(pattern);
-                case HUMANOID_LEGGINGS ->  atlases.getHumanoidLeggingsModelAtlas(pattern);
-                default -> null;
-            };
-            if (atlas == null) return sprite;
-
-            TextureAtlasSprite dynamicSprite = atlas.getSprite(ITEM_WITH_TRIM_CAPTURE.get(), trimSpriteKey.trim().material().value(), trimSpriteKey.spriteId());
+            TextureAtlasSprite dynamicSprite = atlas.getSprite(ITEM_WITH_TRIM_CAPTURE.get(), material, trimSpriteKey.spriteId());
             profiler.pop();
             return dynamicSprite;
         };

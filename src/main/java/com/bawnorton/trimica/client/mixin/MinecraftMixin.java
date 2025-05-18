@@ -1,6 +1,7 @@
 package com.bawnorton.trimica.client.mixin;
 
 import com.bawnorton.trimica.client.TrimicaClient;
+import com.bawnorton.trimica.client.palette.AnimatedTrimPalette;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.ReceivingLevelScreen;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -17,5 +18,13 @@ public abstract class MinecraftMixin {
     )
     private void initTrimAtlases(ClientLevel clientLevel, ReceivingLevelScreen.Reason reason, CallbackInfo ci) {
         TrimicaClient.getRuntimeAtlases().init(clientLevel.registryAccess());
+    }
+
+    @Inject(
+            method = "tick",
+            at = @At("TAIL")
+    )
+    private void tickAnimations(CallbackInfo ci) {
+        AnimatedTrimPalette.computeColours();
     }
 }

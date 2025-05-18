@@ -9,10 +9,13 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.equipment.trim.MaterialAssetGroup;
 import net.minecraft.world.item.equipment.trim.TrimMaterial;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 public final class TrimMaterialRuntimeRegistry {
     private final Map<String, Item> materialProviders = new HashMap<>();
+    private final Set<String> animatedMaterials = new HashSet<>();
     private final Map<ResourceLocation, TrimMaterial> materials = new HashMap<>();
 
     public Item getMaterialProvider(String suffix) {
@@ -38,5 +41,15 @@ public final class TrimMaterialRuntimeRegistry {
             materialProviders.computeIfAbsent(suffix, material -> stack.getItem());
             return new TrimMaterial(id, Component.translatable("trimica.material", stack.getHoverName().getString()));
         });
+    }
+
+    public void setIsAnimated(TrimMaterial trimMaterial, Boolean animated) {
+        if (animated) {
+            animatedMaterials.add(trimMaterial.assets().base().suffix());
+        }
+    }
+
+    public boolean getIsAnimated(TrimMaterial trimMaterial) {
+        return animatedMaterials.contains(trimMaterial.assets().base().suffix());
     }
 }

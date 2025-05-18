@@ -1,4 +1,4 @@
-package com.bawnorton.trimica.client.texture.colour;
+package com.bawnorton.trimica.client.colour;
 
 import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;

@@ -1,6 +1,6 @@
-package com.bawnorton.trimica.client.texture.palette;
+package com.bawnorton.trimica.client.palette;
 
-import com.bawnorton.trimica.client.texture.colour.ColourHSB;
+import com.bawnorton.trimica.client.colour.ColourHSB;
 import net.minecraft.Util;
 import net.minecraft.util.ARGB;
 import java.util.ArrayList;
@@ -8,7 +8,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-public final class TrimPalette {
+public sealed class TrimPalette permits AnimatedTrimPalette {
     public static final TrimPalette DEFAULT = new TrimPalette(ARGB.color(255, 255, 255, 255));
     public static final int PALETTE_SIZE = 8;
     private final List<Integer> colours;
@@ -32,6 +32,14 @@ public final class TrimPalette {
                 colours.add(singleColour);
             }
         }));
+    }
+
+    public AnimatedTrimPalette asAnimated() {
+        return new AnimatedTrimPalette(colours);
+    }
+
+    public boolean isAnimated() {
+        return false;
     }
 
     public List<Integer> getColours() {

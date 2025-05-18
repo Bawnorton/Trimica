@@ -2,13 +2,16 @@ package com.bawnorton.trimica.api.impl;
 
 import com.bawnorton.trimica.api.BaseTextureInterceptor;
 import com.bawnorton.trimica.api.CraftingRecipeInterceptor;
+import com.bawnorton.trimica.api.PaletteInterceptor;
 import com.bawnorton.trimica.api.TrimicaApi;
+import com.bawnorton.trimica.client.palette.TrimPalette;
 import net.minecraft.core.component.DataComponentGetter;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.TriState;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.equipment.trim.ArmorTrim;
+import net.minecraft.world.item.equipment.trim.TrimMaterial;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import java.util.PriorityQueue;
@@ -21,6 +24,7 @@ public final class TrimicaApiImpl implements TrimicaApi {
 
     private final Queue<SortableEndpointHolder<BaseTextureInterceptor>> baseTextureInterceptors = new PriorityQueue<>();
     private final Queue<SortableEndpointHolder<CraftingRecipeInterceptor>> craftingRecipeInterceptors = new PriorityQueue<>();
+    private final Queue<SortableEndpointHolder<PaletteInterceptor>> paletteInterceptors = new PriorityQueue<>();
 
     public void registerBaseTextureInterceptor(int priority, BaseTextureInterceptor baseTextureInterceptor) {
         baseTextureInterceptors.add(new SortableEndpointHolder<>(baseTextureInterceptor, priority));
@@ -28,6 +32,10 @@ public final class TrimicaApiImpl implements TrimicaApi {
 
     public void registerCraftingRecipeInterceptor(int priority, CraftingRecipeInterceptor craftingRecipeInterceptor) {
         craftingRecipeInterceptors.add(new SortableEndpointHolder<>(craftingRecipeInterceptor, priority));
+    }
+
+    public void registerPaletteInterceptor(int priority, PaletteInterceptor paletteInterceptor) {
+        paletteInterceptors.add(new SortableEndpointHolder<>(paletteInterceptor, priority));
     }
 
     public ResourceLocation applyBaseTextureInterceptorsForItem(ResourceLocation expectedBaseTexture, ItemStack itemWithTrim, ArmorTrim armourTrim) {
@@ -73,6 +81,13 @@ public final class TrimicaApiImpl implements TrimicaApi {
             }
         }
         return false;
+    }
+
+    public TrimPalette applyPaletteInterceptors(TrimPalette generated, TrimMaterial material) {
+        for (SortableEndpointHolder<PaletteInterceptor> endpointHolder : paletteInterceptors) {
+            generated = endpointHolder.endpoint().intercept(generated, material);
+        }
+        return generated;
     }
 
     private record SortableEndpointHolder<T>(T endpoint, int priority) implements Comparable<SortableEndpointHolder<T>> {

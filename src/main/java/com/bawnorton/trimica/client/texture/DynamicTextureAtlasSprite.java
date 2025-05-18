@@ -53,7 +53,6 @@ public class DynamicTextureAtlasSprite extends TextureAtlasSprite {
         return delegate.createTicker();
     }
 
-
     @Override
     public float getU(float f) {
         return delegate.getU(f);

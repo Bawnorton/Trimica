@@ -3,7 +3,8 @@ package com.bawnorton.trimica.client.texture;
 import com.bawnorton.trimica.Trimica;
 import com.bawnorton.trimica.api.impl.TrimicaApiImpl;
 import com.bawnorton.trimica.client.TrimicaClient;
-import com.bawnorton.trimica.client.texture.palette.TrimPalette;
+import com.bawnorton.trimica.client.palette.TrimPalette;
+import com.bawnorton.trimica.item.ComponentUtil;
 import com.mojang.blaze3d.platform.NativeImage;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureContents;
@@ -29,51 +30,39 @@ public class TrimItemSpriteFactory extends AbstractTrimSpriteFactory {
     }
 
     @Override
-    protected NativeImage createImageFromMaterial(ArmorTrim trim, DataComponentGetter componentGetter, ResourceLocation location) {
-        if (!(componentGetter instanceof ItemStack stack)) return empty();
+    protected @Nullable TrimSpriteMetadata getSpriteMetadata(ArmorTrim trim, DataComponentGetter componentGetter, ResourceLocation texture) {
+        if (!(componentGetter instanceof ItemStack stack)) return null;
 
-        ArmorType armourType = getArmourType(componentGetter);
-        if (armourType == null) return empty();
+        ArmorType armourType = ComponentUtil.getArmourType(componentGetter);
+        if (armourType == null) return null;
 
+        Equippable equippable = stack.get(DataComponents.EQUIPPABLE);
+        assert equippable != null; // verified above
+
+        ResourceKey<EquipmentAsset> assetResourceKey = equippable.assetId().orElse(null);
+        TrimMaterial material = trim.material().value();
+        TrimPalette palette = TrimicaClient.getPalettes().getOrGeneratePalette(material, assetResourceKey, texture);
         ResourceLocation basePatternTexture = getPatternBasedTrimOverlay(armourType, trim);
         basePatternTexture = TrimicaApiImpl.INSTANCE.applyBaseTextureInterceptorsForItem(basePatternTexture, stack, trim);
-        if (basePatternTexture == null) return empty();
+        return new TrimSpriteMetadata(palette, basePatternTexture, armourType);
+    }
 
+    @Override
+    protected NativeImage createImageFromMetadata(TrimSpriteMetadata metadata) {
         try {
             TextureContents contents;
             try {
-                contents = TextureContents.load(Minecraft.getInstance().getResourceManager(), basePatternTexture);
+                contents = TextureContents.load(Minecraft.getInstance().getResourceManager(), metadata.baseTexture());
             } catch (FileNotFoundException e) {
+                ArmorType armourType = metadata.armorType();
                 ResourceLocation defaultTexture = getDefaultTrimOverlay(armourType);
                 contents = TextureContents.load(Minecraft.getInstance().getResourceManager(), defaultTexture);
             }
-            Equippable equippable = stack.get(DataComponents.EQUIPPABLE);
-            assert equippable != null; // verified above
-
-            ResourceKey<EquipmentAsset> assetResourceKey = equippable.assetId().orElse(null);
-            TrimMaterial material = trim.material().value();
-            TrimPalette palette = TrimicaClient.getPalettes().getOrGeneratePalette(material, assetResourceKey, location);
-            NativeImage coloured = createColouredPatternImage(contents.image(), palette.getColours(), palette.isBuiltin());
-            contents.close();
-            return coloured;
+            return createColouredImage(metadata, contents);
         } catch (IOException e) {
             Trimica.LOGGER.error("Failed to load texture", e);
         }
         return empty();
-    }
-
-    public static @Nullable ArmorType getArmourType(DataComponentGetter componentGetter) {
-        Equippable equippable = componentGetter.get(DataComponents.EQUIPPABLE);
-        if (equippable == null) return null;
-
-        EquipmentSlot slot = equippable.slot();
-        return switch (slot) {
-            case FEET -> ArmorType.BOOTS;
-            case LEGS -> ArmorType.LEGGINGS;
-            case CHEST -> ArmorType.CHESTPLATE;
-            case HEAD -> ArmorType.HELMET;
-            default -> null;
-        };
     }
 
     private ResourceLocation getPatternBasedTrimOverlay(ArmorType armourType, ArmorTrim trim) {

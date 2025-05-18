@@ -2,8 +2,8 @@ package com.bawnorton.trimica.client;
 
 import com.bawnorton.trimica.api.TrimicaApi;
 import com.bawnorton.trimica.client.model.TrimItemModelFactory;
+import com.bawnorton.trimica.client.palette.TrimPalettes;
 import com.bawnorton.trimica.client.texture.RuntimeTrimAtlases;
-import com.bawnorton.trimica.client.texture.palette.TrimPalettes;
 import com.bawnorton.trimica.compat.ElytraBaseTextureInterceptor;
 import com.bawnorton.trimica.platform.Platform;
 

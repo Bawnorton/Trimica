@@ -12,9 +12,6 @@ import java.util.Map;
 @Mixin(TextureAtlas.class)
 public interface TextureAtlasAccessor {
     @Accessor("missingSprite")
-    TextureAtlasSprite trimica$missingSprite();
-
-    @Accessor("missingSprite")
     void trimica$missingSprite(TextureAtlasSprite missingSprite);
 
     @Accessor("texturesByName")
@@ -25,6 +22,9 @@ public interface TextureAtlasAccessor {
 
     @Accessor("sprites")
     void trimica$sprites(List<SpriteContents> sprites);
+
+    @Accessor("animatedTextures")
+    List<TextureAtlasSprite.Ticker> trimica$animatedTextures();
 
     @Accessor("animatedTextures")
     void trimica$animatedTextures(List<TextureAtlasSprite.Ticker> animatedTextures);

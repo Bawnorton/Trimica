@@ -1,10 +1,11 @@
-package com.bawnorton.trimica.client.texture.palette;
+package com.bawnorton.trimica.client.palette;
 
 import com.bawnorton.trimica.Trimica;
+import com.bawnorton.trimica.api.impl.TrimicaApiImpl;
 import com.bawnorton.trimica.client.mixin.accessor.*;
-import com.bawnorton.trimica.client.texture.colour.ColourGroup;
-import com.bawnorton.trimica.client.texture.colour.ColourHSB;
-import com.bawnorton.trimica.client.texture.colour.OkLabHelper;
+import com.bawnorton.trimica.client.colour.ColourGroup;
+import com.bawnorton.trimica.client.colour.ColourHSB;
+import com.bawnorton.trimica.client.colour.OkLabHelper;
 import com.mojang.blaze3d.platform.NativeImage;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -40,11 +41,11 @@ public final class TrimPaletteGenerator {
     private static final Map<String, TrimPalette> BUILT_IN_PALETTES = new HashMap<>();
 
     public TrimPalette generatePalette(TrimMaterial material, String suffix, ResourceLocation location) {
-        ItemModelResolver modelResolver = Minecraft.getInstance().getItemModelResolver();
         Item materialProvider = Trimica.getMaterialRegistry().getMaterialProvider(suffix);
         if (materialProvider == null) {
             return generatePaletteFromBuiltIn(material, suffix);
         }
+        ItemModelResolver modelResolver = Minecraft.getInstance().getItemModelResolver();
         ItemModel model = ((ItemModelResolverAccessor) modelResolver).trimica$modelGetter().apply(BuiltInRegistries.ITEM.getKey(materialProvider));
         return generatePaletteFromModel(location, model);
     }
@@ -179,21 +180,9 @@ public final class TrimPaletteGenerator {
             return palette;
         }
 
-        List<double[]> oklabPalette = new ArrayList<>();
-        for (int rgb : palette) {
-            double[] oklab = OkLabHelper.rgbToOklab(rgb);
-            oklabPalette.add(oklab);
-        }
-
+        List<double[]> oklabPalette = OkLabHelper.rgbToOklab(palette);
         List<double[]> stretchedOKLab = OkLabHelper.strechOkLab(targetSize, size, oklabPalette);
-
-        List<Integer> stretchedPalette = new ArrayList<>(targetSize);
-        for (double[] oklab : stretchedOKLab) {
-            int rgb = OkLabHelper.oklabToRgb(oklab);
-            stretchedPalette.add(rgb);
-        }
-
-        return stretchedPalette;
+        return OkLabHelper.okLabToRgb(stretchedOKLab);
     }
 
     private @NotNull List<Integer> getColoursFromQuads(List<BakedQuad> quads) {

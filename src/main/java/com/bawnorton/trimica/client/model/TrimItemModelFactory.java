@@ -9,6 +9,7 @@ import com.bawnorton.trimica.client.mixin.accessor.ModelManagerAccessor;
 import com.bawnorton.trimica.client.mixin.accessor.TextureSlots$ValueAccessor;
 import com.bawnorton.trimica.client.texture.DynamicTextureAtlasSprite;
 import com.bawnorton.trimica.client.texture.TrimItemSpriteFactory;
+import com.bawnorton.trimica.item.ComponentUtil;
 import com.google.common.collect.ImmutableMap;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.geom.EntityModelSet;
@@ -44,7 +45,7 @@ public final class TrimItemModelFactory {
             return base;
         }
         Optional<ResourceKey<EquipmentAsset>> assetId = equippable.assetId();
-        ArmorType armourType = TrimItemSpriteFactory.getArmourType(stack);
+        ArmorType armourType = ComponentUtil.getArmourType(stack);
         if (armourType == null) {
             return base;
         }

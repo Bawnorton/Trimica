@@ -1,0 +1,11 @@
+package com.bawnorton.trimica.client.mixin.accessor;
+
+import net.minecraft.client.renderer.texture.SpriteTicker;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.gen.Accessor;
+
+@Mixin(targets = "net/minecraft/client/renderer/texture/TextureAtlasSprite$1")
+public interface TextureAtlasSprite$TickerAccessor {
+    @Accessor("val$ticker")
+    SpriteTicker trimica$ticker();
+}

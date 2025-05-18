@@ -1,6 +1,8 @@
 package com.bawnorton.trimica.client.texture;
 
+import com.bawnorton.trimica.client.mixin.accessor.SpriteContents$TickerAccessor;
 import com.bawnorton.trimica.client.mixin.accessor.TextureAtlasAccessor;
+import com.bawnorton.trimica.client.mixin.accessor.TextureAtlasSprite$TickerAccessor;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderType;
@@ -17,15 +19,16 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 public final class RuntimeTrimAtlas extends TextureAtlas {
     private final RuntimeTrimSpriteFactory spriteFactory;
     private final RuntimeTrimAtlases.TrimFactory trimFactory;
     private final RenderType renderType;
     private final List<SpriteContents> dynamicSprites = new ArrayList<>();
-    private final Runnable onModified;
+    private final Consumer<RuntimeTrimAtlas> onModified;
 
-    public RuntimeTrimAtlas(ResourceLocation atlasLocation, RuntimeTrimSpriteFactory spriteFactory, RuntimeTrimAtlases.TrimFactory trimFactory, Runnable onModified) {
+    public RuntimeTrimAtlas(ResourceLocation atlasLocation, RuntimeTrimSpriteFactory spriteFactory, RuntimeTrimAtlases.TrimFactory trimFactory, Consumer<RuntimeTrimAtlas> onModified) {
         super(atlasLocation);
         this.spriteFactory = spriteFactory;
         this.trimFactory = trimFactory;
@@ -60,7 +63,7 @@ public final class RuntimeTrimAtlas extends TextureAtlas {
         SpriteLoader.Preparations preparations = loader.stitch(dynamicSprites, 0, Util.backgroundExecutor());
         AtlasSet.StitchResult result = new AtlasSet.StitchResult(this, preparations);
         result.upload();
-        onModified.run();
+        onModified.accept(this);
         Minecraft client = Minecraft.getInstance();
         client.getTextureManager().register(location(), this);
         return asAccessor().trimica$texturesByName().get(texture);
@@ -71,6 +74,15 @@ public final class RuntimeTrimAtlas extends TextureAtlas {
         asAccessor().trimica$animatedTextures(List.of());
         asAccessor().trimica$texturesByName(Map.of());
         asAccessor().trimica$missingSprite(null);
+    }
+
+    public void resetFrames() {
+        List<TextureAtlasSprite.Ticker> tickers = asAccessor().trimica$animatedTextures();
+        for(TextureAtlasSprite.Ticker ticker : tickers) {
+            if(ticker instanceof TextureAtlasSprite$TickerAccessor accessor && accessor.trimica$ticker() instanceof SpriteContents$TickerAccessor spriteTicker) {
+                spriteTicker.trimica$frame(0);
+            }
+        }
     }
 
     private TextureAtlasAccessor asAccessor() {

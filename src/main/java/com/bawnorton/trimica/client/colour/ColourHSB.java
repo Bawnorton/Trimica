@@ -1,4 +1,4 @@
-package com.bawnorton.trimica.client.texture.colour;
+package com.bawnorton.trimica.client.colour;
 
 import org.jetbrains.annotations.NotNull;
 import java.awt.Color;
@@ -17,6 +17,10 @@ public record ColourHSB(Integer colour, float hue, float saturation, float brigh
 
     public static List<ColourHSB> fromRGB(List<Integer> colours) {
         return colours.stream().map(ColourHSB::fromRGB).collect(Collectors.toList());
+    }
+
+    public static ColourHSB fromHue(int hue) {
+        return fromRGB(Color.HSBtoRGB(hue / 360f, 1f, 1f));
     }
 
     @Override

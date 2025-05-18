@@ -1,5 +1,7 @@
-package com.bawnorton.trimica.client.texture.palette;
+package com.bawnorton.trimica.client.palette;
 
+import com.bawnorton.trimica.Trimica;
+import com.bawnorton.trimica.api.impl.TrimicaApiImpl;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.equipment.EquipmentAsset;
@@ -14,7 +16,13 @@ public final class TrimPalettes {
 
     public TrimPalette getOrGeneratePalette(TrimMaterial material, ResourceKey<EquipmentAsset> equipmentAssetKey, ResourceLocation location) {
         String suffix = equipmentAssetKey == null ? material.assets().base().suffix() : material.assets().assetId(equipmentAssetKey).suffix();
-        return cache.computeIfAbsent(suffix, k -> generator.generatePalette(material, k, location));
+        return cache.computeIfAbsent(suffix, k -> {
+            TrimPalette palette = generator.generatePalette(material, k, location);
+            if (Trimica.getMaterialRegistry().getIsAnimated(material)) {
+                palette = palette.asAnimated();
+            }
+            return TrimicaApiImpl.INSTANCE.applyPaletteInterceptors(palette, material);
+        });
     }
 
     public @Nullable TrimPalette getPalette(TrimMaterial material, ResourceKey<EquipmentAsset> equipmentAssetKey) {

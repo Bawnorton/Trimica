@@ -20,18 +20,13 @@ repositories {
 dependencies {
     modstitch.loom {
         modstitchModImplementation("net.fabricmc.fabric-api:fabric-api:${deps("fabric_api")}+1.21.5")
-        /*modstitchModRuntimeOnly("maven.modrinth:zoomify:2.14.2+1.21.3")
-        modstitchModRuntimeOnly("maven.modrinth:yacl:3.6.6+1.21.5-fabric")
-        modstitchModRuntimeOnly("net.fabricmc:fabric-language-kotlin:1.13.3+kotlin.2.1.21")
-        modstitchRuntimeOnly("org.quiltmc.parsers:gson:0.3.1")
-        modstitchRuntimeOnly("org.quiltmc.parsers:json:0.3.1")*/
     }
 
     modstitch.moddevgradle {
     }
 
     modstitchModRuntimeOnly("maven.modrinth:sodium:mc$minecraft-${deps("sodium")}-$loader")
-    modstitchModRuntimeOnly("maven.modrinth:iris:${deps("iris")}+$minecraft-$loader")
+//    modstitchModRuntimeOnly("maven.modrinth:iris:${deps("iris")}+$minecraft-$loader")
     modstitchModRuntimeOnly("maven.modrinth:advanced-netherite:$loader-${deps("advanced_netherite")}-mc$minecraft")
 
     modstitchRuntimeOnly("org.antlr:antlr4-runtime:4.13.1")

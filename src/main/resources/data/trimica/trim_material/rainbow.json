@@ -3,5 +3,6 @@
   "description": {
     "color": "#FFFFFF",
     "translate": "trim_material.trimica.rainbow"
-  }
+  },
+  "trimica$animated": true
 }

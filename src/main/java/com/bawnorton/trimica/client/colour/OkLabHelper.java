@@ -1,4 +1,4 @@
-package com.bawnorton.trimica.client.texture.colour;
+package com.bawnorton.trimica.client.colour;
 
 import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
@@ -58,6 +58,15 @@ public final class OkLabHelper {
         return new double[]{L, a, b_ok};
     }
 
+    public static List<double[]> rgbToOklab(List<Integer> rgbs) {
+        List<double[]> oklabList = new ArrayList<>(rgbs.size());
+        for (int rgb : rgbs) {
+            double[] oklab = rgbToOklab(rgb);
+            oklabList.add(oklab);
+        }
+        return oklabList;
+    }
+
     public static int oklabToRgb(double[] oklab) {
         double L = oklab[0];
         double a = oklab[1];
@@ -93,6 +102,16 @@ public final class OkLabHelper {
         b_srgb = Math.max(0.0, Math.min(1.0, b_srgb));
 
         return new double[]{r, g, b_srgb};
+    }
+
+    public static List<Integer> okLabToRgb(List<double[]> okLabColours) {
+        List<Integer> rgbList = new ArrayList<>(okLabColours.size());
+        for (double[] okLab : okLabColours) {
+            int rgb = oklabToRgb(okLab);
+            rgbList.add(rgb);
+        }
+        return rgbList;
+
     }
 
     private static double srgbToLinear(double val_srgb) {

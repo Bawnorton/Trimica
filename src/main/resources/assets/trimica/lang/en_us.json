@@ -1,5 +1,6 @@
 {
   "trimica.material": "%s Material",
   "item.trimica.rainbow_material": "Rainbowifier",
-  "item.trimica.rainbow_material.description": "Trim Material"
+  "item.trimica.rainbow_material.description": "Trim Material",
+  "trim_material.trimica.rainbow": "Rainbow Material"
 }

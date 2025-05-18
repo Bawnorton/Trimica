@@ -2,6 +2,7 @@ package com.bawnorton.trimica.client.texture;
 
 import com.bawnorton.trimica.Trimica;
 import com.bawnorton.trimica.client.TrimicaClient;
+import net.minecraft.client.resources.model.EquipmentClientInfo;
 import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.Registries;
@@ -13,87 +14,82 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 public final class RuntimeTrimAtlases {
-    private final Map<TrimPattern, RuntimeTrimAtlas> humanoidModelAtlasFactories = new HashMap<>();
-    private final Map<TrimPattern, RuntimeTrimAtlas> humanoidLeggingsModelAtlasFactories = new HashMap<>();
-    private final Map<TrimPattern, RuntimeTrimAtlas> itemAtlasFactories = new HashMap<>();
-    private final Map<TrimPattern, RuntimeTrimAtlas> shieldAtlasFactories = new HashMap<>();
+    private final Map<TrimPattern, Map<EquipmentClientInfo.LayerType, RuntimeTrimAtlas>> equipmentAtlases = new HashMap<>();
+    private final Map<TrimPattern, RuntimeTrimAtlas> itemAtlases = new HashMap<>();
+    private final Map<TrimPattern, RuntimeTrimAtlas> shieldAtlases = new HashMap<>();
 
-    private final List<Runnable> modelAtlasModifiedListeners = new ArrayList<>();
+    private final List<Consumer<RuntimeTrimAtlas>> modelAtlasModifiedListeners = new ArrayList<>();
 
     public void init(RegistryAccess registryAccess) {
-        humanoidModelAtlasFactories.clear();
-        humanoidLeggingsModelAtlasFactories.clear();
-        itemAtlasFactories.clear();
-        shieldAtlasFactories.clear();
+        equipmentAtlases.values().forEach(Map::clear);
+        equipmentAtlases.clear();
+        itemAtlases.clear();
+        shieldAtlases.clear();
 
         Registry<TrimPattern> patterns = registryAccess.lookup(Registries.TRIM_PATTERN).orElseThrow();
         Registry<TrimMaterial> materials = registryAccess.lookup(Registries.TRIM_MATERIAL).orElseThrow();
 
         for (TrimPattern pattern : patterns) {
             ResourceLocation patternId = pattern.assetId();
-            humanoidModelAtlasFactories.put(
-                    pattern, new RuntimeTrimAtlas(
-                            Trimica.rl("%s/%s/humanoid.png".formatted(patternId.getNamespace(), patternId.getPath())),
-                            new TrimArmourSpriteFactory(),
-                            (m) -> new ArmorTrim(materials.wrapAsHolder(m), patterns.wrapAsHolder(pattern)),
-                            () -> {
-                                for (Runnable listener : modelAtlasModifiedListeners) {
-                                    listener.run();
-                                }
+            Map<EquipmentClientInfo.LayerType, RuntimeTrimAtlas> atlases = new HashMap<>();
+            for (EquipmentClientInfo.LayerType layerType : List.of(EquipmentClientInfo.LayerType.HUMANOID, EquipmentClientInfo.LayerType.HUMANOID_LEGGINGS)) {
+                atlases.put(layerType, new RuntimeTrimAtlas(
+                        Trimica.rl("%s/%s/%s.png".formatted(patternId.getNamespace(), patternId.getPath(), layerType.getSerializedName())),
+                        new TrimArmourSpriteFactory(layerType),
+                        (m) -> new ArmorTrim(materials.wrapAsHolder(m), patterns.wrapAsHolder(pattern)),
+                        atlas -> {
+                            resetFrames();
+                            for (Consumer<RuntimeTrimAtlas> listener : modelAtlasModifiedListeners) {
+                                listener.accept(atlas);
                             }
-                    )
-            );
-            humanoidLeggingsModelAtlasFactories.put(
-                    pattern, new RuntimeTrimAtlas(
-                            Trimica.rl("%s/%s/humanoid_leggings.png".formatted(patternId.getNamespace(), patternId.getPath())),
-                            new TrimArmourSpriteFactory(),
-                            (m) -> new ArmorTrim(materials.wrapAsHolder(m), patterns.wrapAsHolder(pattern)),
-                            () -> {
-                                for (Runnable listener : modelAtlasModifiedListeners) {
-                                    listener.run();
-                                }
-                            }
-                    )
-            );
-            itemAtlasFactories.put(
+                        }
+                ));
+            }
+            equipmentAtlases.put(pattern, atlases);
+            itemAtlases.put(
                     pattern, new RuntimeTrimAtlas(
                             Trimica.rl("%s/%s/item.png".formatted(patternId.getNamespace(), patternId.getPath())),
                             new TrimItemSpriteFactory(),
                             (m) -> new ArmorTrim(materials.wrapAsHolder(m), patterns.wrapAsHolder(pattern)),
-                            () -> TrimicaClient.getItemModelFactory().clear()
+                            atlas -> TrimicaClient.getItemModelFactory().clear()
                     )
             );
-            shieldAtlasFactories.put(
+            shieldAtlases.put(
                     pattern, new RuntimeTrimAtlas(
                             Trimica.rl("%s/%s/shield.png".formatted(patternId.getNamespace(), patternId.getPath())),
                             new TrimShieldSpriteFactory(),
                             (m) -> new ArmorTrim(materials.wrapAsHolder(m), patterns.wrapAsHolder(pattern)),
-                            () -> {}
+                            atlas -> {}
                     )
             );
         }
     }
 
-    public RuntimeTrimAtlas getHumanoidModelAtlas(TrimPattern pattern) {
-        return humanoidModelAtlasFactories.get(pattern);
+    private void resetFrames() {
+        for(Map<EquipmentClientInfo.LayerType, RuntimeTrimAtlas> layerBasedAtlases : equipmentAtlases.values()) {
+            for(RuntimeTrimAtlas atlas : layerBasedAtlases.values()) {
+                atlas.resetFrames();
+            }
+        }
     }
 
-    public RuntimeTrimAtlas getHumanoidLeggingsModelAtlas(TrimPattern pattern) {
-        return humanoidLeggingsModelAtlasFactories.get(pattern);
+    public RuntimeTrimAtlas getEquipmentAtlas(TrimPattern pattern, EquipmentClientInfo.LayerType layerType) {
+        return equipmentAtlases.get(pattern).get(layerType);
     }
 
     public RuntimeTrimAtlas getItemAtlas(TrimPattern pattern) {
-        return itemAtlasFactories.get(pattern);
+        return itemAtlases.get(pattern);
     }
 
     public RuntimeTrimAtlas getShieldAtlas(TrimPattern pattern) {
-        return shieldAtlasFactories.get(pattern);
+        return shieldAtlases.get(pattern);
     }
 
-    public void registerModelAtlasModifiedListener(Runnable runnable) {
-        modelAtlasModifiedListeners.add(runnable);
+    public void registerModelAtlasModifiedListener(Consumer<RuntimeTrimAtlas> consumer) {
+        modelAtlasModifiedListeners.add(consumer);
     }
 
     public interface TrimFactory {

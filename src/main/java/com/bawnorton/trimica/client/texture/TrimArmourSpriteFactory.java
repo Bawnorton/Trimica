@@ -3,10 +3,11 @@ package com.bawnorton.trimica.client.texture;
 import com.bawnorton.trimica.Trimica;
 import com.bawnorton.trimica.api.impl.TrimicaApiImpl;
 import com.bawnorton.trimica.client.TrimicaClient;
-import com.bawnorton.trimica.client.texture.palette.TrimPalette;
+import com.bawnorton.trimica.client.palette.TrimPalette;
 import com.mojang.blaze3d.platform.NativeImage;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureContents;
+import net.minecraft.client.resources.model.EquipmentClientInfo;
 import net.minecraft.core.component.DataComponentGetter;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.resources.ResourceKey;
@@ -16,45 +17,44 @@ import net.minecraft.world.item.equipment.EquipmentAsset;
 import net.minecraft.world.item.equipment.Equippable;
 import net.minecraft.world.item.equipment.trim.ArmorTrim;
 import net.minecraft.world.item.equipment.trim.TrimMaterial;
+import org.jetbrains.annotations.Nullable;
 import java.io.IOException;
 
 public class TrimArmourSpriteFactory extends AbstractTrimSpriteFactory {
-    public TrimArmourSpriteFactory() {
+    private final EquipmentClientInfo.LayerType layerType;
+
+    public TrimArmourSpriteFactory(EquipmentClientInfo.LayerType layerType) {
         super(64, 32);
+        this.layerType = layerType;
     }
 
-    @Override
-    protected NativeImage createImageFromMaterial(ArmorTrim trim, DataComponentGetter componentGetter, ResourceLocation texture) {
-        if (!(componentGetter instanceof ItemStack stack)) return empty();
+    @Nullable
+    protected TrimSpriteMetadata getSpriteMetadata(ArmorTrim trim, DataComponentGetter componentGetter, ResourceLocation texture) {
+        if (!(componentGetter instanceof ItemStack stack)) return null;
 
-        ResourceLocation basePatternTexture = extractBaseTexture(texture);
+        Equippable equippable = stack.get(DataComponents.EQUIPPABLE);
+        if (equippable == null) return null;
+
+        TrimMaterial material = trim.material().value();
+        ResourceKey<EquipmentAsset> assetResourceKey = equippable.assetId().orElse(null);
+        TrimPalette palette = TrimicaClient.getPalettes().getOrGeneratePalette(material, assetResourceKey, texture);
+        ResourceLocation basePatternTexture = extractBaseTexture(texture, trim.pattern().value().assetId());
         basePatternTexture = TrimicaApiImpl.INSTANCE.applyBaseTextureInterceptorsForArmour(basePatternTexture, stack, trim);
-        if (basePatternTexture == null) return empty();
+        return new TrimSpriteMetadata(palette, basePatternTexture);
+    }
 
+    protected NativeImage createImageFromMetadata(TrimSpriteMetadata metadata) {
         Minecraft minecraft = Minecraft.getInstance();
         try {
-            TextureContents contents = TextureContents.load(minecraft.getResourceManager(), basePatternTexture);
-            TrimMaterial material = trim.material().value();
-            Equippable equippable = stack.get(DataComponents.EQUIPPABLE);
-            if(equippable == null) return empty();
-
-            ResourceKey<EquipmentAsset> assetResourceKey = equippable.assetId().orElse(null);
-            TrimPalette palette = TrimicaClient.getPalettes().getOrGeneratePalette(material, assetResourceKey, texture);
-            NativeImage coloured = createColouredPatternImage(contents.image(), palette.getColours(), palette.isBuiltin());
-            contents.close();
-            return coloured;
+            TextureContents contents = TextureContents.load(minecraft.getResourceManager(), metadata.baseTexture());
+            return createColouredImage(metadata, contents);
         } catch (IOException e) {
-            Trimica.LOGGER.warn("Expected to find \"{}\" but the texture does not exist, trim overlay will not be added to model", basePatternTexture);
+            Trimica.LOGGER.warn("Expected to find \"{}\" but the texture does not exist, trim overlay will not be added to model", metadata.baseTexture());
             return empty();
         }
     }
 
-    private ResourceLocation extractBaseTexture(ResourceLocation location) {
-        String path = location.getPath();
-        int lastSlash = path.lastIndexOf("_trimica/");
-        if (lastSlash != -1) {
-            return location.withPath("textures/%s.png".formatted(path.substring(0, lastSlash)));
-        }
-        return null;
+    private ResourceLocation extractBaseTexture(ResourceLocation texture, ResourceLocation assetId) {
+        return texture.withPath("textures/%s/%s.png".formatted(layerType.trimAssetPrefix(), assetId.getPath()));
     }
 }

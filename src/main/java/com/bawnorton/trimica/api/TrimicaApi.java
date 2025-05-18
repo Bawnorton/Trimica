@@ -16,4 +16,9 @@ public interface TrimicaApi {
      * @param priority The priority of the interceptor. Lower numbers are called first.
      */
     void registerCraftingRecipeInterceptor(int priority, CraftingRecipeInterceptor craftingRecipeInterceptor);
+
+    /**
+     * @param priority The priority of the interceptor. Lower numbers are called first.
+     */
+    void registerPaletteInterceptor(int priority, PaletteInterceptor paletteInterceptor);
 }
