@@ -2,16 +2,15 @@ package com.bawnorton.trimica.client.texture;
 
 import com.bawnorton.trimica.client.palette.AnimatedTrimPalette;
 import com.bawnorton.trimica.client.palette.TrimPalette;
-import com.bawnorton.trimica.item.TrimicaItems;
-import com.bawnorton.trimica.item.component.MaterialAddition;
 import com.mojang.blaze3d.platform.NativeImage;
-import it.unimi.dsi.fastutil.ints.Int2ObjectAVLTreeMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntList;
 import net.minecraft.client.renderer.texture.SpriteContents;
 import net.minecraft.client.renderer.texture.TextureContents;
 import net.minecraft.client.resources.metadata.animation.AnimationMetadataSection;
 import net.minecraft.client.resources.metadata.animation.FrameSize;
 import net.minecraft.core.component.DataComponentGetter;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.metadata.MetadataSectionType;
 import net.minecraft.server.packs.resources.ResourceMetadata;
@@ -19,8 +18,10 @@ import net.minecraft.util.ARGB;
 import net.minecraft.world.item.equipment.trim.ArmorTrim;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.joml.Vector2i;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
 
 public abstract class AbstractTrimSpriteFactory implements RuntimeTrimSpriteFactory {
     protected final int width;
@@ -84,27 +85,44 @@ public abstract class AbstractTrimSpriteFactory implements RuntimeTrimSpriteFact
 
     protected NativeImage createColouredPatternImage(NativeImage greyscalePatternImage, List<Integer> colours, boolean builtin) {
         NativeImage coloured = new NativeImage(width, height, false);
-        Map<Integer, Set<Vector2i>> colourPositions = new Int2ObjectAVLTreeMap<>(Comparator.<Integer>comparingInt(i -> i).reversed());
+        IntList[] colourPositions = new IntList[256];
+
+        int count = 0;
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
-                int pixel = greyscalePatternImage.getPixel(x, y);
-                colourPositions.computeIfAbsent(pixel, k -> new HashSet<>()).add(new Vector2i(x, y));
+                int pixel = greyscalePatternImage.getPixel(x, y) & 0xFF;
+                IntList positions = colourPositions[pixel];
+                if (positions == null) {
+                    positions = new IntArrayList();
+                    colourPositions[pixel] = positions;
+                    count++;
+                }
+                positions.add(x);
+                positions.add(y);
             }
         }
-        int index = 0;
-        for (Map.Entry<Integer, Set<Vector2i>> entry : colourPositions.entrySet()) {
-            int colour = entry.getKey();
+
+        int paletteIndex = count - 1;
+        for (int colour = 0; colour < 256; colour++) {
+            IntList positions = colourPositions[colour];
+            if (positions == null) continue;
+
             int paletteColour;
-            if (colour == 0 || index >= TrimPalette.PALETTE_SIZE) {
+
+            if (colour == 0) {
                 paletteColour = 0;
             } else {
-                paletteColour = ARGB.toABGR(0xFF000000 | colours.get(index));
-                index++;
+                if (paletteIndex > 0) {
+                    paletteColour = ARGB.toABGR(0xFF000000 | colours.get(paletteIndex));
+                } else {
+                    paletteColour = 0;
+                }
+                paletteIndex--;
             }
-            Set<Vector2i> positions = entry.getValue();
-            for (Vector2i position : positions) {
-                int x = position.x();
-                int y = position.y();
+
+            for (int j = 0; j < positions.size(); j += 2) {
+                int x = positions.getInt(j);
+                int y = positions.getInt(j + 1);
                 coloured.setPixel(x, y, builtin ? paletteColour : applyGrayscaleMask(paletteColour, colour));
             }
         }
@@ -146,19 +164,19 @@ public abstract class AbstractTrimSpriteFactory implements RuntimeTrimSpriteFact
         return frames;
     }
 
-
     private int applyGrayscaleMask(int colorABGR, int maskABGR) {
         int brightness = maskABGR & 0xFF;
-        float factor = Math.min(1, brightness / 128f);
 
         int alpha = (colorABGR >> 24) & 0xFF;
         int blue  = (colorABGR >> 16) & 0xFF;
         int green = (colorABGR >> 8) & 0xFF;
         int red   = colorABGR & 0xFF;
 
-        red   = Math.round(red * factor);
-        green = Math.round(green * factor);
-        blue  = Math.round(blue * factor);
+        if (brightness < 128) {
+            red   = (red * brightness + 64) >> 7;
+            green = (green * brightness + 64) >> 7;
+            blue  = (blue * brightness + 64) >> 7;
+        }
 
         return (alpha << 24) | (blue << 16) | (green << 8) | red;
     }
