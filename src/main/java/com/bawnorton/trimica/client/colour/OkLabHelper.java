@@ -154,24 +154,4 @@ public final class OkLabHelper {
         return result;
     }
 
-    public static double[] average(double[][] okLabColours) {
-        double[] result = new double[3];
-        if (okLabColours.length == 0) return result;
-
-        double sumL = 0;
-        double sumA = 0;
-        double sumB = 0;
-
-        for (double[] okLabColour : okLabColours) {
-            sumL += okLabColour[0];
-            sumA += okLabColour[1];
-            sumB += okLabColour[2];
-        }
-
-        result[0] = sumL / okLabColours.length;
-        result[1] = sumA / okLabColours.length;
-        result[2] = sumB / okLabColours.length;
-
-        return result;
-    }
 }

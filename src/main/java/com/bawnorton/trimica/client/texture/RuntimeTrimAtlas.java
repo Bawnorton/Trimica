@@ -76,6 +76,7 @@ public final class RuntimeTrimAtlas extends TextureAtlas {
         asAccessor().trimica$missingSprite(null);
     }
 
+    @SuppressWarnings("resource")
     public void resetFrames() {
         List<TextureAtlasSprite.Ticker> tickers = asAccessor().trimica$animatedTextures();
         for(TextureAtlasSprite.Ticker ticker : tickers) {

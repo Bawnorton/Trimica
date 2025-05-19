@@ -2,6 +2,7 @@
 package com.bawnorton.trimica.platform.fabric.data;
 
 import com.bawnorton.trimica.platform.fabric.data.provider.TrimicaModelProvider;
+import com.bawnorton.trimica.platform.fabric.data.provider.TrimicaRecipeProvider;
 import com.bawnorton.trimica.platform.fabric.data.provider.TrimicaTagProvider;
 import net.fabricmc.fabric.api.datagen.v1.DataGeneratorEntrypoint;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataGenerator;
@@ -12,6 +13,7 @@ public final class FabricDataGeneratorEntrypoint implements DataGeneratorEntrypo
         FabricDataGenerator.Pack pack = fabricDataGenerator.createPack();
         pack.addProvider(TrimicaModelProvider::new);
         pack.addProvider(TrimicaTagProvider::new);
+        pack.addProvider(TrimicaRecipeProvider::new);
     }
 }
 //?}

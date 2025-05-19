@@ -30,6 +30,18 @@ public final class TrimicaItems {
             .trimMaterial(ResourceKey.create(Registries.TRIM_MATERIAL, Trimica.rl("rainbow")))
     );
 
+    public static final Item ANIMATOR_MATERIAL = create("animator_material", Item::new, new Item.Properties()
+            .rarity(Rarity.UNCOMMON)
+            .component(DataComponents.LORE,  new ItemLore(
+                    List.of(
+                            Component.translatable("item.trimica.animator_material.description")
+                                    .withStyle(style -> style.withItalic(false)
+                                            .withColor(ChatFormatting.GREEN)
+                                    )
+                    )
+            ))
+    );
+
     public static void forEach(BiConsumer<ResourceKey<Item>, Item> consumer) {
         for (ItemHolder itemHolder : ITEMS) {
             consumer.accept(itemHolder.key(), itemHolder.item());

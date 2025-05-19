@@ -4,7 +4,7 @@ import com.bawnorton.trimica.Trimica;
 import com.bawnorton.trimica.api.impl.TrimicaApiImpl;
 import com.bawnorton.trimica.client.TrimicaClient;
 import com.bawnorton.trimica.client.palette.TrimPalette;
-import com.bawnorton.trimica.item.ComponentUtil;
+import com.bawnorton.trimica.item.component.ComponentUtil;
 import com.mojang.blaze3d.platform.NativeImage;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureContents;
@@ -12,7 +12,6 @@ import net.minecraft.core.component.DataComponentGetter;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.equipment.ArmorType;
 import net.minecraft.world.item.equipment.EquipmentAsset;
@@ -30,18 +29,18 @@ public class TrimItemSpriteFactory extends AbstractTrimSpriteFactory {
     }
 
     @Override
-    protected @Nullable TrimSpriteMetadata getSpriteMetadata(ArmorTrim trim, DataComponentGetter componentGetter, ResourceLocation texture) {
+    protected @Nullable TrimSpriteMetadata getSpriteMetadata(ArmorTrim trim, @Nullable DataComponentGetter componentGetter, ResourceLocation texture) {
         if (!(componentGetter instanceof ItemStack stack)) return null;
 
         ArmorType armourType = ComponentUtil.getArmourType(componentGetter);
         if (armourType == null) return null;
 
         Equippable equippable = stack.get(DataComponents.EQUIPPABLE);
-        assert equippable != null; // verified above
+        assert equippable != null;
 
         ResourceKey<EquipmentAsset> assetResourceKey = equippable.assetId().orElse(null);
         TrimMaterial material = trim.material().value();
-        TrimPalette palette = TrimicaClient.getPalettes().getOrGeneratePalette(material, assetResourceKey, texture);
+        TrimPalette palette = TrimicaClient.getPalettes().getOrGeneratePalette(material, assetResourceKey, texture, componentGetter);
         ResourceLocation basePatternTexture = getPatternBasedTrimOverlay(armourType, trim);
         basePatternTexture = TrimicaApiImpl.INSTANCE.applyBaseTextureInterceptorsForItem(basePatternTexture, stack, trim);
         return new TrimSpriteMetadata(palette, basePatternTexture, armourType);

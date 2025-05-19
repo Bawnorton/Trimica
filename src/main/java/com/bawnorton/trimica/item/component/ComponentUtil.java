@@ -1,4 +1,4 @@
-package com.bawnorton.trimica.item;
+package com.bawnorton.trimica.item.component;
 
 import net.minecraft.core.component.DataComponentGetter;
 import net.minecraft.core.component.DataComponents;

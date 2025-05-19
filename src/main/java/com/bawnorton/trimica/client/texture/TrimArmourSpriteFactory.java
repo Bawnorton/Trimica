@@ -37,7 +37,8 @@ public class TrimArmourSpriteFactory extends AbstractTrimSpriteFactory {
 
         TrimMaterial material = trim.material().value();
         ResourceKey<EquipmentAsset> assetResourceKey = equippable.assetId().orElse(null);
-        TrimPalette palette = TrimicaClient.getPalettes().getOrGeneratePalette(material, assetResourceKey, texture);
+
+        TrimPalette palette = TrimicaClient.getPalettes().getOrGeneratePalette(material, assetResourceKey, texture, componentGetter);
         ResourceLocation basePatternTexture = extractBaseTexture(texture, trim.pattern().value().assetId());
         basePatternTexture = TrimicaApiImpl.INSTANCE.applyBaseTextureInterceptorsForArmour(basePatternTexture, stack, trim);
         return new TrimSpriteMetadata(palette, basePatternTexture);

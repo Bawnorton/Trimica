@@ -2,6 +2,7 @@ package com.bawnorton.trimica.api;
 
 import com.bawnorton.trimica.api.impl.TrimicaApiImpl;
 
+@SuppressWarnings("unused")
 public interface TrimicaApi {
     static TrimicaApi getInstance() {
         return TrimicaApiImpl.INSTANCE;

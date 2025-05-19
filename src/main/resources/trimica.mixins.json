@@ -7,10 +7,16 @@
   },
   "compatibilityLevel": "JAVA_17",
   "mixins": [
+    "CreativeModeTabsMixin",
     "TrimMaterialMixin",
     "command.CommadsMixin",
     "component.DataComponentHolderMixin",
+    "component.DataComponentsMixin",
+    "crafting.SmithingMenuMixin",
     "crafting.SmithingTrimRecipeMixin",
-    "registry.ItemsMixin"
+    "registry.BuiltInRegistriesMixin",
+    "registry.ItemsMixin",
+    "registry.RecipeDisplaysMixin",
+    "registry.SlotDisplaysMixin"
   ]
 }

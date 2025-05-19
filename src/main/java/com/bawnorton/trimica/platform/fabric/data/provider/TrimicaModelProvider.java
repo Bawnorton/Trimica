@@ -7,7 +7,6 @@ import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.minecraft.client.data.models.BlockModelGenerators;
 import net.minecraft.client.data.models.ItemModelGenerators;
 import net.minecraft.client.data.models.model.ItemModelUtils;
-import net.minecraft.client.data.models.model.ModelTemplate;
 import net.minecraft.client.data.models.model.ModelTemplates;
 import net.minecraft.client.data.models.model.TextureMapping;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -26,12 +25,13 @@ public class TrimicaModelProvider extends FabricModelProvider {
 
     @Override
     public void generateItemModels(ItemModelGenerators generators) {
-        itemModel(generators, TrimicaItems.RAINBOW_MATERIAL, ModelTemplates.FLAT_ITEM);
+        itemModel(generators, TrimicaItems.RAINBOW_MATERIAL);
+        itemModel(generators, TrimicaItems.ANIMATOR_MATERIAL);
     }
 
-    private void itemModel(ItemModelGenerators generators, Item item, ModelTemplate template) {
+    private void itemModel(ItemModelGenerators generators, Item item) {
         ResourceLocation id = BuiltInRegistries.ITEM.getKey(item).withPrefix("item/");
-        ResourceLocation modelLoc = template.create(item, TextureMapping.layer0(id), generators.modelOutput);
+        ResourceLocation modelLoc = ModelTemplates.FLAT_ITEM.create(item, TextureMapping.layer0(id), generators.modelOutput);
         generators.itemModelOutput.accept(item, ItemModelUtils.plainModel(modelLoc));
     }
 }

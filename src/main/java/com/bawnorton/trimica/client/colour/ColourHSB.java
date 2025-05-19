@@ -19,10 +19,6 @@ public record ColourHSB(Integer colour, float hue, float saturation, float brigh
         return colours.stream().map(ColourHSB::fromRGB).collect(Collectors.toList());
     }
 
-    public static ColourHSB fromHue(int hue) {
-        return fromRGB(Color.HSBtoRGB(hue / 360f, 1f, 1f));
-    }
-
     @Override
     public @NotNull String toString() {
         return "ColourHSB[%s, (%.2f, %.2f, %.2f)]".formatted(

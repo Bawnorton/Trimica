@@ -1,7 +1,6 @@
 package com.bawnorton.trimica.client.palette;
 
 import com.bawnorton.trimica.Trimica;
-import com.bawnorton.trimica.api.impl.TrimicaApiImpl;
 import com.bawnorton.trimica.client.mixin.accessor.*;
 import com.bawnorton.trimica.client.colour.ColourGroup;
 import com.bawnorton.trimica.client.colour.ColourHSB;

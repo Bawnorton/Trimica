@@ -24,9 +24,9 @@ public class TrimShieldSpriteFactory extends AbstractTrimSpriteFactory {
     }
 
     @Override
-    protected @Nullable TrimSpriteMetadata getSpriteMetadata(ArmorTrim trim, DataComponentGetter componentGetter, ResourceLocation texture) {
+    protected @Nullable TrimSpriteMetadata getSpriteMetadata(ArmorTrim trim, @Nullable DataComponentGetter componentGetter, ResourceLocation texture) {
         TrimMaterial material = trim.material().value();
-        TrimPalette palette = TrimicaClient.getPalettes().getOrGeneratePalette(material, null, texture);
+        TrimPalette palette = TrimicaClient.getPalettes().getOrGeneratePalette(material, null, texture, componentGetter);
         ResourceLocation basePatternTexture = getPatternBasedTrimOverlay(trim);
         basePatternTexture = TrimicaApiImpl.INSTANCE.applyBaseTextureInterceptorsForShield(basePatternTexture, componentGetter, trim);
         return new TrimSpriteMetadata(palette, basePatternTexture);

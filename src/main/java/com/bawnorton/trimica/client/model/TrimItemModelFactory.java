@@ -8,8 +8,8 @@ import com.bawnorton.trimica.client.mixin.accessor.ModelDiscover$ModelWrapperAcc
 import com.bawnorton.trimica.client.mixin.accessor.ModelManagerAccessor;
 import com.bawnorton.trimica.client.mixin.accessor.TextureSlots$ValueAccessor;
 import com.bawnorton.trimica.client.texture.DynamicTextureAtlasSprite;
-import com.bawnorton.trimica.client.texture.TrimItemSpriteFactory;
-import com.bawnorton.trimica.item.ComponentUtil;
+import com.bawnorton.trimica.item.component.ComponentUtil;
+import com.bawnorton.trimica.item.component.MaterialAddition;
 import com.google.common.collect.ImmutableMap;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.geom.EntityModelSet;
@@ -51,6 +51,10 @@ public final class TrimItemModelFactory {
         }
         TrimModelId trimModelId = TrimModelId.fromTrim(armourType.getName(), trim, assetId.orElse(null));
         ResourceLocation overlayLocation = trimModelId.asSingle();
+        MaterialAddition addition = stack.get(MaterialAddition.TYPE);
+        if(addition != null) {
+            overlayLocation = addition.apply(overlayLocation);
+        }
         ResourceLocation baseModelLocation = stack.getOrDefault(DataComponents.ITEM_MODEL, BuiltInRegistries.ITEM.getKey(stack.getItem()));
         ResourceLocation newModelLocation = overlayLocation.withPrefix(baseModelLocation.toString().replace(":", "_") + "/");
         if (models.containsKey(newModelLocation)) {
@@ -102,7 +106,7 @@ public final class TrimItemModelFactory {
         ModelManager modelManager = minecraft.getModelManager();
         SpriteGetter spriteGetter = new SpriteGetter() {
             @Override
-            public @NotNull TextureAtlasSprite get(Material material, ModelDebugName modelDebugName) {
+            public @NotNull TextureAtlasSprite get(Material material, @NotNull ModelDebugName modelDebugName) {
                 if (material.texture().equals(overlayLocation)) {
                     return sprite;
                 }
@@ -111,7 +115,7 @@ public final class TrimItemModelFactory {
             }
 
             @Override
-            public @NotNull TextureAtlasSprite reportMissingReference(String string, ModelDebugName modelDebugName) {
+            public @NotNull TextureAtlasSprite reportMissingReference(@NotNull String string, @NotNull ModelDebugName modelDebugName) {
                 return sprite;
             }
         };

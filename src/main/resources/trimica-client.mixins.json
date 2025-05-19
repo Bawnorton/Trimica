@@ -23,7 +23,6 @@
     "accessor.SpriteContentsAccessor",
     "accessor.TextureAtlasAccessor",
     "accessor.TextureAtlasSprite$TickerAccessor",
-    "accessor.TextureAtlasSpriteAccessor",
     "accessor.TextureSlots$ValueAccessor",
     "model.BlockModelWrapperMixin",
     "model.ModelManagerMixin",
@@ -32,7 +31,6 @@
     "render.ShieldSpecialRendererMixin"
   ],
   "mixins": [
-    "ArmorTrimMixin",
-    "accessor.TrimMaterialAccessor"
+    "ArmorTrimMixin"
   ]
 }

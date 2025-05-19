@@ -1,6 +1,7 @@
 package com.bawnorton.trimica.crafting;
 
 import com.bawnorton.trimica.api.CraftingRecipeInterceptor;
+import com.bawnorton.trimica.item.TrimicaItems;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.util.TriState;
@@ -12,7 +13,7 @@ import net.minecraft.world.item.equipment.Equippable;
 public class BaseCraftingRecipeInterceptor implements CraftingRecipeInterceptor {
     @Override
     public TriState allowAsAddition(Item item) {
-        if(item == Items.AIR) {
+        if(item == Items.AIR || item == TrimicaItems.ANIMATOR_MATERIAL) {
             return TriState.FALSE;
         }
         return TriState.DEFAULT;

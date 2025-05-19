@@ -3,6 +3,7 @@ package com.bawnorton.trimica.client.mixin.render;
 import com.bawnorton.trimica.client.TrimicaClient;
 import com.bawnorton.trimica.client.model.TrimModelId;
 import com.bawnorton.trimica.client.texture.DynamicTextureAtlasSprite;
+import com.bawnorton.trimica.item.component.MaterialAddition;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.model.ShieldModel;
@@ -11,6 +12,7 @@ import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.renderer.special.ShieldSpecialRenderer;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.profiling.Profiler;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.item.ItemDisplayContext;
@@ -40,7 +42,12 @@ public abstract class ShieldSpecialRendererMixin {
         if (trim == null) return;
 
         TrimModelId trimModelId = TrimModelId.fromTrim("shield", trim, null);
-        DynamicTextureAtlasSprite sprite = TrimicaClient.getRuntimeAtlases().getShieldAtlas(trim.pattern().value()).getSprite(dataComponentMap, trim.material().value(), trimModelId.asSingle());
+        ResourceLocation overlayLocation = trimModelId.asSingle();
+        MaterialAddition addition = dataComponentMap.get(MaterialAddition.TYPE);
+        if (addition != null) {
+            overlayLocation = addition.apply(overlayLocation);
+        }
+        DynamicTextureAtlasSprite sprite = TrimicaClient.getRuntimeAtlases().getShieldAtlas(trim.pattern().value()).getSprite(dataComponentMap, trim.material().value(), overlayLocation);
         VertexConsumer vertexConsumer = sprite.wrap(ItemRenderer.getFoilBuffer(multiBufferSource, sprite.getRenderType(), itemDisplayContext == ItemDisplayContext.GUI, bl));
         this.model.plate().render(poseStack, vertexConsumer, i, j);
         profiler.pop();

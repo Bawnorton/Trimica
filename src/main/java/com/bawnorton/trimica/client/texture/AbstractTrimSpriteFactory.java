@@ -2,6 +2,8 @@ package com.bawnorton.trimica.client.texture;
 
 import com.bawnorton.trimica.client.palette.AnimatedTrimPalette;
 import com.bawnorton.trimica.client.palette.TrimPalette;
+import com.bawnorton.trimica.item.TrimicaItems;
+import com.bawnorton.trimica.item.component.MaterialAddition;
 import com.mojang.blaze3d.platform.NativeImage;
 import it.unimi.dsi.fastutil.ints.Int2ObjectAVLTreeMap;
 import net.minecraft.client.renderer.texture.SpriteContents;
@@ -9,6 +11,7 @@ import net.minecraft.client.renderer.texture.TextureContents;
 import net.minecraft.client.resources.metadata.animation.AnimationMetadataSection;
 import net.minecraft.client.resources.metadata.animation.FrameSize;
 import net.minecraft.core.component.DataComponentGetter;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.metadata.MetadataSectionType;
 import net.minecraft.server.packs.resources.ResourceMetadata;
@@ -63,7 +66,7 @@ public abstract class AbstractTrimSpriteFactory implements RuntimeTrimSpriteFact
     }
 
     @Nullable
-    protected abstract TrimSpriteMetadata getSpriteMetadata(ArmorTrim trim, DataComponentGetter componentGetter, ResourceLocation texture);
+    protected abstract TrimSpriteMetadata getSpriteMetadata(ArmorTrim trim, @Nullable DataComponentGetter componentGetter, ResourceLocation texture);
 
     protected abstract NativeImage createImageFromMetadata(TrimSpriteMetadata metadata);
 
