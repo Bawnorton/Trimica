@@ -3,7 +3,6 @@ package com.bawnorton.trimica.client.texture;
 import com.bawnorton.trimica.client.palette.AnimatedTrimPalette;
 import com.bawnorton.trimica.client.palette.TrimPalette;
 import com.mojang.blaze3d.platform.NativeImage;
-import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import net.minecraft.client.renderer.texture.SpriteContents;
@@ -19,7 +18,6 @@ import net.minecraft.world.item.equipment.trim.ArmorTrim;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 

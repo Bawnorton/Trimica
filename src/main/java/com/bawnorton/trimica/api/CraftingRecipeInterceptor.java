@@ -3,6 +3,7 @@ package com.bawnorton.trimica.api;
 import net.minecraft.util.TriState;
 import net.minecraft.world.item.Item;
 
+@SuppressWarnings("unused")
 public interface CraftingRecipeInterceptor {
     /**
      * Whether or not the item should be used as an addition (trim material)
