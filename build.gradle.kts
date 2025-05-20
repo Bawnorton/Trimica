@@ -9,7 +9,7 @@ plugins {
 fun deps(name: String): String? = findProperty("deps.${name}") as String?
 fun deps(name: String, consumer: (prop: String) -> Unit) = deps(name)?.let(consumer)
 
-val minecraft: String = deps("minecraft")!!
+val minecraft: String = name.split("-")[0]
 var loader: String = name.split("-")[1]
 
 repositories {
@@ -39,7 +39,7 @@ modstitch {
 
     javaTarget = when (minecraft) {
         "1.21.5" -> 21
-        else -> throw IllegalArgumentException("Unsupported Minecraft version: ${deps("minecraft")}")
+        else -> throw IllegalArgumentException("Unsupported Minecraft version: $minecraft")
     }
 
     parchment {
@@ -67,9 +67,9 @@ modstitch {
             put("mod_issue_tracker", "https://github.com/Bawnorton/Trimica/issues")
             put("minecraft_version", minecraft)
             put(
-                "pack_format", when (deps("minecraft")) {
+                "pack_format", when (minecraft) {
                     "1.21.5" -> 46
-                    else -> throw IllegalArgumentException("Unsupported Minecraft version: ${deps("minecraft")}")
+                    else -> throw IllegalArgumentException("Unsupported Minecraft version: $minecraft")
                 }.toString()
             )
         }
