@@ -2,6 +2,7 @@ package com.bawnorton.trimica_tests.client;
 
 import com.bawnorton.trimica.item.TrimicaItems;
 import com.bawnorton.trimica.item.component.ComponentUtil;
+import com.bawnorton.trimica.item.component.MaterialAddition;
 import net.fabricmc.fabric.api.client.gametest.v1.FabricClientGameTest;
 import net.fabricmc.fabric.api.client.gametest.v1.context.ClientGameTestContext;
 import net.fabricmc.fabric.api.client.gametest.v1.context.TestServerContext;
@@ -43,6 +44,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 @SuppressWarnings("UnstableApiUsage")
 public class TrimicaClientGameTest implements FabricClientGameTest {
@@ -84,6 +86,15 @@ public class TrimicaClientGameTest implements FabricClientGameTest {
                     "rainbow",
                     ResourceLocation.withDefaultNamespace("eye")
             ));
+
+            // validate material addition
+            applyTrimMaterialAdditionAndValidate(context, serverContext, Items.COAST_ARMOR_TRIM_SMITHING_TEMPLATE, Items.GOLDEN_CHESTPLATE, Items.SPYGLASS, TrimicaItems.ANIMATOR_MATERIAL, addition -> {
+                ResourceLocation key = addition.key();
+                ResourceLocation expectedKey = BuiltInRegistries.ITEM.getKey(TrimicaItems.ANIMATOR_MATERIAL);
+                if (!key.equals(expectedKey)) {
+                    throw new AssertionError("Expected material addition key %s, got %s".formatted(expectedKey, key));
+                }
+            });
 
             context.runOnClient(client -> client.options.hideGui = true);
 
@@ -157,7 +168,6 @@ public class TrimicaClientGameTest implements FabricClientGameTest {
         });
         singleplayerContext.getClientWorld().waitForChunksRender();
     }
-
     private void applyTrimAndValidate(
             ClientGameTestContext context,
             TestServerContext serverContext,
@@ -165,19 +175,23 @@ public class TrimicaClientGameTest implements FabricClientGameTest {
             Item trimmable,
             Item addition,
             BiConsumer<String, ResourceLocation> validator) {
+        applyTrimAndValidate(context, serverContext, template, trimmable, addition, true, validator);
+    }
+
+    private void applyTrimAndValidate(
+            ClientGameTestContext context,
+            TestServerContext serverContext,
+            Item template,
+            Item trimmable,
+            Item addition,
+            boolean clear,
+            BiConsumer<String, ResourceLocation> validator) {
+        placeAndOpenSmithingTable(context, serverContext);
         serverContext.runOnServer(server -> {
-            BlockPos tablePos = new BlockPos(0, -60, 1);
-            ServerLevel level = server.overworld();
-            level.setBlock(tablePos, Blocks.SMITHING_TABLE.defaultBlockState(), 0);
             ServerPlayer player = playerRef.get();
             player.addItem(template.getDefaultInstance());
             player.addItem(trimmable.getDefaultInstance());
             player.addItem(addition.getDefaultInstance());
-            player.openMenu(Blocks.SMITHING_TABLE.defaultBlockState().getMenuProvider(level, tablePos));
-        });
-        context.waitTick(); // ensure the menu is open
-        serverContext.runOnServer(server -> {
-            ServerPlayer player = playerRef.get();
             AbstractContainerMenu menu = player.containerMenu;
             if(!(menu instanceof SmithingMenu smithingMenu)) {
                 throw new AssertionError("Expected SmithingMenu, got " + menu);
@@ -208,8 +222,21 @@ public class TrimicaClientGameTest implements FabricClientGameTest {
             ResourceLocation patternKey = trim.pattern().value().assetId();
 
             validator.accept(suffix, patternKey);
-            player.getInventory().clearContent();
+            if (clear) {
+                player.getInventory().clearContent();
+            }
         });
+    }
+
+    private void placeAndOpenSmithingTable(ClientGameTestContext context, TestServerContext serverContext) {
+        serverContext.runOnServer(server -> {
+            BlockPos tablePos = new BlockPos(0, -60, 1);
+            ServerLevel level = server.overworld();
+            level.setBlock(tablePos, Blocks.SMITHING_TABLE.defaultBlockState(), 0);
+            ServerPlayer player = playerRef.get();
+            player.openMenu(Blocks.SMITHING_TABLE.defaultBlockState().getMenuProvider(level, tablePos));
+        });
+        context.waitTick();
     }
 
     private @NotNull BiConsumer<String, ResourceLocation> getValidatorFor(String expectedSuffix, ResourceLocation expectedPattern) {
@@ -221,5 +248,41 @@ public class TrimicaClientGameTest implements FabricClientGameTest {
                 throw new AssertionError("Expected pattern %s, got %s".formatted(expectedPattern, pattern));
             }
         };
+    }
+
+    private void applyTrimMaterialAdditionAndValidate(
+            ClientGameTestContext context,
+            TestServerContext serverContext,
+            Item template,
+            Item trimmable,
+            Item addition,
+            Item materialAddition,
+            Consumer<MaterialAddition> validator) {
+        applyTrimAndValidate(context, serverContext, template, trimmable, addition, false, (material, pattern) -> {});
+        placeAndOpenSmithingTable(context, serverContext);
+        serverContext.runOnServer(server -> {
+            ServerPlayer player = playerRef.get();
+            player.addItem(materialAddition.getDefaultInstance());
+            AbstractContainerMenu menu = player.containerMenu;
+            if(!(menu instanceof SmithingMenu smithingMenu)) {
+                throw new AssertionError("Expected SmithingMenu, got " + menu);
+            }
+            smithingMenu.quickMoveStack(player, 39); // Result
+            smithingMenu.quickMoveStack(player, 31); // Addition
+            smithingMenu.quickMoveStack(player, 3);  // Smithing Menu Output
+
+            player.closeContainer();
+        });
+        context.waitTick();
+        serverContext.runOnServer(server -> {
+            ServerPlayer player = playerRef.get();
+            InventoryMenu inventoryMenu = player.inventoryMenu;
+            ItemStack result = inventoryMenu.getSlot(44).getItem(); // Rightmost slot in the hotbar
+            MaterialAddition materialAdditionComponent = result.get(MaterialAddition.TYPE);
+            if (materialAdditionComponent == null) {
+                throw new AssertionError("Expected material addition, got null");
+            }
+            validator.accept(materialAdditionComponent);
+        });
     }
 }
