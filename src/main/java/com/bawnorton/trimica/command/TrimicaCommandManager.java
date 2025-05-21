@@ -1,5 +1,6 @@
 package com.bawnorton.trimica.command;
 
+import com.bawnorton.trimica.item.component.ComponentUtil;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.commands.CommandBuildContext;
@@ -20,7 +21,6 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.ProvidesTrimMaterial;
 import net.minecraft.world.item.equipment.Equippable;
 import net.minecraft.world.item.equipment.trim.ArmorTrim;
@@ -28,7 +28,6 @@ import net.minecraft.world.item.equipment.trim.TrimMaterial;
 import net.minecraft.world.item.equipment.trim.TrimPattern;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Stream;
 
 public class TrimicaCommandManager {
     public static void init(CommandDispatcher<CommandSourceStack> dispatcher, CommandBuildContext buildContext) {
@@ -71,18 +70,7 @@ public class TrimicaCommandManager {
         patternLookup.listElements()
                      .forEach(patternRef -> {
                          materials.forEach(materialRef -> {
-                             ArmorTrim trim = new ArmorTrim(materialRef, patternRef);
-                             List<ItemStack> toEquip = Stream.of(
-                                     Items.DIAMOND_HELMET,
-                                     Items.DIAMOND_CHESTPLATE,
-                                     Items.DIAMOND_LEGGINGS,
-                                     Items.DIAMOND_BOOTS,
-                                     Items.SHIELD
-                             ).map(item -> {
-                                 ItemStack stack = item.getDefaultInstance();
-                                 stack.set(DataComponents.TRIM, trim);
-                                 return stack;
-                             }).toList();
+                             List<ItemStack> toEquip = ComponentUtil.getTrimmedEquipment(new ArmorTrim(materialRef, patternRef));
                              ArmorStand stand = EntityType.ARMOR_STAND.create(
                                      level, armourStand -> {
                                          armourStand.setNoGravity(true);

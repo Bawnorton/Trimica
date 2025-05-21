@@ -7,6 +7,8 @@ import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricTagProvider;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.tags.ItemTags;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.item.Item;
 import java.util.concurrent.CompletableFuture;
 
 public class TrimicaTagProvider extends FabricTagProvider.ItemTagProvider {
@@ -16,10 +18,16 @@ public class TrimicaTagProvider extends FabricTagProvider.ItemTagProvider {
 
     @Override
     protected void addTags(HolderLookup.Provider wrapperLookup) {
-        getOrCreateTagBuilder(ItemTags.TRIM_MATERIALS)
-                .add(TrimicaItems.RAINBOW_MATERIAL);
-        getOrCreateTagBuilder(TrimicaTags.MATERIAL_ADDITIONS)
-                .add(TrimicaItems.ANIMATOR_MATERIAL);
+        addToTag(ItemTags.TRIM_MATERIALS, TrimicaItems.RAINBOW_MATERIAL);
+        addToTag(TrimicaTags.MATERIAL_ADDITIONS, TrimicaItems.ANIMATOR_MATERIAL);
+    }
+
+    private void addToTag(TagKey<Item> tagKey, Item... items) {
+        //? if >1.21.5 {
+        /*valueLookupBuilder(tagKey).add(items);
+        *///?} else {
+        getOrCreateTagBuilder(tagKey).add(items);
+        //?}
     }
 }
 //?}

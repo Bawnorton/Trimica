@@ -19,26 +19,28 @@ repositories {
 
 dependencies {
     modstitch.loom {
-        modstitchModImplementation("net.fabricmc.fabric-api:fabric-api:${deps("fabric_api")}+1.21.5")
+        modstitchModImplementation("net.fabricmc.fabric-api:fabric-api:${deps("fabric_api")}")
     }
 
     modstitch.moddevgradle {
     }
 
-    modstitchModRuntimeOnly("maven.modrinth:sodium:mc$minecraft-${deps("sodium")}-$loader")
-    modstitchModRuntimeOnly("maven.modrinth:iris:${deps("iris")}+$minecraft-$loader")
-    modstitchModRuntimeOnly("maven.modrinth:advanced-netherite:$loader-${deps("advanced_netherite")}-mc$minecraft")
+    deps("advanced_netherite") { modstitchModRuntimeOnly("maven.modrinth:advanced-netherite:$loader-$it-mc$minecraft") }
+    deps("sodium") { modstitchModRuntimeOnly("maven.modrinth:sodium:mc$minecraft-$it-$loader") }
+    deps("iris") {
+        modstitchModRuntimeOnly("maven.modrinth:iris:$it+$minecraft-$loader")
+        modstitchRuntimeOnly("org.antlr:antlr4-runtime:4.13.1")
+        modstitchRuntimeOnly("io.github.douira:glsl-transformer:2.0.1")
+        modstitchRuntimeOnly("org.anarres:jcpp:1.4.14")
+    }
 
-    modstitchRuntimeOnly("org.antlr:antlr4-runtime:4.13.1")
-    modstitchRuntimeOnly("io.github.douira:glsl-transformer:2.0.1")
-    modstitchRuntimeOnly("org.anarres:jcpp:1.4.14")
 }
 
 modstitch {
     minecraftVersion = minecraft
 
     javaTarget = when (minecraft) {
-        "1.21.5" -> 21
+        "1.21.5", "25w21a" -> 21
         else -> throw IllegalArgumentException("Unsupported Minecraft version: $minecraft")
     }
 
@@ -68,7 +70,8 @@ modstitch {
             put("minecraft_version", minecraft)
             put(
                 "pack_format", when (minecraft) {
-                    "1.21.5" -> 46
+                    "1.21.5" -> 71
+                    "25w21a" -> 77
                     else -> throw IllegalArgumentException("Unsupported Minecraft version: $minecraft")
                 }.toString()
             )
@@ -96,14 +99,24 @@ modstitch {
     }
 
     loom {
-        fabricLoaderVersion = "0.16.10"
+        fabricLoaderVersion = "0.16.13"
 
         configureLoom {
-            (project.extensions.findByName("fabricApi") as? FabricApiExtension)?.configureDataGeneration {
-                createRunConfiguration = true
-                client = true
-                modId = "trimica"
-                outputDirectory = rootProject.file("src/main/generated")
+            fun fapi(action: FabricApiExtension.() -> Unit) = (project.extensions.findByName("fabricApi") as FabricApiExtension).action()
+
+            fapi {
+                configureDataGeneration {
+                    createRunConfiguration = true
+                    client = true
+                    modId = "trimica"
+                    outputDirectory = rootProject.file("src/main/generated")
+                }
+
+                configureTests {
+                    createSourceSet = true
+                    modId = "trimica-tests"
+                    eula = true
+                }
             }
 
             accessWidenerPath.set(rootProject.file("src/main/resources/$minecraft.accesswidener"))
