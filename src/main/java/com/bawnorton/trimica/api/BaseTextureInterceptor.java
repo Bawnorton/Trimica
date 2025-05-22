@@ -17,10 +17,10 @@ import org.jetbrains.annotations.Nullable;
  * For example a chestplate with a silence pattern will look for a base texture at
  * <pre>
  *     {@code
- *     if trimmedType is ITEM:
+ *     for the item:
  *     "trimica:textures/trims/items/chestplate/silence.png"}
  *     {@code
- *     if trimmedType is ARMOUR:
+ *     for the armour layer:
  *     "minecraft:textures/trims/entity/humanoid/silence.png"}
  * </pre>
  * <br>
@@ -28,10 +28,10 @@ import org.jetbrains.annotations.Nullable;
  * This is useful for providing support to non-standard item types such as elytras which will look for textures at
  * <pre>
  *     {@code
- *     if trimmedType is ITEM:
+ *     for the item:
  *     "trimica:textures/trims/items/chestplate/pattern.png"}
  *     {@code
- *     if trimmedType is ARMOUR:
+ *     for the armour layer:
  *     "minecraft:textures/trims/entity/wings/pattern.png"}
  * </pre>
  * This is clearly not the correct location for elytra trim base textures as the elytra does not have a chestplate model and that entity texture doesn't exist.

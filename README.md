@@ -19,9 +19,8 @@ All in one mod for your item trimming needs.
 - Rainbowifier
   - Using the "Rainbowifier" as a trim material will make the trim an animated rainbow
 
-## API
-Trimica provides a resource API and an in-code API for modders to provide additional functionality or 
-override the default behaviour of the mod.
+## Resource API
+Trimica provides a resource API for modders / modpack makers to provide additional textures or modify existing ones.
 
 ### Providing Overlay Texutres
 For overlay textures the lightness of a pixel will be used to determine the colour index on the palette. 
@@ -81,7 +80,8 @@ For example to make diamond animated and emissive by default you would define th
 }
 ```
 
-## Development
+## In-Code API
+Trimica provides an API for modders to 
 
 ### Depending on Trimica
 View the latest version of Trimica [here](https://maven.bawnorton.com/#/releases/com/bawnorton/trimica)
@@ -100,7 +100,15 @@ dependencies {
 }
 ```
 
-### Developing Trimica
+### Endpoints:
+See each of the endpoints below for more information on how to use them.
+- [BaseTextureInterceptor](src/main/java/com/bawnorton/trimica/api/BaseTextureInterceptor.java)
+- [CraftingRecipeInterceptor](src/main/java/com/bawnorton/trimica/api/CraftingRecipeInterceptor.java)
+- [PaletteInterceptor](src/main/java/com/bawnorton/trimica/api/PaletteInterceptor.java)
+
+```kotlin
+
+## Developing Trimica
 
 Trimica uses Modstitch and Stonecutter for development.
 
