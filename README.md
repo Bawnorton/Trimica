@@ -106,8 +106,6 @@ See each of the endpoints below for more information on how to use them.
 - [CraftingRecipeInterceptor](src/main/java/com/bawnorton/trimica/api/CraftingRecipeInterceptor.java)
 - [PaletteInterceptor](src/main/java/com/bawnorton/trimica/api/PaletteInterceptor.java)
 
-```kotlin
-
 ## Developing Trimica
 
 Trimica uses Modstitch and Stonecutter for development.
