@@ -27,7 +27,7 @@ dependencies {
     }
 
     deps("advanced_netherite") { modstitchModRuntimeOnly("maven.modrinth:advanced-netherite:$loader-$it-mc$minecraft") }
-    deps("sodium") { modstitchModRuntimeOnly("maven.modrinth:sodium:mc$minecraft-$it-$loader") }
+    deps("sodium") { modstitchModImplementation("maven.modrinth:sodium:mc$minecraft-$it-$loader") }
     deps("iris") {
         modstitchModRuntimeOnly("maven.modrinth:iris:$it+$minecraft-$loader")
         modstitchRuntimeOnly("org.antlr:antlr4-runtime:4.13.1")

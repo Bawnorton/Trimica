@@ -91,6 +91,14 @@ public class TrimicaTests {
                 }
             });
 
+            // validate material addition
+            applyTrimMaterialAdditionAndValidate(context, serverContext, Items.RIB_ARMOR_TRIM_SMITHING_TEMPLATE, Items.LEATHER_LEGGINGS, Items.ENDER_EYE, Items.GLOW_INK_SAC, addition -> {
+                ResourceLocation expectedKey = BuiltInRegistries.ITEM.getKey(Items.GLOW_INK_SAC);
+                if (!addition.matches(expectedKey)) {
+                    throw new AssertionError("Expected material addition %s to be present, found %s".formatted(expectedKey, addition.additionKeys()));
+                }
+            });
+
             context.runOnClient(client -> client.options.hideGui = true);
 
             Holder<TrimPattern> silencePattern = serverContext.computeOnServer(server -> {
