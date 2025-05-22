@@ -9,7 +9,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.equipment.Equippable;
 
-public class BaseCraftingRecipeInterceptor implements CraftingRecipeInterceptor {
+public class DefaultCraftingRecipeInterceptor implements CraftingRecipeInterceptor {
     @Override
     public TriState allowAsAddition(Item item) {
         if(item == Items.AIR) {

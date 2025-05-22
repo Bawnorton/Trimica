@@ -2,6 +2,7 @@ package com.bawnorton.trimica.client;
 
 import com.bawnorton.trimica.api.TrimicaApi;
 import com.bawnorton.trimica.client.model.TrimItemModelFactory;
+import com.bawnorton.trimica.client.palette.DefaultPaletteInterceptor;
 import com.bawnorton.trimica.client.palette.TrimPalettes;
 import com.bawnorton.trimica.client.texture.RuntimeTrimAtlases;
 import com.bawnorton.trimica.compat.ElytraBaseTextureInterceptor;
@@ -15,8 +16,9 @@ public class TrimicaClient {
     static {
         TrimicaApi api = TrimicaApi.getInstance();
         if(Platform.isModLoaded("elytratrims")) {
-            api.registerBaseTextureInterceptor(0, new ElytraBaseTextureInterceptor());
+            api.registerBaseTextureInterceptor(new ElytraBaseTextureInterceptor());
         }
+        api.registerPaletteInterceptor(new DefaultPaletteInterceptor());
     }
 
     public static TrimPalettes getPalettes() {

@@ -1,12 +1,8 @@
 package com.bawnorton.trimica.client.palette;
 
 import com.bawnorton.trimica.client.colour.ColourHSB;
-import com.bawnorton.trimica.item.TrimicaItems;
-import com.bawnorton.trimica.item.component.MaterialAdditions;
 import net.minecraft.Util;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.util.ARGB;
-import net.minecraft.world.item.Items;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -73,17 +69,6 @@ public class TrimPalette {
         }
         Collections.sort(hsbColours);
         return ARGB.toABGR(hsbColours.getFirst().colour());
-    }
-
-    public TrimPalette withMaterialAddition(MaterialAdditions addition) {
-        TrimPalette palette = this;
-        if(addition.matches(BuiltInRegistries.ITEM.getKey(TrimicaItems.ANIMATOR))) {
-            palette = palette.asAnimated();
-        }
-        if (addition.matches(BuiltInRegistries.ITEM.getKey(Items.GLOW_INK_SAC))) {
-            palette.setEmissive(true);
-        }
-        return palette;
     }
 
     @Override

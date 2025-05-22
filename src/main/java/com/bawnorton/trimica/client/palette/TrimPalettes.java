@@ -19,21 +19,21 @@ public final class TrimPalettes {
     public TrimPalette getOrGeneratePalette(TrimMaterial material, ResourceKey<EquipmentAsset> equipmentAssetKey, ResourceLocation location, @Nullable DataComponentGetter componentGetter) {
         String suffix = equipmentAssetKey == null ? material.assets().base().suffix() : material.assets().assetId(equipmentAssetKey).suffix();
         ResourceLocation key = Trimica.rl(suffix);
-        MaterialAdditions addition;
+        MaterialAdditions additions;
         if (componentGetter == null) {
-            addition = null;
+            additions = null;
         } else {
-            addition = componentGetter.get(MaterialAdditions.TYPE);
-            if(addition != null) {
-                key = addition.apply(key);
+            additions = componentGetter.get(MaterialAdditions.TYPE);
+            if(additions != null) {
+                key = additions.apply(key);
             }
         }
         return cache.computeIfAbsent(key, k -> {
             TrimPalette palette = generator.generatePalette(material, suffix, location);
-            if (addition != null) {
-                palette = palette.withMaterialAddition(addition);
+            if (additions != null) {
+                palette = TrimicaApiImpl.INSTANCE.applyPaletteInterceptorsForMaterialAdditions(palette, additions);
             }
-            return TrimicaApiImpl.INSTANCE.applyPaletteInterceptors(palette, material);
+            return TrimicaApiImpl.INSTANCE.applyPaletteInterceptorsForGeneration(palette, material);
         });
     }
 

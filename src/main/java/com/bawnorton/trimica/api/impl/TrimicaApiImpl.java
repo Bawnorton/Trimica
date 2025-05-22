@@ -5,6 +5,7 @@ import com.bawnorton.trimica.api.CraftingRecipeInterceptor;
 import com.bawnorton.trimica.api.PaletteInterceptor;
 import com.bawnorton.trimica.api.TrimicaApi;
 import com.bawnorton.trimica.client.palette.TrimPalette;
+import com.bawnorton.trimica.item.component.MaterialAdditions;
 import net.minecraft.core.component.DataComponentGetter;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.TriState;
@@ -83,11 +84,18 @@ public final class TrimicaApiImpl implements TrimicaApi {
         return false;
     }
 
-    public TrimPalette applyPaletteInterceptors(TrimPalette generated, TrimMaterial material) {
+    public TrimPalette applyPaletteInterceptorsForGeneration(TrimPalette generated, TrimMaterial material) {
         for (SortableEndpointHolder<PaletteInterceptor> endpointHolder : paletteInterceptors) {
-            generated = endpointHolder.endpoint().intercept(generated, material);
+            generated = endpointHolder.endpoint().interceptGenerated(generated, material);
         }
         return generated;
+    }
+
+    public TrimPalette applyPaletteInterceptorsForMaterialAdditions(TrimPalette palette, MaterialAdditions additions) {
+        for (SortableEndpointHolder<PaletteInterceptor> endpointHolder : paletteInterceptors) {
+            palette = endpointHolder.endpoint().interceptMaterialAdditions(palette, additions);
+        }
+        return palette;
     }
 
     private record SortableEndpointHolder<T>(T endpoint, int priority) implements Comparable<SortableEndpointHolder<T>> {
