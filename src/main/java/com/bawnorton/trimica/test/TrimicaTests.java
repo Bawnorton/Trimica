@@ -2,7 +2,7 @@ package com.bawnorton.trimica.test;
 
 import com.bawnorton.trimica.item.TrimicaItems;
 import com.bawnorton.trimica.item.component.ComponentUtil;
-import com.bawnorton.trimica.item.component.MaterialAddition;
+import com.bawnorton.trimica.item.component.MaterialAdditions;
 import net.fabricmc.fabric.api.client.gametest.v1.context.ClientGameTestContext;
 import net.fabricmc.fabric.api.client.gametest.v1.context.TestServerContext;
 import net.fabricmc.fabric.api.client.gametest.v1.context.TestSingleplayerContext;
@@ -78,17 +78,16 @@ public class TrimicaTests {
                     ResourceLocation.withDefaultNamespace("ward")
             ));
             // validate rainbow trim
-            applyTrimAndValidate(context, serverContext, Items.EYE_ARMOR_TRIM_SMITHING_TEMPLATE, Items.TURTLE_HELMET, TrimicaItems.RAINBOW_MATERIAL, getValidatorFor(
+            applyTrimAndValidate(context, serverContext, Items.EYE_ARMOR_TRIM_SMITHING_TEMPLATE, Items.TURTLE_HELMET, TrimicaItems.RAINBOWIFIER, getValidatorFor(
                     "rainbow",
                     ResourceLocation.withDefaultNamespace("eye")
             ));
 
             // validate material addition
-            applyTrimMaterialAdditionAndValidate(context, serverContext, Items.COAST_ARMOR_TRIM_SMITHING_TEMPLATE, Items.GOLDEN_CHESTPLATE, Items.SPYGLASS, TrimicaItems.ANIMATOR_MATERIAL, addition -> {
-                ResourceLocation key = addition.key();
-                ResourceLocation expectedKey = BuiltInRegistries.ITEM.getKey(TrimicaItems.ANIMATOR_MATERIAL);
-                if (!key.equals(expectedKey)) {
-                    throw new AssertionError("Expected material addition key %s, got %s".formatted(expectedKey, key));
+            applyTrimMaterialAdditionAndValidate(context, serverContext, Items.COAST_ARMOR_TRIM_SMITHING_TEMPLATE, Items.GOLDEN_CHESTPLATE, Items.SPYGLASS, TrimicaItems.ANIMATOR, addition -> {
+                ResourceLocation expectedKey = BuiltInRegistries.ITEM.getKey(TrimicaItems.ANIMATOR);
+                if (!addition.matches(expectedKey)) {
+                    throw new AssertionError("Expected material addition %s to be present, found %s".formatted(expectedKey, addition.additionKeys()));
                 }
             });
 
@@ -253,7 +252,7 @@ public class TrimicaTests {
             Item trimmable,
             Item addition,
             Item materialAddition,
-            Consumer<MaterialAddition> validator) {
+            Consumer<MaterialAdditions> validator) {
         applyTrimAndValidate(context, serverContext, template, trimmable, addition, false, (material, pattern) -> {});
         placeAndOpenSmithingTable(context, serverContext);
         serverContext.runOnServer(server -> {
@@ -274,11 +273,11 @@ public class TrimicaTests {
             ServerPlayer player = playerRef.get();
             InventoryMenu inventoryMenu = player.inventoryMenu;
             ItemStack result = inventoryMenu.getSlot(44).getItem(); // Rightmost slot in the hotbar
-            MaterialAddition materialAdditionComponent = result.get(MaterialAddition.TYPE);
-            if (materialAdditionComponent == null) {
+            MaterialAdditions materialAdditionsComponent = result.get(MaterialAdditions.TYPE);
+            if (materialAdditionsComponent == null) {
                 throw new AssertionError("Expected material addition, got null");
             }
-            validator.accept(materialAdditionComponent);
+            validator.accept(materialAdditionsComponent);
         });
     }
 }

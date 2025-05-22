@@ -2,7 +2,7 @@ package com.bawnorton.trimica.client.palette;
 
 import com.bawnorton.trimica.Trimica;
 import com.bawnorton.trimica.api.impl.TrimicaApiImpl;
-import com.bawnorton.trimica.item.component.MaterialAddition;
+import com.bawnorton.trimica.item.component.MaterialAdditions;
 import net.minecraft.core.component.DataComponentGetter;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -19,20 +19,18 @@ public final class TrimPalettes {
     public TrimPalette getOrGeneratePalette(TrimMaterial material, ResourceKey<EquipmentAsset> equipmentAssetKey, ResourceLocation location, @Nullable DataComponentGetter componentGetter) {
         String suffix = equipmentAssetKey == null ? material.assets().base().suffix() : material.assets().assetId(equipmentAssetKey).suffix();
         ResourceLocation key = Trimica.rl(suffix);
-        MaterialAddition addition;
+        MaterialAdditions addition;
         if (componentGetter == null) {
             addition = null;
         } else {
-            addition = componentGetter.get(MaterialAddition.TYPE);
+            addition = componentGetter.get(MaterialAdditions.TYPE);
             if(addition != null) {
                 key = addition.apply(key);
             }
         }
         return cache.computeIfAbsent(key, k -> {
             TrimPalette palette = generator.generatePalette(material, suffix, location);
-            if (Trimica.getMaterialRegistry().getIsAnimated(material)) {
-                palette = palette.asAnimated();
-            } else if (addition != null) {
+            if (addition != null) {
                 palette = palette.withMaterialAddition(addition);
             }
             return TrimicaApiImpl.INSTANCE.applyPaletteInterceptors(palette, material);
@@ -43,7 +41,7 @@ public final class TrimPalettes {
         String suffix = equipmentAssetKey == null ? material.assets().base().suffix() : material.assets().assetId(equipmentAssetKey).suffix();
         ResourceLocation key = Trimica.rl(suffix);
         if (componentGetter != null) {
-            MaterialAddition addition = componentGetter.get(MaterialAddition.TYPE);
+            MaterialAdditions addition = componentGetter.get(MaterialAdditions.TYPE);
             if(addition != null) {
                 key = addition.apply(key);
             }

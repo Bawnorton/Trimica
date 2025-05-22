@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "trimica:item/rainbow_material"
+    "layer0": "trimica:item/animator"
   }
 }

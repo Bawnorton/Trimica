@@ -52,13 +52,16 @@ assets/trimica/textures/trims/items/shield/minecraft/bolt.png
 ```
 This texture will need to be a 64x64 texture. 
 
-### Making A Material Animated By Default
-To make a material animated by default add the entry:
+### Giving a Trim Material Default Addditions
+To give a material default additions, you can add the following to the material definition:
 ```
-"trimica$animated": true
+"trimica$additions": [
+    <addition_1>,
+    <addition_2>,
+    ...
+]
 ```
-to the material definition.
-For example to make diamond animated by default you would define the material as:
+For example to make diamond animated and emissive by default you would define the material as:
 
 ```json5
 // assets/minecraft/trim_material.diamond.json
@@ -71,7 +74,10 @@ For example to make diamond animated by default you would define the material as
   "override_armor_assets": {
     "minecraft:diamond": "diamond_darker"
   },
-  "trimica$animated": true
+  "trimica$additions": [
+    "trimica:animator",
+    "minecraft:glow_ink_sac"
+  ]
 }
 ```
 

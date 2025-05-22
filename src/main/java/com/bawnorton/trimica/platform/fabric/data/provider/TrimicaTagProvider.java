@@ -9,6 +9,7 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Items;
 import java.util.concurrent.CompletableFuture;
 
 public class TrimicaTagProvider extends FabricTagProvider.ItemTagProvider {
@@ -18,8 +19,8 @@ public class TrimicaTagProvider extends FabricTagProvider.ItemTagProvider {
 
     @Override
     protected void addTags(HolderLookup.Provider wrapperLookup) {
-        addToTag(ItemTags.TRIM_MATERIALS, TrimicaItems.RAINBOW_MATERIAL);
-        addToTag(TrimicaTags.MATERIAL_ADDITIONS, TrimicaItems.ANIMATOR_MATERIAL);
+        addToTag(ItemTags.TRIM_MATERIALS, TrimicaItems.RAINBOWIFIER);
+        addToTag(TrimicaTags.MATERIAL_ADDITIONS, TrimicaItems.ANIMATOR, Items.GLOW_INK_SAC);
     }
 
     private void addToTag(TagKey<Item> tagKey, Item... items) {

@@ -2,7 +2,7 @@ package com.bawnorton.trimica.mixin.component;
 
 import com.bawnorton.trimica.Trimica;
 import com.bawnorton.trimica.item.TrimicaItems;
-import com.bawnorton.trimica.item.component.MaterialAddition;
+import com.bawnorton.trimica.item.component.MaterialAdditions;
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponentHolder;
@@ -30,14 +30,12 @@ public interface DataComponentHolderMixin {
     default <T> T fakeComponents(T original, DataComponentType<? extends T> type) {
         if (type == DataComponents.PROVIDES_TRIM_MATERIAL && original == null && (Object) this instanceof ItemStack stack) {
             return (T) new ProvidesTrimMaterial(Holder.direct(Trimica.getMaterialRegistry().getOrCreate(stack)));
-        } else if (type == MaterialAddition.TYPE && original == null) {
+        } else if (type == MaterialAdditions.TYPE && original == null) {
             ArmorTrim trim = get(DataComponents.TRIM);
             if(trim == null) return original;
 
             TrimMaterial trimMaterial = trim.material().value();
-            if(Trimica.getMaterialRegistry().getIsAnimated(trimMaterial)) {
-                return (T) new MaterialAddition(BuiltInRegistries.ITEM.getKey(TrimicaItems.ANIMATOR_MATERIAL));
-            }
+            return (T) Trimica.getMaterialRegistry().getIntrinsicAdditions(trimMaterial);
         }
         return original;
     }

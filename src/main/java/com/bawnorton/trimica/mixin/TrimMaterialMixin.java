@@ -1,12 +1,11 @@
 package com.bawnorton.trimica.mixin;
 
 import com.bawnorton.trimica.Trimica;
+import com.bawnorton.trimica.item.component.MaterialAdditions;
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.mojang.datafixers.kinds.App;
-import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.equipment.trim.TrimMaterial;
 import org.spongepowered.asm.mixin.Mixin;
@@ -28,10 +27,10 @@ public abstract class TrimMaterialMixin {
     private static Function<RecordCodecBuilder.Instance<TrimMaterial>, ? extends App<RecordCodecBuilder.Mu<TrimMaterial>, TrimMaterial>> wrapCodec(Function<RecordCodecBuilder.Instance<TrimMaterial>, ? extends App<RecordCodecBuilder.Mu<TrimMaterial>, TrimMaterial>> builder) {
         return instance -> instance.group(
                 RecordCodecBuilder.mapCodec(builder).forGetter(Function.identity()),
-                Codec.BOOL.optionalFieldOf("trimica$animated").forGetter(material -> Optional.of(Trimica.getMaterialRegistry().getIsAnimated(material)))
+                MaterialAdditions.CODEC.optionalFieldOf("trimica$additions").forGetter(material -> Optional.of(Trimica.getMaterialRegistry().getIntrinsicAdditions(material)))
         ).apply(
                 instance, (trimMaterial, animated) -> {
-                    Trimica.getMaterialRegistry().setIsAnimated(trimMaterial, animated.orElse(false));
+                    Trimica.getMaterialRegistry().setIntrinsicAdditions(trimMaterial, animated.orElse(null));
                     return trimMaterial;
                 }
         );
@@ -47,9 +46,9 @@ public abstract class TrimMaterialMixin {
     private static StreamCodec<RegistryFriendlyByteBuf, TrimMaterial> wrapStreamCodec(StreamCodec<RegistryFriendlyByteBuf, TrimMaterial> original) {
         return StreamCodec.composite(
                 original, Function.identity(),
-                ByteBufCodecs.BOOL, (trimMaterial) -> Trimica.getMaterialRegistry().getIsAnimated(trimMaterial),
+                MaterialAdditions.STREAM_CODEC, (trimMaterial) -> Trimica.getMaterialRegistry().getIntrinsicAdditions(trimMaterial),
                 (trimMaterial, animated) -> {
-                    Trimica.getMaterialRegistry().setIsAnimated(trimMaterial, animated);
+                    Trimica.getMaterialRegistry().setIntrinsicAdditions(trimMaterial, animated);
                     return trimMaterial;
                 }
         );

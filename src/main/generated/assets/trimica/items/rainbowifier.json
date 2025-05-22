@@ -1,6 +1,6 @@
 {
   "model": {
     "type": "minecraft:model",
-    "model": "trimica:item/rainbow_material"
+    "model": "trimica:item/rainbowifier"
   }
 }

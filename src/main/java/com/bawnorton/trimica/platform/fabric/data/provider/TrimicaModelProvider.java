@@ -25,8 +25,8 @@ public class TrimicaModelProvider extends FabricModelProvider {
 
     @Override
     public void generateItemModels(ItemModelGenerators generators) {
-        itemModel(generators, TrimicaItems.RAINBOW_MATERIAL);
-        itemModel(generators, TrimicaItems.ANIMATOR_MATERIAL);
+        itemModel(generators, TrimicaItems.RAINBOWIFIER);
+        itemModel(generators, TrimicaItems.ANIMATOR);
     }
 
     private void itemModel(ItemModelGenerators generators, Item item) {

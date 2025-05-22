@@ -2,11 +2,13 @@ package com.bawnorton.trimica.client.mixin.render;
 
 import com.bawnorton.trimica.client.TrimicaClient;
 import com.bawnorton.trimica.client.model.TrimModelId;
-import com.bawnorton.trimica.client.texture.DynamicTextureAtlasSprite;
-import com.bawnorton.trimica.item.component.MaterialAddition;
+import com.bawnorton.trimica.client.palette.TrimPalette;
+import com.bawnorton.trimica.client.texture.DynamicTrimTextureAtlasSprite;
+import com.bawnorton.trimica.item.component.MaterialAdditions;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.model.ShieldModel;
+import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.renderer.special.ShieldSpecialRenderer;
@@ -43,13 +45,15 @@ public abstract class ShieldSpecialRendererMixin {
 
         TrimModelId trimModelId = TrimModelId.fromTrim("shield", trim, null);
         ResourceLocation overlayLocation = trimModelId.asSingle();
-        MaterialAddition addition = dataComponentMap.get(MaterialAddition.TYPE);
+        MaterialAdditions addition = dataComponentMap.get(MaterialAdditions.TYPE);
         if (addition != null) {
             overlayLocation = addition.apply(overlayLocation);
         }
-        DynamicTextureAtlasSprite sprite = TrimicaClient.getRuntimeAtlases().getShieldAtlas(trim.pattern().value()).getSprite(dataComponentMap, trim.material().value(), overlayLocation);
+        DynamicTrimTextureAtlasSprite sprite = TrimicaClient.getRuntimeAtlases().getShieldAtlas(trim.pattern().value()).getSprite(dataComponentMap, trim.material().value(), overlayLocation);
         VertexConsumer vertexConsumer = sprite.wrap(ItemRenderer.getFoilBuffer(multiBufferSource, sprite.getRenderType(), itemDisplayContext == ItemDisplayContext.GUI, bl));
-        this.model.plate().render(poseStack, vertexConsumer, i, j);
+        TrimPalette palette = sprite.getPalette();
+        int light = palette == null ? i : (palette.isEmissive() ? LightTexture.FULL_BRIGHT : i);
+        this.model.plate().render(poseStack, vertexConsumer, light, j);
         profiler.pop();
     }
 }

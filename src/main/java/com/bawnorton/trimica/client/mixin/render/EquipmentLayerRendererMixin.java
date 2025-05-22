@@ -1,15 +1,21 @@
 package com.bawnorton.trimica.client.mixin.render;
 
 import com.bawnorton.trimica.client.TrimicaClient;
-import com.bawnorton.trimica.client.texture.DynamicTextureAtlasSprite;
+import com.bawnorton.trimica.client.palette.TrimPalette;
+import com.bawnorton.trimica.client.texture.DynamicTrimTextureAtlasSprite;
 import com.bawnorton.trimica.client.texture.RuntimeTrimAtlas;
 import com.bawnorton.trimica.client.texture.RuntimeTrimAtlases;
-import com.bawnorton.trimica.item.component.MaterialAddition;
+import com.bawnorton.trimica.item.component.MaterialAdditions;
 import com.llamalad7.mixinextras.injector.ModifyReceiver;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
+import com.llamalad7.mixinextras.sugar.Share;
+import com.llamalad7.mixinextras.sugar.ref.LocalRef;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import net.minecraft.client.model.Model;
+import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.layers.EquipmentLayerRenderer;
@@ -66,7 +72,7 @@ public abstract class EquipmentLayerRendererMixin {
             profiler.push("trimica:armour_runtime_atlas");
             TrimMaterial material = trimSpriteKey.trim().material().value();
             ItemStack stack = ITEM_WITH_TRIM_CAPTURE.get();
-            MaterialAddition addition = stack.get(MaterialAddition.TYPE);
+            MaterialAdditions addition = stack.get(MaterialAdditions.TYPE);
             if (!sprite.contents().name().equals(MissingTextureAtlasSprite.getLocation()) && addition == null) return sprite;
 
             RuntimeTrimAtlases atlases = TrimicaClient.getRuntimeAtlases();
@@ -91,10 +97,24 @@ public abstract class EquipmentLayerRendererMixin {
                     target = "Lnet/minecraft/client/renderer/MultiBufferSource;getBuffer(Lnet/minecraft/client/renderer/RenderType;)Lcom/mojang/blaze3d/vertex/VertexConsumer;"
             )
     )
-    private VertexConsumer useDynamicRenderType(MultiBufferSource instance, RenderType renderType, Operation<VertexConsumer> original, @Local TextureAtlasSprite textureAtlasSprite) {
-        if (textureAtlasSprite instanceof DynamicTextureAtlasSprite dynamicTextureAtlasSprite) {
-            return original.call(instance, dynamicTextureAtlasSprite.getRenderType());
+    private VertexConsumer useDynamicRenderType(MultiBufferSource instance, RenderType renderType, Operation<VertexConsumer> original, @Local TextureAtlasSprite textureAtlasSprite, @Share("palette") LocalRef<TrimPalette> paletteLocalRef) {
+        if (textureAtlasSprite instanceof DynamicTrimTextureAtlasSprite dynamicTrimTextureAtlasSprite) {
+            paletteLocalRef.set(dynamicTrimTextureAtlasSprite.getPalette());
+            return original.call(instance, dynamicTrimTextureAtlasSprite.getRenderType());
         }
         return original.call(instance, renderType);
+    }
+
+    @WrapOperation(
+            method = "renderLayers(Lnet/minecraft/client/resources/model/EquipmentClientInfo$LayerType;Lnet/minecraft/resources/ResourceKey;Lnet/minecraft/client/model/Model;Lnet/minecraft/world/item/ItemStack;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;ILnet/minecraft/resources/ResourceLocation;)V",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/client/model/Model;renderToBuffer(Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;II)V"
+            )
+    )
+    private void usePaletteLightness(Model instance, PoseStack poseStack, VertexConsumer vertexConsumer, int i, int j, Operation<Void> original, @Share("palette") LocalRef<TrimPalette> paletteLocalRef) {
+        TrimPalette palette = paletteLocalRef.get();
+        int light = palette == null ? i : (palette.isEmissive() ? LightTexture.FULL_BRIGHT : i);
+        original.call(instance, poseStack, vertexConsumer, light, j);
     }
 }

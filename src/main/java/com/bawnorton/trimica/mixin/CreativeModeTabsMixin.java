@@ -18,7 +18,7 @@ public abstract class CreativeModeTabsMixin {
             )
     )
     private static void addTrimicaItems(CreativeModeTab.ItemDisplayParameters itemDisplayParameters, CreativeModeTab.Output output, CallbackInfo ci) {
-        output.accept(TrimicaItems.RAINBOW_MATERIAL);
-        output.accept(TrimicaItems.ANIMATOR_MATERIAL);
+        output.accept(TrimicaItems.RAINBOWIFIER);
+        output.accept(TrimicaItems.ANIMATOR);
     }
 }

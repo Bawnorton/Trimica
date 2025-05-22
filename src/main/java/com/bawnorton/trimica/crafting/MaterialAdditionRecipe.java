@@ -1,7 +1,7 @@
 package com.bawnorton.trimica.crafting;
 
 import com.bawnorton.trimica.api.impl.TrimicaApiImpl;
-import com.bawnorton.trimica.item.component.MaterialAddition;
+import com.bawnorton.trimica.item.component.MaterialAdditions;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.Util;
@@ -10,6 +10,7 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
 import net.minecraft.util.context.ContextMap;
 import net.minecraft.world.item.ItemStack;
@@ -28,6 +29,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Stream;
 
 public class MaterialAdditionRecipe implements SmithingRecipe {
@@ -51,12 +53,13 @@ public class MaterialAdditionRecipe implements SmithingRecipe {
         ArmorTrim existing = base.get(DataComponents.TRIM);
         if(existing == null) return ItemStack.EMPTY;
 
-        MaterialAddition materialAddition = base.get(MaterialAddition.TYPE);
-        MaterialAddition newMaterialAdditon = new MaterialAddition(BuiltInRegistries.ITEM.getKey(addition.getItem()));
-        if(Objects.equals(materialAddition, newMaterialAdditon)) return ItemStack.EMPTY;
+        MaterialAdditions materialAdditions = base.getOrDefault(MaterialAdditions.TYPE, new MaterialAdditions(Set.of()));
+        ResourceLocation additionKey = BuiltInRegistries.ITEM.getKey(addition.getItem());
+        MaterialAdditions newMaterialAdditon = materialAdditions.and(additionKey);
+        if(Objects.equals(materialAdditions, newMaterialAdditon)) return ItemStack.EMPTY;
 
         ItemStack result = base.copyWithCount(1);
-        result.set(MaterialAddition.TYPE, newMaterialAdditon);
+        result.set(MaterialAdditions.TYPE, newMaterialAdditon);
         return result;
     }
 

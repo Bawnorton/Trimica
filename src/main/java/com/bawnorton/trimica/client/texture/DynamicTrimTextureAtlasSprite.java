@@ -1,5 +1,6 @@
 package com.bawnorton.trimica.client.texture;
 
+import com.bawnorton.trimica.client.palette.TrimPalette;
 import com.mojang.blaze3d.textures.GpuTexture;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.renderer.RenderType;
@@ -9,18 +10,25 @@ import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class DynamicTextureAtlasSprite extends TextureAtlasSprite {
-    private final RenderType renderType;
+public class DynamicTrimTextureAtlasSprite extends TextureAtlasSprite {
     private final TextureAtlasSprite delegate;
+    private final RenderType renderType;
+    private final TrimPalette palette;
 
-    public DynamicTextureAtlasSprite(TextureAtlasSprite delegate, RenderType renderType) {
+    public DynamicTrimTextureAtlasSprite(TextureAtlasSprite delegate, RenderType renderType, TrimPalette palette) {
         super(delegate.atlasLocation(), delegate.contents(), 1, 1, delegate.getX(), delegate.getY());
         this.delegate = delegate;
         this.renderType = renderType;
+        this.palette = palette;
     }
 
     public RenderType getRenderType() {
         return renderType;
+    }
+
+    @Nullable
+    public TrimPalette getPalette() {
+        return palette;
     }
 
     @Override

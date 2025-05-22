@@ -3,6 +3,7 @@ package com.bawnorton.trimica.client.texture;
 import com.bawnorton.trimica.client.mixin.accessor.SpriteContents$TickerAccessor;
 import com.bawnorton.trimica.client.mixin.accessor.TextureAtlasAccessor;
 import com.bawnorton.trimica.client.mixin.accessor.TextureAtlasSprite$TickerAccessor;
+import com.bawnorton.trimica.client.palette.TrimPalette;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderType;
@@ -17,6 +18,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.equipment.trim.TrimMaterial;
 import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -26,6 +28,7 @@ public final class RuntimeTrimAtlas extends TextureAtlas {
     private final RuntimeTrimAtlases.TrimFactory trimFactory;
     private final RenderType renderType;
     private final List<SpriteContents> dynamicSprites = new ArrayList<>();
+    private final Map<ResourceLocation, TrimPalette> palettes = new HashMap<>();
     private final Consumer<RuntimeTrimAtlas> onModified;
 
     public RuntimeTrimAtlas(ResourceLocation atlasLocation, RuntimeTrimSpriteFactory spriteFactory, RuntimeTrimAtlases.TrimFactory trimFactory, Consumer<RuntimeTrimAtlas> onModified) {
@@ -39,7 +42,7 @@ public final class RuntimeTrimAtlas extends TextureAtlas {
 
     private SpriteContents createMissing() {
         ResourceLocation missingLocation = MissingTextureAtlasSprite.getLocation();
-        return spriteFactory.create(missingLocation, null, null);
+        return spriteFactory.create(missingLocation, null, null).spriteContents();
     }
 
     @Override
@@ -47,18 +50,21 @@ public final class RuntimeTrimAtlas extends TextureAtlas {
         throw new UnsupportedOperationException("Use getSprite(DataComponentGetter, TrimMaterial, ResourceLocation) instead");
     }
 
-    public @NotNull DynamicTextureAtlasSprite getSprite(DataComponentGetter componentGetter, TrimMaterial material, ResourceLocation texture) {
+    public @NotNull DynamicTrimTextureAtlasSprite getSprite(DataComponentGetter componentGetter, TrimMaterial material, ResourceLocation texture) {
         Map<ResourceLocation, TextureAtlasSprite> texturesByName = asAccessor().trimica$texturesByName();
         TextureAtlasSprite sprite = texturesByName.get(texture);
         if (sprite == null) {
-            sprite = createSprite(componentGetter, material, texture);
+            TrimTextureAtlasSprite trimTextureAtlasSprite = createSprite(componentGetter, material, texture);
+            sprite = trimTextureAtlasSprite.sprite();
+            TrimPalette palette = trimTextureAtlasSprite.palette();
+            palettes.put(texture, palette);
         }
-        return new DynamicTextureAtlasSprite(sprite, renderType);
+        return new DynamicTrimTextureAtlasSprite(sprite, renderType, palettes.get(texture));
     }
 
-    private TextureAtlasSprite createSprite(DataComponentGetter componentGetter, TrimMaterial material, ResourceLocation texture) {
-        SpriteContents sprite = spriteFactory.create(texture, trimFactory.create(material), componentGetter);
-        dynamicSprites.add(sprite);
+    private TrimTextureAtlasSprite createSprite(DataComponentGetter componentGetter, TrimMaterial material, ResourceLocation texture) {
+        TrimSpriteContents sprite = spriteFactory.create(texture, trimFactory.create(material), componentGetter);
+        dynamicSprites.add(sprite.spriteContents());
         SpriteLoader loader = SpriteLoader.create(this);
         SpriteLoader.Preparations preparations = loader.stitch(dynamicSprites, 0, Util.backgroundExecutor());
         AtlasSet.StitchResult result = new AtlasSet.StitchResult(this, preparations);
@@ -66,7 +72,7 @@ public final class RuntimeTrimAtlas extends TextureAtlas {
         onModified.accept(this);
         Minecraft client = Minecraft.getInstance();
         client.getTextureManager().register(location(), this);
-        return asAccessor().trimica$texturesByName().get(texture);
+        return new TrimTextureAtlasSprite(asAccessor().trimica$texturesByName().get(texture), sprite.palette());
     }
 
     public void clearTextureData() {
@@ -89,4 +95,6 @@ public final class RuntimeTrimAtlas extends TextureAtlas {
     private TextureAtlasAccessor asAccessor() {
         return (TextureAtlasAccessor) (Object) this;
     }
+
+    private record TrimTextureAtlasSprite(TextureAtlasSprite sprite, TrimPalette palette) {}
 }

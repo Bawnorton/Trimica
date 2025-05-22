@@ -7,9 +7,9 @@ import com.bawnorton.trimica.client.mixin.accessor.ModelBakery$ModelBakerImplAcc
 import com.bawnorton.trimica.client.mixin.accessor.ModelDiscover$ModelWrapperAccessor;
 import com.bawnorton.trimica.client.mixin.accessor.ModelManagerAccessor;
 import com.bawnorton.trimica.client.mixin.accessor.TextureSlots$ValueAccessor;
-import com.bawnorton.trimica.client.texture.DynamicTextureAtlasSprite;
+import com.bawnorton.trimica.client.texture.DynamicTrimTextureAtlasSprite;
 import com.bawnorton.trimica.item.component.ComponentUtil;
-import com.bawnorton.trimica.item.component.MaterialAddition;
+import com.bawnorton.trimica.item.component.MaterialAdditions;
 import com.google.common.collect.ImmutableMap;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.geom.EntityModelSet;
@@ -51,7 +51,7 @@ public final class TrimItemModelFactory {
         }
         TrimModelId trimModelId = TrimModelId.fromTrim(armourType.getName(), trim, assetId.orElse(null));
         ResourceLocation overlayLocation = trimModelId.asSingle();
-        MaterialAddition addition = stack.get(MaterialAddition.TYPE);
+        MaterialAdditions addition = stack.get(MaterialAdditions.TYPE);
         if(addition != null) {
             overlayLocation = addition.apply(overlayLocation);
         }
@@ -99,9 +99,9 @@ public final class TrimItemModelFactory {
                 Map.of(newModelLocation, resolvedModel),
                 ModelDiscover$ModelWrapperAccessor.trimica$init(MissingBlockModel.LOCATION, MissingBlockModel.missingModel(), true)
         );
-        DynamicTextureAtlasSprite sprite = TrimicaClient.getRuntimeAtlases()
-                                                        .getItemAtlas(trim.pattern().value())
-                                                        .getSprite(stack, trim.material().value(), overlayLocation);
+        DynamicTrimTextureAtlasSprite sprite = TrimicaClient.getRuntimeAtlases()
+                                                            .getItemAtlas(trim.pattern().value())
+                                                            .getSprite(stack, trim.material().value(), overlayLocation);
         Minecraft minecraft = Minecraft.getInstance();
         ModelManager modelManager = minecraft.getModelManager();
         SpriteGetter spriteGetter = new SpriteGetter() {

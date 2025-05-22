@@ -31,18 +31,27 @@ public abstract class AbstractTrimSpriteFactory implements RuntimeTrimSpriteFact
     }
 
     @Override
-    public SpriteContents create(ResourceLocation texture, ArmorTrim trim, @Nullable DataComponentGetter componentGetter) {
+    public TrimSpriteContents create(ResourceLocation texture, ArmorTrim trim, @Nullable DataComponentGetter componentGetter) {
         if(trim == null) {
-            return new SpriteContents(texture, new FrameSize(width, height), empty(), ResourceMetadata.EMPTY);
+            return TrimSpriteContents.noPalette(new SpriteContents(texture, new FrameSize(width, height), empty(), ResourceMetadata.EMPTY));
         }
         TrimSpriteMetadata metadata = getSpriteMetadata(trim, componentGetter, texture);
         if(metadata == null) {
-            return new SpriteContents(texture, new FrameSize(width, height), empty(), ResourceMetadata.EMPTY);
+            return TrimSpriteContents.noPalette(new SpriteContents(texture, new FrameSize(width, height), empty(), ResourceMetadata.EMPTY));
         }
         NativeImage image = createImageFromMetadata(metadata);
-        ResourceMetadata resourceMetadata;
+        ResourceMetadata resourceMetadata = getResourceMetadataFromSpriteMetadata(metadata);
+        return new TrimSpriteContents(new SpriteContents(texture, new FrameSize(width, height), image, resourceMetadata), metadata.palette());
+    }
+
+    @Nullable
+    protected abstract TrimSpriteMetadata getSpriteMetadata(ArmorTrim trim, @Nullable DataComponentGetter componentGetter, ResourceLocation texture);
+
+    protected abstract NativeImage createImageFromMetadata(TrimSpriteMetadata metadata);
+
+    private @NotNull ResourceMetadata getResourceMetadataFromSpriteMetadata(TrimSpriteMetadata metadata) {
         if(metadata.isAnimated()) {
-            resourceMetadata = new ResourceMetadata() {
+            return new ResourceMetadata() {
                 @SuppressWarnings("unchecked")
                 @Override
                 public <T> @NotNull Optional<T> getSection(@NotNull MetadataSectionType<T> metadataSectionType) {
@@ -59,15 +68,9 @@ public abstract class AbstractTrimSpriteFactory implements RuntimeTrimSpriteFact
                 }
             };
         } else {
-            resourceMetadata = ResourceMetadata.EMPTY;
+            return ResourceMetadata.EMPTY;
         }
-        return new SpriteContents(texture, new FrameSize(width, height), image, resourceMetadata);
     }
-
-    @Nullable
-    protected abstract TrimSpriteMetadata getSpriteMetadata(ArmorTrim trim, @Nullable DataComponentGetter componentGetter, ResourceLocation texture);
-
-    protected abstract NativeImage createImageFromMetadata(TrimSpriteMetadata metadata);
 
     protected NativeImage createColouredImage(TrimSpriteMetadata metadata, TextureContents contents) {
         TrimPalette palette = metadata.palette();

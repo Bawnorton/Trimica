@@ -1,5 +1,5 @@
 // 1.21.5	-999999999-01-01T00:00:00	Trimica/Model Definitions
-1bc995f5200cd282fcd656582d41e56d216fa660 assets/trimica/items/animator_material.json
-efb1e2639d6b4205c96c9c79facc2699e4c1e49f assets/trimica/items/rainbow_material.json
-cb28d7b0e99b4fc1d10f8d2e0a02370b0aedf30b assets/trimica/models/item/animator_material.json
-55f314b9da5c3866f2ac6a99729b1a297710decc assets/trimica/models/item/rainbow_material.json
+5e1e2e66b80f76da3f32f36465c8dca0cbdb4c4e assets/trimica/items/animator.json
+2b04fe4b6133bbe6796886af0cbafe0b79908f4f assets/trimica/items/rainbowifier.json
+e1689bffbcbee641beed52bb9a320b74368d96fc assets/trimica/models/item/animator.json
+a234c80e9fab31c0bc5084dc2515a20bcd088d1e assets/trimica/models/item/rainbowifier.json

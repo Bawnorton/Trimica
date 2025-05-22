@@ -12,7 +12,7 @@ public final class AnimatedTrimPalette extends TrimPalette {
     private final List<Integer> interpolatedColours;
     private int offset = 0;
 
-    public AnimatedTrimPalette(List<Integer> colours) {
+    AnimatedTrimPalette(List<Integer> colours) {
         super(colours);
         int first = colours.getFirst();
         List<Integer> base = new ArrayList<>(PALETTE_SIZE + 1);

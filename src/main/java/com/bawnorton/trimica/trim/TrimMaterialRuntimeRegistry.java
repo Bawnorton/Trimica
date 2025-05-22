@@ -1,5 +1,6 @@
 package com.bawnorton.trimica.trim;
 
+import com.bawnorton.trimica.item.component.MaterialAdditions;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
@@ -9,13 +10,11 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.equipment.trim.MaterialAssetGroup;
 import net.minecraft.world.item.equipment.trim.TrimMaterial;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 public final class TrimMaterialRuntimeRegistry {
     private final Map<String, Item> materialProviders = new HashMap<>();
-    private final Set<String> animatedMaterials = new HashSet<>();
+    private final Map<String, MaterialAdditions> intrinsicAdditions = new HashMap<>();
     private final Map<ResourceLocation, TrimMaterial> materials = new HashMap<>();
 
     public Item getMaterialProvider(String suffix) {
@@ -43,13 +42,14 @@ public final class TrimMaterialRuntimeRegistry {
         });
     }
 
-    public void setIsAnimated(TrimMaterial trimMaterial, Boolean animated) {
-        if (animated) {
-            animatedMaterials.add(trimMaterial.assets().base().suffix());
+    public void setIntrinsicAdditions(TrimMaterial trimMaterial, MaterialAdditions addition) {
+        if (addition == null) {
+            return;
         }
+        intrinsicAdditions.put(trimMaterial.assets().base().suffix(), addition);
     }
 
-    public boolean getIsAnimated(TrimMaterial trimMaterial) {
-        return animatedMaterials.contains(trimMaterial.assets().base().suffix());
+    public MaterialAdditions getIntrinsicAdditions(TrimMaterial trimMaterial) {
+        return intrinsicAdditions.get(trimMaterial.assets().base().suffix());
     }
 }
