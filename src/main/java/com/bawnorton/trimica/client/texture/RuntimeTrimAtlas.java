@@ -4,6 +4,7 @@ import com.bawnorton.trimica.client.mixin.accessor.SpriteContents$TickerAccessor
 import com.bawnorton.trimica.client.mixin.accessor.TextureAtlasAccessor;
 import com.bawnorton.trimica.client.mixin.accessor.TextureAtlasSprite$TickerAccessor;
 import com.bawnorton.trimica.client.palette.TrimPalette;
+import com.bawnorton.trimica.compat.Compat;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderType;

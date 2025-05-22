@@ -5,6 +5,7 @@ import com.bawnorton.trimica.client.palette.TrimPalette;
 import com.bawnorton.trimica.client.texture.DynamicTrimTextureAtlasSprite;
 import com.bawnorton.trimica.client.texture.RuntimeTrimAtlas;
 import com.bawnorton.trimica.client.texture.RuntimeTrimAtlases;
+import com.bawnorton.trimica.compat.Compat;
 import com.bawnorton.trimica.item.component.MaterialAdditions;
 import com.llamalad7.mixinextras.injector.ModifyReceiver;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
@@ -84,7 +85,11 @@ public abstract class EquipmentLayerRendererMixin {
             if (addition != null) {
                 overlayLocation = addition.apply(overlayLocation);
             }
-            TextureAtlasSprite dynamicSprite = atlas.getSprite(stack, material, overlayLocation);
+            DynamicTrimTextureAtlasSprite dynamicSprite = atlas.getSprite(stack, material, overlayLocation);
+            TrimPalette palette = dynamicSprite.getPalette();
+            if(palette != null && palette.isAnimated()) {
+                Compat.getSodiumCompat().ifPresent(compat -> compat.markSpriteAsActive(dynamicSprite));
+            }
             profiler.pop();
             return dynamicSprite;
         };

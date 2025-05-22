@@ -4,6 +4,7 @@ import com.bawnorton.trimica.Trimica;
 import com.bawnorton.trimica.client.TrimicaClient;
 import com.bawnorton.trimica.client.extend.ItemStackRenderState$LayerRenderStateExtender;
 import com.bawnorton.trimica.client.mixin.accessor.BlockModelWrapperAccessor;
+import com.bawnorton.trimica.client.palette.TrimPalette;
 import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import net.minecraft.client.color.item.ItemTintSource;
@@ -102,7 +103,11 @@ public abstract class BlockModelWrapperMixin {
         callOriginal.run();
 
         ItemStackRenderState.LayerRenderState overlayRenderState = itemStackRenderState.newLayer();
-        ((ItemStackRenderState$LayerRenderStateExtender) overlayRenderState).trimica$markAsTrimOverlay();
+        ItemStackRenderState$LayerRenderStateExtender extender = (ItemStackRenderState$LayerRenderStateExtender) overlayRenderState;
+        extender.trimica$markAsTrimOverlay();
+        TrimPalette palette = TrimicaClient.getItemModelFactory().getPalette();
+        boolean emissive = palette != null && palette.isEmissive();
+        extender.trimica$setEmissive(emissive);
         if(stack.hasFoil()) {
             overlayRenderState.setFoilType(ItemStackRenderState.FoilType.SPECIAL);
         }

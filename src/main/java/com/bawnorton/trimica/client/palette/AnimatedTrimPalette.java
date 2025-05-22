@@ -1,8 +1,6 @@
 package com.bawnorton.trimica.client.palette;
 
 import com.bawnorton.trimica.client.colour.OkLabHelper;
-import com.bawnorton.trimica.compat.Compat;
-import com.bawnorton.trimica.compat.SodiumCompat;
 import net.minecraft.util.ARGB;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,10 +22,6 @@ public final class AnimatedTrimPalette extends TrimPalette {
         List<double[]> stretched = OkLabHelper.strechOkLab(ANIMATED_PALETTE_SIZE, PALETTE_SIZE + 1, okLab);
         interpolatedColours = OkLabHelper.okLabToRgb(stretched);
         ANIMATED_PALETTES.add(this);
-    }
-
-    static {
-        Compat.getSodiumCompat().ifPresent(SodiumCompat::disableAnimationPeformance);
     }
 
     @Override

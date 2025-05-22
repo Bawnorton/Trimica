@@ -7,6 +7,7 @@ import com.bawnorton.trimica.client.mixin.accessor.ModelBakery$ModelBakerImplAcc
 import com.bawnorton.trimica.client.mixin.accessor.ModelDiscover$ModelWrapperAccessor;
 import com.bawnorton.trimica.client.mixin.accessor.ModelManagerAccessor;
 import com.bawnorton.trimica.client.mixin.accessor.TextureSlots$ValueAccessor;
+import com.bawnorton.trimica.client.palette.TrimPalette;
 import com.bawnorton.trimica.client.texture.DynamicTrimTextureAtlasSprite;
 import com.bawnorton.trimica.item.component.ComponentUtil;
 import com.bawnorton.trimica.item.component.MaterialAdditions;
@@ -37,7 +38,9 @@ import java.util.Optional;
 
 public final class TrimItemModelFactory {
     private final Map<ResourceLocation, ItemModel> models = new HashMap<>();
+    private final Map<ResourceLocation, TrimPalette> palettes = new HashMap<>();
     private ModelManager.ResolvedModels resolvedModels;
+    private TrimPalette currentPalette;
 
     public ItemModel getOrCreateModel(ItemModel base, ItemStack stack, ArmorTrim trim) {
         Equippable equippable = stack.get(DataComponents.EQUIPPABLE);
@@ -58,10 +61,12 @@ public final class TrimItemModelFactory {
         ResourceLocation baseModelLocation = stack.getOrDefault(DataComponents.ITEM_MODEL, BuiltInRegistries.ITEM.getKey(stack.getItem()));
         ResourceLocation newModelLocation = overlayLocation.withPrefix(baseModelLocation.toString().replace(":", "_") + "/");
         if (models.containsKey(newModelLocation)) {
+            currentPalette = palettes.get(newModelLocation);
             return models.get(newModelLocation);
         }
         ItemModel model = createModel(baseModelLocation, newModelLocation, overlayLocation, base, stack, trim);
         models.put(newModelLocation, model);
+        currentPalette = palettes.get(newModelLocation);
         return model;
     }
 
@@ -102,6 +107,7 @@ public final class TrimItemModelFactory {
         DynamicTrimTextureAtlasSprite sprite = TrimicaClient.getRuntimeAtlases()
                                                             .getItemAtlas(trim.pattern().value())
                                                             .getSprite(stack, trim.material().value(), overlayLocation);
+        palettes.put(newModelLocation, sprite.getPalette());
         Minecraft minecraft = Minecraft.getInstance();
         ModelManager modelManager = minecraft.getModelManager();
         SpriteGetter spriteGetter = new SpriteGetter() {
@@ -128,6 +134,10 @@ public final class TrimItemModelFactory {
         );
         BlockModelWrapper.Unbaked unbaked = new BlockModelWrapper.Unbaked(newModelLocation, ((BlockModelWrapperAccessor) base).trimica$tints());
         return unbaked.bake(bakingContext);
+    }
+
+    public TrimPalette getPalette() {
+        return currentPalette;
     }
 
     public void setResolvedModels(ModelManager.ResolvedModels resolvedModels) {

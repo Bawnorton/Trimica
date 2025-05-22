@@ -136,6 +136,10 @@ modstitch {
                 name = "Fabric Server"
             }
 
+            runConfigs["clientGameTest"].apply {
+                runDir = "./run"
+            }
+
             afterEvaluate {
                 this@configureLoom.runs.configureEach {
                     applyMixinDebugConfig(this, configurations)

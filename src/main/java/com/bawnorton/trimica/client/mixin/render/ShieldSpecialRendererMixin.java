@@ -4,6 +4,7 @@ import com.bawnorton.trimica.client.TrimicaClient;
 import com.bawnorton.trimica.client.model.TrimModelId;
 import com.bawnorton.trimica.client.palette.TrimPalette;
 import com.bawnorton.trimica.client.texture.DynamicTrimTextureAtlasSprite;
+import com.bawnorton.trimica.compat.Compat;
 import com.bawnorton.trimica.item.component.MaterialAdditions;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -49,10 +50,13 @@ public abstract class ShieldSpecialRendererMixin {
         if (addition != null) {
             overlayLocation = addition.apply(overlayLocation);
         }
-        DynamicTrimTextureAtlasSprite sprite = TrimicaClient.getRuntimeAtlases().getShieldAtlas(trim.pattern().value()).getSprite(dataComponentMap, trim.material().value(), overlayLocation);
-        VertexConsumer vertexConsumer = sprite.wrap(ItemRenderer.getFoilBuffer(multiBufferSource, sprite.getRenderType(), itemDisplayContext == ItemDisplayContext.GUI, bl));
-        TrimPalette palette = sprite.getPalette();
+        DynamicTrimTextureAtlasSprite dynamicSprite = TrimicaClient.getRuntimeAtlases().getShieldAtlas(trim.pattern().value()).getSprite(dataComponentMap, trim.material().value(), overlayLocation);
+        TrimPalette palette = dynamicSprite.getPalette();
         int light = palette == null ? i : (palette.isEmissive() ? LightTexture.FULL_BRIGHT : i);
+        if(palette != null && palette.isAnimated()) {
+            Compat.getSodiumCompat().ifPresent(compat -> compat.markSpriteAsActive(dynamicSprite));
+        }
+        VertexConsumer vertexConsumer = dynamicSprite.wrap(ItemRenderer.getFoilBuffer(multiBufferSource, dynamicSprite.getRenderType(), itemDisplayContext == ItemDisplayContext.GUI, bl));
         this.model.plate().render(poseStack, vertexConsumer, light, j);
         profiler.pop();
     }
