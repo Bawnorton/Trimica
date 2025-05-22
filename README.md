@@ -103,8 +103,14 @@ dependencies {
 ### Endpoints:
 See each of the endpoints below for more information on how to use them.
 - [BaseTextureInterceptor](src/main/java/com/bawnorton/trimica/api/BaseTextureInterceptor.java)
+  - Where Trimica can find the base overlay textures provided by [Custom Patterns](#custom-patterns) if they are not in
+  an expected location, or you want to provide your own schema. i.e. per-item-per-pattern overlays.
 - [CraftingRecipeInterceptor](src/main/java/com/bawnorton/trimica/api/CraftingRecipeInterceptor.java)
+  - How Trimica determines what items can be used to trim an item or what items can be trimmed.
 - [PaletteInterceptor](src/main/java/com/bawnorton/trimica/api/PaletteInterceptor.java)
+  - How Trimica determines the palette for a given item. This can be used in conjuction with 
+  [Custom Material Additions](#giving-a-trim-material-default-addditions) to provide a custom palette for a given
+  addition.
 
 ## Developing Trimica
 
