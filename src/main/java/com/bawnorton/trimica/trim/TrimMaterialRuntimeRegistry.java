@@ -1,4 +1,4 @@
-package com.bawnorton.trimica.trim.material;
+package com.bawnorton.trimica.trim;
 
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;

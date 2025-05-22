@@ -1,5 +1,5 @@
-//? if fabric {
-package com.bawnorton.trimica.platform.fabric.mixin.accessor;
+//? if fabric && <1.21.5 {
+/*package com.bawnorton.trimica.platform.fabric.mixin.accessor;
 
 import net.fabricmc.fabric.api.client.model.loading.v1.wrapper.WrapperBakedItemModel;
 import net.minecraft.client.renderer.item.ItemModel;
@@ -11,4 +11,4 @@ public interface WrapperBakedItemModelAccessor {
     @Accessor("wrapped")
     ItemModel trimica$wrapped();
 }
-//?}
+*///?}

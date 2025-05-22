@@ -4,6 +4,7 @@ import net.neoforged.moddevgradle.dsl.RunModel
 
 plugins {
     id("dev.isxander.modstitch.base") version "0.5.14-unstable"
+    id("dev.kikugie.j52j") version "2.0"
 }
 
 fun deps(name: String): String? = findProperty("deps.${name}") as String?
@@ -59,7 +60,7 @@ modstitch {
             A successor to AllTheTrims and DynamicTrims that allows you to trim any wearable item with anything 
             while also providing per-trim item texture overrides in a compatible way. Also includes some additional 
             items and features to make trimming more interesting.
-         """.trimIndent()
+         """.trimIndent().replace("\n", " ")
 
         fun <K, V> MapProperty<K, V>.populate(block: MapProperty<K, V>.() -> Unit) {
             block()
@@ -193,6 +194,12 @@ stonecutter {
         "fabric" to (loader == "fabric"),
         "neoforge" to (loader == "neoforge")
     )
+}
+
+j52j {
+    params {
+        prettyPrinting = true
+    }
 }
 
 tasks {

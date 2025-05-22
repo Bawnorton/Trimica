@@ -2,7 +2,7 @@ package com.bawnorton.trimica;
 
 import com.bawnorton.trimica.api.TrimicaApi;
 import com.bawnorton.trimica.crafting.BaseCraftingRecipeInterceptor;
-import com.bawnorton.trimica.trim.material.TrimMaterialRuntimeRegistry;
+import com.bawnorton.trimica.trim.TrimMaterialRuntimeRegistry;
 import net.minecraft.resources.ResourceLocation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

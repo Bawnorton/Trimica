@@ -31,9 +31,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-//? if fabric {
-import com.bawnorton.trimica.platform.fabric.mixin.accessor.WrapperBakedItemModelAccessor;
-//?}
+//? if fabric && <1.21.5 {
+/*import com.bawnorton.trimica.platform.fabric.mixin.accessor.WrapperBakedItemModelAccessor;
+*///?}
 
 public final class TrimPaletteGenerator {
     private static final Map<ResourceLocation, TrimPalette> TRIM_PALETTES = new HashMap<>();
@@ -122,7 +122,9 @@ public final class TrimPaletteGenerator {
             case ConditionalItemModelAccessor conditionalItemModelAccessor -> getColoursFromModel(conditionalItemModelAccessor.trimica$onFalse());
             case RangeSelectItemModelAccessor rangeSelectItemModelAccessor -> getColoursFromModel(rangeSelectItemModelAccessor.trimica$fallback());
             //? if fabric {
-            case WrapperBakedItemModelAccessor wrapperBakedItemModelAccessor -> getColoursFromModel(wrapperBakedItemModelAccessor.trimica$wrapped());
+            //? if <1.21.5 {
+            /*case WrapperBakedItemModelAccessor wrapperBakedItemModelAccessor -> getColoursFromModel(wrapperBakedItemModelAccessor.trimica$wrapped());
+            *///?}
             //?}
             case null, default -> Collections.emptyList();
         };
