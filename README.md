@@ -42,7 +42,7 @@ For example:
 assets/trimica/textures/trims/items/boots/minecraft/bolt.png
 ```
 This texture will need to be a 16x16 texture. 
-### Shields
+#### Shields
 To provide a custom shield trim, create a new resource pack and add the following to your pack:
 ```
 assets/trimica/textures/trims/items/shield/<pattern_namespace>/<pattern_path>.png
