@@ -90,7 +90,7 @@ For example to make diamond animated and emissive by default you would define th
 ```
 
 ## In-Code API
-Trimica provides an API for modders to 
+Trimica provides an API for modders to interact with the mod and add their own features.
 
 ### Depending on Trimica
 View the latest version of Trimica [here](https://maven.bawnorton.com/#/releases/com/bawnorton/trimica)
