@@ -8,7 +8,9 @@ All in one mod for your item trimming needs.
 - Almost any item can be a trim material - Even modded
 - Most equipment can be trimmed - Even modded
 - Custom Shield Trims
-- Animated Trims
+- Trim Material Additions
+  - Animated Trims (Animator)
+  - Emissive Trims (Glow Ink Sacs)
 - Per-trim-pattern item textures
   - The item texture overlay now has a custom pattern for each trim pattern rather than a single overlay for all trims.
   - This falls back to the old overlay if the trim pattern does not have a provided item texture. [See Below](#custom-patterns)
@@ -51,7 +53,14 @@ assets/trimica/textures/trims/items/shield/minecraft/bolt.png
 ```
 This texture will need to be a 64x64 texture. 
 
-### Giving a Trim Material Default Addditions
+### Trim Material Addditions
+Trimica comes with 2 default material additions:
+- `trimica:animator` - This will make the trim animated.
+- `minecraft:glow_ink_sac` - This will make the trim emissive.
+
+You can make any item a trim material addition by adding it to the `trimica:material_additions` tag.
+See [Palette Interceptor](#endpoints) for providing a custom palette for a given addition.
+
 To give a material default additions, you can add the following to the material definition:
 ```
 "trimica$additions": [
@@ -63,7 +72,7 @@ To give a material default additions, you can add the following to the material 
 For example to make diamond animated and emissive by default you would define the material as:
 
 ```json5
-// assets/minecraft/trim_material.diamond.json
+// minecraft/trim_material/diamond.json
 {
   "asset_name": "diamond",
   "description": {
@@ -109,7 +118,7 @@ See each of the endpoints below for more information on how to use them.
   - How Trimica determines what items can be used to trim an item or what items can be trimmed.
 - [PaletteInterceptor](src/main/java/com/bawnorton/trimica/api/PaletteInterceptor.java)
   - How Trimica determines the palette for a given item. This can be used in conjuction with 
-  [Custom Material Additions](#giving-a-trim-material-default-addditions) to provide a custom palette for a given
+  [Custom Material Additions](#trim-material-addditions) to provide a custom palette for a given
   addition.
 
 ## Developing Trimica
