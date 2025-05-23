@@ -3,6 +3,7 @@ package com.bawnorton.trimica.client.mixin;
 import com.bawnorton.trimica.tags.TrimicaTags;
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.component.DataComponentHolder;
 import net.minecraft.network.chat.Component;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
@@ -14,7 +15,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import java.util.List;
 
 @Mixin(value = ItemStack.class, priority = 1500)
-public abstract class ItemStackMixin {
+public abstract class ItemStackMixin implements DataComponentHolder {
     @Shadow public abstract boolean is(TagKey<Item> tag);
 
     @ModifyReturnValue(
