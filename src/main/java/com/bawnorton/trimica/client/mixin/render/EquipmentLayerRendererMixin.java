@@ -88,7 +88,7 @@ public abstract class EquipmentLayerRendererMixin {
             DynamicTrimTextureAtlasSprite dynamicSprite = atlas.getSprite(stack, material, overlayLocation);
             TrimPalette palette = dynamicSprite.getPalette();
             if(palette != null && palette.isAnimated()) {
-                Compat.getSodiumCompat().ifPresent(compat -> compat.markSpriteAsActive(dynamicSprite));
+                Compat.ifSodiumPresent(compat -> compat.markSpriteAsActive(dynamicSprite));
             }
             profiler.pop();
             return dynamicSprite;

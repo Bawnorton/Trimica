@@ -1,13 +1,12 @@
 package com.bawnorton.trimica.compat;
 
 import com.bawnorton.trimica.platform.Platform;
-import java.util.Optional;
+import java.util.function.Consumer;
 
 public class Compat {
-    public static Optional<SodiumCompat> getSodiumCompat() {
+    public static void ifSodiumPresent(Consumer<SodiumCompat> consumer) {
         if(Platform.isModLoaded("sodium")) {
-            return Optional.of(new SodiumCompat());
+            consumer.accept(new SodiumCompat());
         }
-        return Optional.empty();
     }
 }

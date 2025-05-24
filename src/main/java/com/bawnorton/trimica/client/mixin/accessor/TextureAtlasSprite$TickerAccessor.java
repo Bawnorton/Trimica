@@ -6,6 +6,10 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 
 @Mixin(targets = "net/minecraft/client/renderer/texture/TextureAtlasSprite$1")
 public interface TextureAtlasSprite$TickerAccessor {
+    //? if fabric {
     @Accessor("val$ticker")
+    //?} else {
+    /*@Accessor("val$spriteticker")
+    *///?}
     SpriteTicker trimica$ticker();
 }

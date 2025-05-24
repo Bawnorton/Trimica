@@ -1,4 +1,5 @@
-package com.bawnorton.trimica.test;
+//? if fabric {
+package com.bawnorton.trimica.platform.fabric.test;
 
 import com.bawnorton.trimica.item.TrimicaItems;
 import com.bawnorton.trimica.item.component.ComponentUtil;
@@ -289,3 +290,4 @@ public class TrimicaTests {
         });
     }
 }
+//?}

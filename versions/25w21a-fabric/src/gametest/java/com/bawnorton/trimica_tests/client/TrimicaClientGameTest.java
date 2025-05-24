@@ -1,6 +1,6 @@
 package com.bawnorton.trimica_tests.client;
 
-import com.bawnorton.trimica.test.TrimicaTests;
+import com.bawnorton.trimica.platform.fabric.test.TrimicaTests;
 import net.fabricmc.fabric.api.client.gametest.v1.FabricClientGameTest;
 import net.fabricmc.fabric.api.client.gametest.v1.context.ClientGameTestContext;
 

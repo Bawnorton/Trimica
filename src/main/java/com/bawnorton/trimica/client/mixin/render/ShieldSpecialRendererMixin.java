@@ -54,7 +54,7 @@ public abstract class ShieldSpecialRendererMixin {
         TrimPalette palette = dynamicSprite.getPalette();
         int light = palette == null ? i : (palette.isEmissive() ? LightTexture.FULL_BRIGHT : i);
         if(palette != null && palette.isAnimated()) {
-            Compat.getSodiumCompat().ifPresent(compat -> compat.markSpriteAsActive(dynamicSprite));
+            Compat.ifSodiumPresent(compat -> compat.markSpriteAsActive(dynamicSprite));
         }
         VertexConsumer vertexConsumer = dynamicSprite.wrap(ItemRenderer.getFoilBuffer(multiBufferSource, dynamicSprite.getRenderType(), itemDisplayContext == ItemDisplayContext.GUI, bl));
         this.model.plate().render(poseStack, vertexConsumer, light, j);

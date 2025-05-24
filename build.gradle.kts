@@ -29,10 +29,10 @@ dependencies {
     deps("advanced_netherite") { modstitchModRuntimeOnly("maven.modrinth:advanced-netherite:$loader-$it-mc$minecraft") }
     deps("sodium") { modstitchModImplementation("maven.modrinth:sodium:mc$minecraft-$it-$loader") }
     deps("iris") {
-        modstitchModRuntimeOnly("maven.modrinth:iris:$it+$minecraft-$loader")
-        modstitchRuntimeOnly("org.antlr:antlr4-runtime:4.13.1")
-        modstitchRuntimeOnly("io.github.douira:glsl-transformer:2.0.1")
-        modstitchRuntimeOnly("org.anarres:jcpp:1.4.14")
+//        modstitchModRuntimeOnly("maven.modrinth:iris:$it+$minecraft-$loader")
+//        modstitchRuntimeOnly("org.antlr:antlr4-runtime:4.13.1")
+//        modstitchRuntimeOnly("io.github.douira:glsl-transformer:2.0.1")
+//        modstitchRuntimeOnly("org.anarres:jcpp:1.4.14")
     }
 
 }
@@ -154,17 +154,13 @@ modstitch {
             deps("neoforge") { neoForgeVersion = it }
         }
 
-        sourceSets.main {
-            resources.srcDirs("src/main/generated", "src/main/resources")
-        }
-
         defaultRuns()
 
         configureNeoforge {
             validateAccessTransformers = true
 
             runs.all {
-                gameDirectory = file("../../run")
+                gameDirectory = file(rootProject.file("run"))
             }
 
             runs["client"].apply {
@@ -193,6 +189,19 @@ modstitch {
     }
 }
 
+sourceSets.main {
+    java.srcDir(rootProject.file("src/main/java"))
+    resources.srcDir(rootProject.file("src/main/resources"))
+
+    modstitch {
+        moddevgradle {
+            resources.srcDir(rootProject.file("src/main/generated")) // add fabric datagen output to neo
+            resources.exclude(".cache")
+        }
+        templatesSourceDirectorySet.srcDir(rootProject.file("src/main/templates"))
+    }
+}
+
 stonecutter {
     consts(
         "fabric" to (loader == "fabric"),
@@ -210,16 +219,9 @@ tasks {
     modstitch.finalJarTask {
         val modName = modstitch.metadata.modName.get()
         val modVersion = modstitch.metadata.modVersion.get()
-        val modLoader = when {
-            modstitch.isLoom -> "fabric"
-            modstitch.isModDevGradle -> "neoforge"
-            else -> throw IllegalStateException("Unknown platform: ${modstitch.platform}")
-        }
-        val modFileName = "$modName-$modLoader+$modVersion.jar"
         archiveBaseName.set(modName)
-        archiveVersion.set(modVersion)
-        archiveClassifier.set(modLoader)
-        archiveFileName.set(modFileName)
+        archiveVersion.set("$modVersion+$minecraft")
+        archiveClassifier.set(loader)
     }
 
     register<Copy>("buildAndCollect") {
@@ -231,5 +233,10 @@ tasks {
 
     processResources {
         outputs.upToDateWhen { false } // work around modstitch mixin cache issue
+        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    }
+
+    generateModMetadata {
+        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     }
 }

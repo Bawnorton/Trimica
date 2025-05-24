@@ -24,11 +24,7 @@ public class TrimicaTagProvider extends FabricTagProvider.ItemTagProvider {
     }
 
     private void addToTag(TagKey<Item> tagKey, Item... items) {
-        //? if >1.21.5 {
-        /*valueLookupBuilder(tagKey).add(items);
-        *///?} else {
         getOrCreateTagBuilder(tagKey).add(items);
-        //?}
     }
 }
 //?}

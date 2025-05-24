@@ -11,7 +11,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(CreativeModeTabs.class)
 public abstract class CreativeModeTabsMixin {
     @Inject(
+            //? if fabric {
             method = "method_51321",
+            //?} else {
+            /*method = "lambda$bootstrap$26",
+            *///?}
             at = @At(
                     value = "FIELD",
                     target = "Lnet/minecraft/world/item/Items;SENTRY_ARMOR_TRIM_SMITHING_TEMPLATE:Lnet/minecraft/world/item/Item;"
