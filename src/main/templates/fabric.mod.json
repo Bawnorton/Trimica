@@ -12,6 +12,9 @@
     ],
     "fabric-datagen": [
       "com.bawnorton.trimica.platform.fabric.data.FabricDataGeneratorEntrypoint"
+    ],
+    "fabric-client-gametest" : [
+      "com.bawnorton.trimica.platform.fabric.test.TrimicaTests"
     ]
   }
 }

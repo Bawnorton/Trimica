@@ -5,5 +5,6 @@
   "item.trimica.animator": "Animator",
   "trimica.trim_material": "Trim Material",
   "trimica.material_addition": "Trim Material Addition",
-  "trimica.material_addition_list": "Material Additions:"
+  "trimica.material_addition_list": "Material Additions:",
+  "tag.item.trimica.material_additions": "Trim Material Additions"
 }

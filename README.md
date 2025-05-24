@@ -139,8 +139,8 @@ it will fail to load the mod and crash.
 
 #### Testing
 Fabric provides client gametests as a part of their API, NeoForge does not, thus, the tests are only avaliable for Fabric.
-Set your active project version to a version of Fabric and run the `Gametest Minecraft Client Game Test (:<version>-fabric)`
-task. The tests are located at `versions/<version>/src/gametest/`.
+Set your active project version to a version of Fabric and run the `Minecraft Client Game Test (:<version>-fabric)`
+task. The tests are located at `src/main/java/com/bawnorton/trimica/platform/fabric/test`.
 
 #### Building
 To build the mod, run the `Tasks/project/chiseledBuildAndCollect` task. This will build the mod for all versions

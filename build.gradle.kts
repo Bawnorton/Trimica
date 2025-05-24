@@ -29,10 +29,12 @@ dependencies {
     deps("advanced_netherite") { modstitchModRuntimeOnly("maven.modrinth:advanced-netherite:$loader-$it-mc$minecraft") }
     deps("sodium") { modstitchModImplementation("maven.modrinth:sodium:mc$minecraft-$it-$loader") }
     deps("iris") {
-//        modstitchModRuntimeOnly("maven.modrinth:iris:$it+$minecraft-$loader")
-//        modstitchRuntimeOnly("org.antlr:antlr4-runtime:4.13.1")
-//        modstitchRuntimeOnly("io.github.douira:glsl-transformer:2.0.1")
-//        modstitchRuntimeOnly("org.anarres:jcpp:1.4.14")
+        modstitch.loom {
+            modstitchModRuntimeOnly("maven.modrinth:iris:$it+$minecraft-$loader")
+            modstitchRuntimeOnly("org.antlr:antlr4-runtime:4.13.1")
+            modstitchRuntimeOnly("io.github.douira:glsl-transformer:2.0.1")
+            modstitchRuntimeOnly("org.anarres:jcpp:1.4.14")
+        }
     }
 
 }
@@ -114,9 +116,8 @@ modstitch {
                 }
 
                 configureTests {
-                    createSourceSet = true
-                    modId = "trimica-tests"
                     eula = true
+                    clearRunDirectory = false
                 }
             }
 
@@ -134,10 +135,6 @@ modstitch {
 
             runConfigs["server"].apply {
                 name = "Fabric Server"
-            }
-
-            runConfigs["clientGameTest"].apply {
-                runDir = "./run"
             }
 
             afterEvaluate {
@@ -190,15 +187,11 @@ modstitch {
 }
 
 sourceSets.main {
-    java.srcDir(rootProject.file("src/main/java"))
-    resources.srcDir(rootProject.file("src/main/resources"))
-
     modstitch {
         moddevgradle {
             resources.srcDir(rootProject.file("src/main/generated")) // add fabric datagen output to neo
             resources.exclude(".cache")
         }
-        templatesSourceDirectorySet.srcDir(rootProject.file("src/main/templates"))
     }
 }
 
@@ -232,11 +225,22 @@ tasks {
     }
 
     processResources {
-        outputs.upToDateWhen { false } // work around modstitch mixin cache issue
         duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+        outputs.upToDateWhen { false } // work around modstitch mixin cache issue
+
+        val refmap = "refmap" to "${modstitch.metadata.modId.get()}.refmap.json"
+        inputs.properties(refmap)
+
+        filesMatching("trimica-fabric.mixins.json5") {
+            expand(refmap)
+        }
     }
 
     generateModMetadata {
         duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    }
+
+    clean {
+        delete(rootProject.layout.buildDirectory)
     }
 }

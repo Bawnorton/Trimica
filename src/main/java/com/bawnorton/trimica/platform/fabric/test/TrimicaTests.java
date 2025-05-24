@@ -4,6 +4,7 @@ package com.bawnorton.trimica.platform.fabric.test;
 import com.bawnorton.trimica.item.TrimicaItems;
 import com.bawnorton.trimica.item.component.ComponentUtil;
 import com.bawnorton.trimica.item.component.MaterialAdditions;
+import net.fabricmc.fabric.api.client.gametest.v1.FabricClientGameTest;
 import net.fabricmc.fabric.api.client.gametest.v1.context.ClientGameTestContext;
 import net.fabricmc.fabric.api.client.gametest.v1.context.TestServerContext;
 import net.fabricmc.fabric.api.client.gametest.v1.context.TestSingleplayerContext;
@@ -45,10 +46,10 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 @SuppressWarnings("UnstableApiUsage")
-public class TrimicaTests {
-    private static final AtomicReference<ServerPlayer> playerRef = new AtomicReference<>();
+public class TrimicaTests implements FabricClientGameTest {
+    private final AtomicReference<ServerPlayer> playerRef = new AtomicReference<>();
 
-    public static void runTests(ClientGameTestContext context) {
+    public void runTest(ClientGameTestContext context) {
         context.getInput().resizeWindow(1024, 512);
         context.runOnClient(client -> {
             client.options.renderDistance().set(2);
@@ -129,7 +130,7 @@ public class TrimicaTests {
         }
     }
 
-    private static void createTrimmedArmourStand(
+    private void createTrimmedArmourStand(
             ClientGameTestContext context,
             TestServerContext serverContext,
             Holder<TrimMaterial> material,
@@ -164,7 +165,7 @@ public class TrimicaTests {
         context.waitTick();
     }
 
-    private static void setupPlayer(TestServerContext serverContext, TestSingleplayerContext singleplayerContext) {
+    private void setupPlayer(TestServerContext serverContext, TestSingleplayerContext singleplayerContext) {
         serverContext.runCommand("/tp @a 0 -60 0");
         serverContext.runOnServer(server -> {
             ServerPlayer player = server.getPlayerList().getPlayers().getFirst();
@@ -172,7 +173,7 @@ public class TrimicaTests {
         });
         singleplayerContext.getClientWorld().waitForChunksRender();
     }
-    private static void applyTrimAndValidate(
+    private void applyTrimAndValidate(
             ClientGameTestContext context,
             TestServerContext serverContext,
             Item template,
@@ -182,7 +183,7 @@ public class TrimicaTests {
         applyTrimAndValidate(context, serverContext, template, trimmable, addition, true, validator);
     }
 
-    private static void applyTrimAndValidate(
+    private void applyTrimAndValidate(
             ClientGameTestContext context,
             TestServerContext serverContext,
             Item template,
@@ -232,7 +233,7 @@ public class TrimicaTests {
         });
     }
 
-    private static void placeAndOpenSmithingTable(ClientGameTestContext context, TestServerContext serverContext) {
+    private void placeAndOpenSmithingTable(ClientGameTestContext context, TestServerContext serverContext) {
         serverContext.runOnServer(server -> {
             BlockPos tablePos = new BlockPos(0, -60, 1);
             ServerLevel level = server.overworld();
@@ -243,7 +244,7 @@ public class TrimicaTests {
         context.waitTick();
     }
 
-    private static @NotNull BiConsumer<String, ResourceLocation> getValidatorFor(String expectedSuffix, ResourceLocation expectedPattern) {
+    private @NotNull BiConsumer<String, ResourceLocation> getValidatorFor(String expectedSuffix, ResourceLocation expectedPattern) {
         return (material, pattern) -> {
             if (!material.equals(expectedSuffix)) {
                 throw new AssertionError("Expected material %s, got %s".formatted(expectedSuffix, material));
@@ -254,7 +255,7 @@ public class TrimicaTests {
         };
     }
 
-    private static void applyTrimMaterialAdditionAndValidate(
+    private void applyTrimMaterialAdditionAndValidate(
             ClientGameTestContext context,
             TestServerContext serverContext,
             Item template,
