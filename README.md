@@ -143,5 +143,5 @@ Set your active project version to a version of Fabric and run the `Minecraft Cl
 task. The tests are located at `src/main/java/com/bawnorton/trimica/platform/fabric/test`.
 
 #### Building
-To build the mod, run the `Tasks/project/chiseledBuildAndCollect` task. This will build the mod for all versions
-and move the built jars to the root `build/libs` directory. 
+To build the mod, run the `Tasks/project/chiseledBuild` task. This will build the mod for all versions which can then be 
+found in the root `build/versions/` directory. 

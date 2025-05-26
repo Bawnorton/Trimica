@@ -3,7 +3,9 @@ package com.bawnorton.trimica.mixin.loot;
 import com.bawnorton.trimica.Trimica;
 import com.bawnorton.trimica.item.TrimicaItems;
 import com.bawnorton.trimica.loot.LootTableReader;
+import com.bawnorton.trimica.mixin.accessor.LootTable$BuilderAccessor;
 import com.bawnorton.trimica.mixin.accessor.LootTableAccessor;
+import com.google.common.collect.ImmutableList;
 import com.llamalad7.mixinextras.injector.ModifyReceiver;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.ReloadableServerRegistries;
@@ -13,6 +15,7 @@ import net.minecraft.world.level.storage.loot.LootPool;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.entries.EmptyLootItem;
 import net.minecraft.world.level.storage.loot.entries.LootItem;
+import net.minecraft.world.level.storage.loot.functions.LootItemFunction;
 import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -22,9 +25,13 @@ import java.util.function.BiConsumer;
 
 @Mixin(ReloadableServerRegistries.class)
 public abstract class ReloadableServerRegistriesMixin {
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "ConstantValue"})
     @ModifyReceiver(
+            //? if fabric {
             method = "method_61240",
+            //?} else {
+            /*method = "lambda$scheduleRegistryLoad$5",
+            *///?}
             at = @At(
                     value = "INVOKE",
                     target = "Ljava/util/Map;forEach(Ljava/util/function/BiConsumer;)V"
@@ -41,9 +48,10 @@ public abstract class ReloadableServerRegistriesMixin {
             if(containsTemplateItem) {
                 LootTable.Builder builder = new LootTable.Builder();
                 LootTableAccessor accessor = (LootTableAccessor) lootTable;
+                LootTable$BuilderAccessor builderAccessor = (LootTable$BuilderAccessor) builder;
                 builder.setParamSet(lootTable.getParamSet());
-                builder.pools(accessor.trimica$pools());
-                builder.apply(accessor.trimica$functions());
+                builderAccessor.trimica$pools(ImmutableList.<LootPool>builder().addAll(accessor.trimica$pools()));
+                builderAccessor.trimica$functions(ImmutableList.<LootItemFunction>builder().addAll(accessor.trimica$functions()));
                 accessor.trimica$randomSequence().ifPresent(builder::setRandomSequence);
 
                 builder.withPool(LootPool.lootPool()

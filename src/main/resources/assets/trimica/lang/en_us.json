@@ -6,5 +6,9 @@
   "trimica.trim_material": "Trim Material",
   "trimica.material_addition": "Trim Material Addition",
   "trimica.material_addition_list": "Material Additions:",
-  "tag.item.trimica.material_additions": "Trim Material Additions"
+  "tag.item.trimica.material_additions": "Trim Material Additions",
+  "trimica.advancements.adventure.add_material_addition.title": "Styled to Perfection",
+  "trimica.advancements.adventure.add_material_addition.description": "Add a Trim Material Addition to a Trimmed Item",
+  "trimica.advancements.adventure.add_rainbowifier_material.title": "True Gamer",
+  "trimica.advancements.adventure.add_rainbowifier_material.description": "Use a Rainbowifier as a Trim Material"
 }

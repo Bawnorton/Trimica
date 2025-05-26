@@ -3,6 +3,7 @@ package com.bawnorton.trimica.loot;
 import com.bawnorton.trimica.mixin.accessor.CompositeEntryBaseAccessor;
 import com.bawnorton.trimica.mixin.accessor.DynamicLootAccessor;
 import com.bawnorton.trimica.mixin.accessor.LootItemAccessor;
+import com.bawnorton.trimica.mixin.accessor.LootPoolAccessor;
 import com.bawnorton.trimica.mixin.accessor.LootTableAccessor;
 import com.bawnorton.trimica.mixin.accessor.NestedLootTableAccessor;
 import com.bawnorton.trimica.mixin.accessor.TagEntryAccessor;
@@ -30,7 +31,7 @@ public class LootTableReader {
         List<LootPool> pools = accessor.trimica$pools();
         List<Item> items = new ArrayList<>();
         for(LootPool pool : pools) {
-            List<LootPoolEntryContainer> entries = pool.entries;
+            List<LootPoolEntryContainer> entries = ((LootPoolAccessor) pool).trimica$entries();
             for(LootPoolEntryContainer entry : entries) {
                 items.addAll(readEntry(getter, entry));
             }

@@ -84,10 +84,10 @@ public final class TrimPaletteGenerator {
     private List<Integer> extractColoursFromBuiltIn(NativeImage builtInImage) {
         int width = builtInImage.getWidth();
         int height = builtInImage.getHeight();
-        if (width != 8 || height != 1) {
+        if (width != TrimPalette.PALETTE_SIZE || height != 1) {
             return List.of();
         }
-        List<Integer> colours = new ArrayList<>(8);
+        List<Integer> colours = new ArrayList<>(TrimPalette.PALETTE_SIZE);
         for (int x = 0; x < width; x++) {
             int colour = builtInImage.getPixel(x, 0);
             colours.add(ARGB.toABGR(colour));
@@ -166,12 +166,11 @@ public final class TrimPaletteGenerator {
     }
 
     private List<Integer> sortPalette(List<Integer> colours) {
-        List<ColourHSB> hsbColours = ColourHSB.fromRGB(colours);
-
-        return hsbColours.stream()
-                         .sorted()
-                         .map(ColourHSB::colour)
-                         .toList();
+        return ColourHSB.fromRGB(colours)
+                        .stream()
+                        .sorted()
+                        .map(ColourHSB::colour)
+                        .toList();
     }
 
     private List<Integer> stretchPalette(List<Integer> palette) {

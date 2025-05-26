@@ -13,6 +13,8 @@ fun deps(name: String, consumer: (prop: String) -> Unit) = deps(name)?.let(consu
 val minecraft: String = name.split("-")[0]
 var loader: String = name.split("-")[1]
 
+layout.buildDirectory = rootProject.file("build/versions/$minecraft/$loader")
+
 repositories {
     maven("https://maven.quiltmc.org/repository/release/")
     maven("https://api.modrinth.com/maven")
@@ -116,6 +118,7 @@ modstitch {
                 }
 
                 configureTests {
+                    enableGameTests = false
                     eula = true
                     clearRunDirectory = false
                 }
@@ -215,13 +218,6 @@ tasks {
         archiveBaseName.set(modName)
         archiveVersion.set("$modVersion+$minecraft")
         archiveClassifier.set(loader)
-    }
-
-    register<Copy>("buildAndCollect") {
-        group = "build"
-        from(modstitch.finalJarTask.flatMap { it.archiveFile })
-        into(rootProject.layout.buildDirectory.file("libs/${modstitch.metadata.modVersion.get()}"))
-        dependsOn(modstitch.finalJarTask)
     }
 
     processResources {

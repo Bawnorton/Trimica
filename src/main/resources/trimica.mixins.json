@@ -12,6 +12,8 @@
     "accessor.CompositeEntryBaseAccessor",
     "accessor.DynamicLootAccessor",
     "accessor.LootItemAccessor",
+    "accessor.LootPoolAccessor",
+    "accessor.LootTable$BuilderAccessor",
     "accessor.LootTableAccessor",
     "accessor.NestedLootTableAccessor",
     "accessor.TagEntryAccessor",
