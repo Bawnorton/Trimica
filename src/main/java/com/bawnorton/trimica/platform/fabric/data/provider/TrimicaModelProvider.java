@@ -27,6 +27,7 @@ public class TrimicaModelProvider extends FabricModelProvider {
     public void generateItemModels(ItemModelGenerators generators) {
         itemModel(generators, TrimicaItems.RAINBOWIFIER);
         itemModel(generators, TrimicaItems.ANIMATOR);
+        itemModel(generators, TrimicaItems.FAKE_ADDITION);
     }
 
     private void itemModel(ItemModelGenerators generators, Item item) {

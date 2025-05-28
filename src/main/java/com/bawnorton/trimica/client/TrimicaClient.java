@@ -5,7 +5,7 @@ import com.bawnorton.trimica.client.model.TrimItemModelFactory;
 import com.bawnorton.trimica.client.palette.DefaultPaletteInterceptor;
 import com.bawnorton.trimica.client.palette.TrimPalettes;
 import com.bawnorton.trimica.client.texture.RuntimeTrimAtlases;
-import com.bawnorton.trimica.compat.ElytraBaseTextureInterceptor;
+import com.bawnorton.trimica.compat.elytratrims.ElytraBaseTextureInterceptor;
 import com.bawnorton.trimica.platform.Platform;
 
 public class TrimicaClient {

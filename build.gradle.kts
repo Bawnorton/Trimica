@@ -10,14 +10,17 @@ plugins {
 fun deps(name: String): String? = findProperty("deps.${name}") as String?
 fun deps(name: String, consumer: (prop: String) -> Unit) = deps(name)?.let(consumer)
 
-val minecraft: String = name.split("-")[0]
-var loader: String = name.split("-")[1]
+val split = name.lastIndexOf('-')
+val minecraft: String = name.substring(0, split)
+var loader: String = name.substring(split + 1)
 
 layout.buildDirectory = rootProject.file("build/versions/$minecraft/$loader")
 
 repositories {
     maven("https://maven.quiltmc.org/repository/release/")
     maven("https://api.modrinth.com/maven")
+    maven("https://maven.blamejared.com/")
+    maven("https://maven.shedaniel.me/")
 }
 
 dependencies {
@@ -31,21 +34,27 @@ dependencies {
     deps("advanced_netherite") { modstitchModRuntimeOnly("maven.modrinth:advanced-netherite:$loader-$it-mc$minecraft") }
     deps("sodium") { modstitchModImplementation("maven.modrinth:sodium:mc$minecraft-$it-$loader") }
     deps("iris") {
-        modstitch.loom {
-            modstitchModRuntimeOnly("maven.modrinth:iris:$it+$minecraft-$loader")
-            modstitchRuntimeOnly("org.antlr:antlr4-runtime:4.13.1")
-            modstitchRuntimeOnly("io.github.douira:glsl-transformer:2.0.1")
-            modstitchRuntimeOnly("org.anarres:jcpp:1.4.14")
-        }
+        modstitchModRuntimeOnly("maven.modrinth:iris:$it+$minecraft-$loader")
+        modstitchRuntimeOnly("org.antlr:antlr4-runtime:4.13.1")
+        modstitchRuntimeOnly("io.github.douira:glsl-transformer:2.0.1")
+        modstitchRuntimeOnly("org.anarres:jcpp:1.4.14")
     }
-
+    deps("jei") {
+        modstitchModCompileOnly("mezz.jei:jei-$minecraft-$loader-api:$it")
+        modstitchModImplementation("mezz.jei:jei-$minecraft-$loader:$it")
+    }
+    deps("rei") {
+        modstitchModCompileOnly("me.shedaniel:RoughlyEnoughItems-api-$loader:$it")
+        modstitchModCompileOnly("me.shedaniel:RoughlyEnoughItems-default-plugin-$loader:$it")
+//        modstitchModRuntimeOnly("me.shedaniel:RoughlyEnoughItems-$loader:$it")
+    }
 }
 
 modstitch {
     minecraftVersion = minecraft
 
     javaTarget = when (minecraft) {
-        "1.21.5", "25w21a" -> 21
+        "1.21.5", "1.21.6-pre1" -> 21
         else -> throw IllegalArgumentException("Unsupported Minecraft version: $minecraft")
     }
 
@@ -76,7 +85,7 @@ modstitch {
             put(
                 "pack_format", when (minecraft) {
                     "1.21.5" -> 71
-                    "25w21a" -> 77
+                    "1.21.6-pre1" -> 77
                     else -> throw IllegalArgumentException("Unsupported Minecraft version: $minecraft")
                 }.toString()
             )

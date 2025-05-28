@@ -1,6 +1,6 @@
 package com.bawnorton.trimica.api;
 
-import com.bawnorton.trimica.compat.ElytraBaseTextureInterceptor;
+import com.bawnorton.trimica.compat.elytratrims.ElytraBaseTextureInterceptor;
 import net.minecraft.core.component.DataComponentGetter;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;

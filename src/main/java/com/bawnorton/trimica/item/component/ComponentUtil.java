@@ -53,13 +53,16 @@ public final class ComponentUtil {
 
         if (type == DataComponents.PROVIDES_TRIM_MATERIAL && instance instanceof ItemStack stack) {
             return (T) new ProvidesTrimMaterial(Holder.direct(Trimica.getMaterialRegistry().getOrCreate(stack)));
-        } else if (type == MaterialAdditions.TYPE) {
-            ArmorTrim trim = instance.get(DataComponents.TRIM);
-            if(trim == null) return null;
-
-            TrimMaterial trimMaterial = trim.material().value();
-            return (T) Trimica.getMaterialRegistry().getIntrinsicAdditions(trimMaterial);
         }
         return null;
+    }
+
+    public static <T> void setFakeComponents(DataComponentSetter setter, DataComponentGetter getter, DataComponentType<T> type, @Nullable T object) {
+        if(type == DataComponents.TRIM && object != null) {
+            ArmorTrim trim = (ArmorTrim) object;
+            TrimMaterial trimMaterial = trim.material().value();
+            MaterialAdditions additions = getter.getOrDefault(MaterialAdditions.TYPE, Trimica.getMaterialRegistry().getIntrinsicAdditions(trimMaterial));
+            setter.set(MaterialAdditions.TYPE, additions);
+        }
     }
 }

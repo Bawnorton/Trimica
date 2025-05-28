@@ -1,3 +1,4 @@
+//? if fabric {
 package com.bawnorton.trimica.platform.fabric.data.provider;
 
 import com.bawnorton.trimica.item.TrimicaItems;
@@ -79,3 +80,4 @@ public class TrimicaAdvancementsProvider extends FabricAdvancementProvider {
                .save(consumer, "trimica:adventure/add_rainbowifier_material");
     }
 }
+//?}

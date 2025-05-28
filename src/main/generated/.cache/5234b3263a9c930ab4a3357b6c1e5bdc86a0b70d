@@ -1,5 +1,7 @@
 // 1.21.5	-999999999-01-01T00:00:00	Trimica/Model Definitions
 5e1e2e66b80f76da3f32f36465c8dca0cbdb4c4e assets/trimica/items/animator.json
+c7431c742ced0c233d7d1374d216fcfe8b8d8523 assets/trimica/items/fake_addition.json
 2b04fe4b6133bbe6796886af0cbafe0b79908f4f assets/trimica/items/rainbowifier.json
 e1689bffbcbee641beed52bb9a320b74368d96fc assets/trimica/models/item/animator.json
+d77634c5a0345177201b2c6878320ecf5ef94712 assets/trimica/models/item/fake_addition.json
 a234c80e9fab31c0bc5084dc2515a20bcd088d1e assets/trimica/models/item/rainbowifier.json

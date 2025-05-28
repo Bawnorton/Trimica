@@ -1,4 +1,4 @@
-package com.bawnorton.trimica.compat;
+package com.bawnorton.trimica.compat.elytratrims;
 
 import com.bawnorton.trimica.api.BaseTextureInterceptor;
 import net.minecraft.resources.ResourceLocation;

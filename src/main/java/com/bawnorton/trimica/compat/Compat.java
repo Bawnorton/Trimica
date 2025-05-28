@@ -1,5 +1,6 @@
 package com.bawnorton.trimica.compat;
 
+import com.bawnorton.trimica.compat.sodium.SodiumCompat;
 import com.bawnorton.trimica.platform.Platform;
 import java.util.function.Consumer;
 

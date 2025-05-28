@@ -22,6 +22,8 @@ public final class TrimicaItems {
             .rarity(Rarity.UNCOMMON)
     );
 
+    public static final Item FAKE_ADDITION = create("fake_addition", Item::new, new Item.Properties());
+
     public static void forEach(BiConsumer<ResourceKey<Item>, Item> consumer) {
         for (ItemHolder itemHolder : ITEMS) {
             consumer.accept(itemHolder.key(), itemHolder.item());

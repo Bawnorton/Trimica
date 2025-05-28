@@ -1,4 +1,4 @@
-package com.bawnorton.trimica.compat;
+package com.bawnorton.trimica.compat.sodium;
 
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 

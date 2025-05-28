@@ -11,6 +11,7 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.item.ItemModel;
 import net.minecraft.client.renderer.item.ItemModelResolver;
+import net.minecraft.client.renderer.item.MissingItemModel;
 import net.minecraft.client.renderer.item.ModelRenderProperties;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureContents;
@@ -120,7 +121,16 @@ public final class TrimPaletteGenerator {
             }
             case CompositeModelAccessor compositeModelAccessor -> getColoursFromModel(compositeModelAccessor.trimica$models().getFirst());
             case ConditionalItemModelAccessor conditionalItemModelAccessor -> getColoursFromModel(conditionalItemModelAccessor.trimica$onFalse());
-            case RangeSelectItemModelAccessor rangeSelectItemModelAccessor -> getColoursFromModel(rangeSelectItemModelAccessor.trimica$fallback());
+            case RangeSelectItemModelAccessor rangeSelectItemModelAccessor -> {
+                ItemModel fallback = rangeSelectItemModelAccessor.trimica$fallback();
+                if (!(fallback instanceof MissingItemModel)) yield getColoursFromModel(fallback);
+
+                ItemModel[] models = rangeSelectItemModelAccessor.trimica$models();
+                if (models.length > 0) {
+                    yield getColoursFromModel(models[0]);
+                }
+                yield Collections.emptyList();
+            }
             //? if fabric {
             //? if <1.21.5 {
             /*case WrapperBakedItemModelAccessor wrapperBakedItemModelAccessor -> getColoursFromModel(wrapperBakedItemModelAccessor.trimica$wrapped());
