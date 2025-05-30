@@ -131,12 +131,14 @@ public final class TrimPaletteGenerator {
                 }
                 yield Collections.emptyList();
             }
-            //? if fabric {
-            //? if <1.21.5 {
+            //? if fabric && <1.21.5 {
             /*case WrapperBakedItemModelAccessor wrapperBakedItemModelAccessor -> getColoursFromModel(wrapperBakedItemModelAccessor.trimica$wrapped());
             *///?}
-            //?}
-            case null, default -> Collections.emptyList();
+            case null -> Collections.emptyList();
+            default -> {
+                Trimica.LOGGER.warn("Unknown ItemModel type: {}", model.getClass().getName());
+                yield Collections.emptyList();
+            }
         };
     }
 

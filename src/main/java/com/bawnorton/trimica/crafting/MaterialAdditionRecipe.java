@@ -40,7 +40,7 @@ public class MaterialAdditionRecipe implements SmithingRecipe {
     private PlacementInfo placementInfo;
 
     public MaterialAdditionRecipe(Ingredient addition) {
-        this.base = Ingredient.of(BuiltInRegistries.ITEM.stream().filter(TrimicaApiImpl.INSTANCE::applyCraftingRecipeInterceptorsForBase));
+        this.base = TrimicaApiImpl.INSTANCE.applyCraftingRecipeInterceptorsForBase(null);
         this.addition = addition;
     }
 

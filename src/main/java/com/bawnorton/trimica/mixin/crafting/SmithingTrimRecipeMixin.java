@@ -1,7 +1,6 @@
 package com.bawnorton.trimica.mixin.crafting;
 
 import com.bawnorton.trimica.api.impl.TrimicaApiImpl;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.SmithingTrimRecipe;
 import org.spongepowered.asm.mixin.Final;
@@ -24,8 +23,8 @@ public abstract class SmithingTrimRecipeMixin {
             method = "<init>",
             at = @At("TAIL")
     )
-    private void allowAllItems(CallbackInfo ci) {
-        addition = Ingredient.of(BuiltInRegistries.ITEM.stream().filter(TrimicaApiImpl.INSTANCE::applyCraftingRecipeInterceptorsForAddition));
-        base = Ingredient.of(BuiltInRegistries.ITEM.stream().filter(TrimicaApiImpl.INSTANCE::applyCraftingRecipeInterceptorsForBase));
+    private void useTrimicaIngredients(CallbackInfo ci) {
+        addition = TrimicaApiImpl.INSTANCE.applyCraftingRecipeInterceptorsForAddition(addition);
+        base = TrimicaApiImpl.INSTANCE.applyCraftingRecipeInterceptorsForBase(base);
     }
 }

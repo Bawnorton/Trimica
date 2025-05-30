@@ -11,6 +11,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.TriState;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.equipment.trim.ArmorTrim;
 import net.minecraft.world.item.equipment.trim.TrimMaterial;
 import org.jetbrains.annotations.ApiStatus;
@@ -60,28 +61,18 @@ public final class TrimicaApiImpl implements TrimicaApi {
         return expectedBaseTexture;
     }
 
-    public boolean applyCraftingRecipeInterceptorsForAddition(Item item) {
+    public Ingredient applyCraftingRecipeInterceptorsForAddition(Ingredient current) {
         for (SortableEndpointHolder<CraftingRecipeInterceptor> endpointHolder : craftingRecipeInterceptors) {
-            TriState state = endpointHolder.endpoint().allowAsAddition(item);
-            if (state == TriState.TRUE) {
-                return true;
-            } else if (state == TriState.FALSE) {
-                return false;
-            }
+            current = endpointHolder.endpoint().getAdditionIngredient(current);
         }
-        return true;
+        return current;
     }
 
-    public boolean applyCraftingRecipeInterceptorsForBase(Item item) {
+    public Ingredient applyCraftingRecipeInterceptorsForBase(Ingredient current) {
         for (SortableEndpointHolder<CraftingRecipeInterceptor> endpointHolder : craftingRecipeInterceptors) {
-            TriState state = endpointHolder.endpoint().allowAsBase(item);
-            if (state == TriState.TRUE) {
-                return true;
-            } else if (state == TriState.FALSE) {
-                return false;
-            }
+            current = endpointHolder.endpoint().getBaseIngredient(current);
         }
-        return false;
+        return current;
     }
 
     public TrimPalette applyPaletteInterceptorsForGeneration(TrimPalette generated, TrimMaterial material) {

@@ -8,7 +8,6 @@ import com.bawnorton.trimica.mixin.accessor.LootTableAccessor;
 import com.bawnorton.trimica.mixin.accessor.NestedLootTableAccessor;
 import com.bawnorton.trimica.mixin.accessor.TagEntryAccessor;
 import com.mojang.datafixers.util.Either;
-import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
