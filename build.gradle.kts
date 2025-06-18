@@ -54,11 +54,12 @@ modstitch {
     minecraftVersion = minecraft
 
     javaTarget = when (minecraft) {
-        "1.21.5", "1.21.6-pre1" -> 21
+        "1.21.5", "1.21.6" -> 21
         else -> throw IllegalArgumentException("Unsupported Minecraft version: $minecraft")
     }
 
     parchment {
+        minecraftVersion = "1.21.5"
         deps("parchment") { mappingsVersion = it }
     }
 
@@ -85,7 +86,7 @@ modstitch {
             put(
                 "pack_format", when (minecraft) {
                     "1.21.5" -> 71
-                    "1.21.6-pre1" -> 77
+                    "1.21.6" -> 77
                     else -> throw IllegalArgumentException("Unsupported Minecraft version: $minecraft")
                 }.toString()
             )
@@ -113,7 +114,7 @@ modstitch {
     }
 
     loom {
-        fabricLoaderVersion = "0.16.13"
+        fabricLoaderVersion = "0.16.14"
 
         configureLoom {
             fun fapi(action: FabricApiExtension.() -> Unit) = (project.extensions.findByName("fabricApi") as FabricApiExtension).action()
@@ -126,6 +127,7 @@ modstitch {
                     outputDirectory = rootProject.file("src/main/generated")
                 }
 
+                @Suppress("UnstableApiUsage")
                 configureTests {
                     enableGameTests = false
                     eula = true
@@ -210,7 +212,9 @@ sourceSets.main {
 stonecutter {
     consts(
         "fabric" to (loader == "fabric"),
-        "neoforge" to (loader == "neoforge")
+        "neoforge" to (loader == "neoforge"),
+        "rei" to (deps("rei") != null),
+        "jei" to (deps("jei") != null)
     )
 }
 
@@ -239,13 +243,21 @@ tasks {
         filesMatching("trimica-fabric.mixins.json5") {
             expand(refmap)
         }
+
+        exclude {
+            val name = it.name
+            val awExclude = it.name.endsWith(".accesswidener") && name != "$minecraft.accesswidener"
+            val atExclude = it.name.endsWith("-accesstransformer.cfg") && name != "$minecraft-accesstransformer.cfg"
+            awExclude || atExclude
+        }
     }
 
     generateModMetadata {
-        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+        duplicatesStrategy = DuplicatesStrategy.WARN
     }
 
     clean {
         delete(rootProject.layout.buildDirectory)
+        delete(project.file("build"))
     }
 }

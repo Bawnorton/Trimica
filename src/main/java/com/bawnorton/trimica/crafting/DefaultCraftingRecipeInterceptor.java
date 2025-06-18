@@ -21,7 +21,7 @@ public class DefaultCraftingRecipeInterceptor implements CraftingRecipeIntercept
 
     private boolean allowAsAddition(Item item) {
         HolderSet<Item> blacklisted = getTag(TrimicaTags.SMITHING_ADDITION_BLACKLIST);
-        return !blacklisted.contains(BuiltInRegistries.ITEM.wrapAsHolder(item));
+        return !blacklisted.contains(item.builtInRegistryHolder());
     }
 
     @Override
@@ -35,7 +35,7 @@ public class DefaultCraftingRecipeInterceptor implements CraftingRecipeIntercept
         if (equippable == null) return false;
 
         HolderSet<Item> blacklisted = getTag(TrimicaTags.SMITHING_BASE_BLACKLIST);
-        if (blacklisted.contains(BuiltInRegistries.ITEM.wrapAsHolder(item))) return false;
+        if (blacklisted.contains(item.builtInRegistryHolder())) return false;
         if (!Platform.isModLoaded("elytratrims") && item == Items.ELYTRA) return false;
 
         EquipmentSlot slot = equippable.slot();

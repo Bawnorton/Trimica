@@ -1,3 +1,4 @@
+//? if rei {
 package com.bawnorton.trimica.compat.rei;
 
 import com.bawnorton.trimica.item.TrimicaItems;
@@ -34,3 +35,4 @@ public class TrimicaSmithingDisplayFactory {
         return displays;
     }
 }
+//?}

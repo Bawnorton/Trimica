@@ -52,15 +52,20 @@ public class TrimicaCommandManager {
         HolderLookup.RegistryLookup<TrimPattern> patternLookup = registryAccess.lookupOrThrow(Registries.TRIM_PATTERN);
         ServerLevel level = source.getLevel();
         BlockPos.MutableBlockPos pos = BlockPos.containing(source.getPosition()).mutable();
-        List<? extends Holder<TrimMaterial>> materials = allMaterials
-                ? registryAccess.lookupOrThrow(Registries.ITEM).listElements().map(itemRef -> {
-            Item item = itemRef.value();
-            ProvidesTrimMaterial trimMaterialProvider = item.getDefaultInstance().get(DataComponents.PROVIDES_TRIM_MATERIAL);
-            if (trimMaterialProvider == null) return null;
 
-            return trimMaterialProvider.material().unwrap(registryAccess).orElse(null);
-        }).filter(Objects::nonNull).toList()
-                : registryAccess.lookupOrThrow(Registries.TRIM_MATERIAL).listElements().toList();
+        List<? extends Holder<TrimMaterial>> materials;
+        if (allMaterials) {
+            materials = registryAccess.lookupOrThrow(Registries.ITEM).listElements().map(itemRef -> {
+                Item item = itemRef.value();
+                ProvidesTrimMaterial trimMaterialProvider = item.getDefaultInstance().get(DataComponents.PROVIDES_TRIM_MATERIAL);
+                if (trimMaterialProvider == null) return null;
+
+                return trimMaterialProvider.material().unwrap(registryAccess).orElse(null);
+            }).filter(Objects::nonNull).toList();
+        } else {
+            materials = registryAccess.lookupOrThrow(Registries.TRIM_MATERIAL).listElements().toList();
+        }
+
         source.sendSystemMessage(Component.literal("Summoning %s armour stands at %s".formatted(
                 patternLookup.listElementIds().count() * materials.size(), pos.toShortString()
         )));

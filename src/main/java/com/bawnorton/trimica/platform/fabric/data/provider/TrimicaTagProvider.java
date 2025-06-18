@@ -13,6 +13,10 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import java.util.concurrent.CompletableFuture;
 
+//? if >1.21.5 {
+/*import net.minecraft.data.tags.TagAppender;
+*///?}
+
 public class TrimicaTagProvider extends FabricTagProvider.ItemTagProvider {
     public TrimicaTagProvider(FabricDataOutput output, CompletableFuture<HolderLookup.Provider> completableFuture) {
         super(output, completableFuture, null);
@@ -38,7 +42,10 @@ public class TrimicaTagProvider extends FabricTagProvider.ItemTagProvider {
     @SafeVarargs
     private void addToTag(TagKey<Item> tagKey, TagKey<Item>... tags) {
         //? if >1.21.5 {
-        /*valueLookupBuilder(tagKey).forceAddTag(tags);
+        /*TagAppender<Item, Item> appender = valueLookupBuilder(tagKey);
+        for (TagKey<Item> tag : tags) {
+            appender.forceAddTag(tag);
+        }
         *///?} else {
         getOrCreateTagBuilder(tagKey).forceAddTags(tags);
          //?}

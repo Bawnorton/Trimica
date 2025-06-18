@@ -3,7 +3,9 @@ package com.bawnorton.trimica.client.mixin;
 import com.bawnorton.trimica.tags.TrimicaTags;
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.component.DataComponentHolder;
+import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
@@ -24,7 +26,13 @@ public abstract class ItemStackMixin implements DataComponentHolder {
     )
     private List<Component> addTrimMaterialAdditionLine(List<Component> original) {
         if(is(TrimicaTags.MATERIAL_ADDITIONS)) {
-            original.add(Component.translatable("trimica.material_addition").withStyle(ChatFormatting.GOLD));
+            if (Screen.hasShiftDown()) {
+                original.add(Component.translatable("trimica.material_addition.shift").withStyle(ChatFormatting.GOLD));
+                original.add(CommonComponents.space().append(Component.translatable("trimica.material_addition.details.1").withStyle(ChatFormatting.GRAY)));
+                original.add(CommonComponents.space().append(Component.translatable("trimica.material_addition.details.2").withStyle(ChatFormatting.RED)));
+            } else {
+                original.add(Component.translatable("trimica.material_addition.no_shift").withStyle(ChatFormatting.GOLD));
+            }
         }
         if(is(ItemTags.TRIM_MATERIALS)) {
             original.add(Component.translatable("trimica.trim_material").withStyle(ChatFormatting.GREEN));

@@ -20,8 +20,12 @@
     "accessor.SmithingTrimRecipeAccessor",
     "accessor.TagEntryAccessor",
     "command.CommadsMixin",
+    //? if jei {
     "compat.jei.SmithingTrimCategoryExtensionMixin",
+    //?}
+    //? if rei {
     "compat.rei.DefaultPluginMixin",
+    //?}
     "component.DataComponentHolderMixin",
     "component.DataComponentMap$Builder$SimpleMapMixin",
     "component.DataComponentsMixin",

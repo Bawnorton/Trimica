@@ -1,3 +1,4 @@
+//? if rei {
 package com.bawnorton.trimica.mixin.compat.rei;
 
 import com.bawnorton.trimica.compat.rei.TrimicaSmithingDisplayFactory;
@@ -34,3 +35,4 @@ public abstract class DefaultPluginMixin {
         return TrimicaSmithingDisplayFactory::create;
     }
 }
+//?}

@@ -25,7 +25,7 @@ public abstract class CommadsMixin {
                     remap = false
             )
     )
-    private void registerTrimicaCommands(CallbackInfo ci, @Local(argsOnly = true)CommandBuildContext buildContext) {
+    private void registerTrimicaCommands(CallbackInfo ci, @Local(argsOnly = true) CommandBuildContext buildContext) {
         TrimicaCommandManager.init(dispatcher, buildContext);
     }
 }

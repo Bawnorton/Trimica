@@ -77,10 +77,11 @@ public final class RuntimeTrimAtlas extends TextureAtlas {
     }
 
     public void clearTextureData() {
-        asAccessor().trimica$sprites(List.of());
-        asAccessor().trimica$animatedTextures(List.of());
-        asAccessor().trimica$texturesByName(Map.of());
-        asAccessor().trimica$missingSprite(null);
+        TextureAtlasAccessor accessor = asAccessor();
+        accessor.trimica$sprites(List.of());
+        accessor.trimica$animatedTextures(List.of());
+        accessor.trimica$texturesByName(Map.of());
+        accessor.trimica$missingSprite(null);
     }
 
     @SuppressWarnings("resource")

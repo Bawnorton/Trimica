@@ -1,5 +1,5 @@
-//? if neoforge {
-/*package com.bawnorton.trimica.mixin.compat.jei;
+//? if jei {
+package com.bawnorton.trimica.mixin.compat.jei;
 
 import com.bawnorton.trimica.item.TrimicaItems;
 import mezz.jei.api.gui.builder.IIngredientAcceptor;
@@ -23,12 +23,4 @@ public abstract class SmithingTrimCategoryExtensionMixin {
         ingredientAcceptor.add(TrimicaItems.FAKE_ADDITION);
     }
 }
-*///?} else {
-package com.bawnorton.trimica.mixin.compat.jei;
-
-import com.bawnorton.trimica.Trimica;
-import org.spongepowered.asm.mixin.Mixin;
-
-@Mixin(Trimica.class)
-public abstract class SmithingTrimCategoryExtensionMixin {
-}
+//?}

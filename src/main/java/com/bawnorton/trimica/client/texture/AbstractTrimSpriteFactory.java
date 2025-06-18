@@ -31,7 +31,7 @@ public abstract class AbstractTrimSpriteFactory implements RuntimeTrimSpriteFact
     }
 
     @Override
-    public TrimSpriteContents create(ResourceLocation texture, ArmorTrim trim, @Nullable DataComponentGetter componentGetter) {
+    public TrimSpriteContents create(ResourceLocation texture, @Nullable ArmorTrim trim, @Nullable DataComponentGetter componentGetter) {
         if(trim == null) {
             return TrimSpriteContents.noPalette(new SpriteContents(texture, new FrameSize(width, height), empty(), ResourceMetadata.EMPTY));
         }
