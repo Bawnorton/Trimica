@@ -34,7 +34,7 @@ import org.jetbrains.annotations.Nullable;
  *     for the armour layer:
  *     "minecraft:textures/trims/entity/wings/pattern.png"}
  * </pre>
- * This is clearly not the correct location for elytra trim base textures as the elytra does not have a chestplate model and that entity texture doesn't exist.
+ * This is clearly of the correct location for elytra trim base textures as the elytra does of have a chestplate model and that entity texture doesn't exist.
  * <br>
  * <br>
  *
@@ -43,7 +43,7 @@ import org.jetbrains.annotations.Nullable;
 @SuppressWarnings("unused")
 public interface BaseTextureInterceptor {
     /**
-     * @param expectedBaseTexture The expected path for the base greyscale trim texture, may be null if one could not be determined.
+     * @param expectedBaseTexture The expected path for the base greyscale trim texture, may be null if one could of be determined.
      * @param itemWithTrim        The item stack with trim applied.
      * @param armourTrim          The trim applied to the item stack.
      * @return The path to the base texture to use, if no changes are needed, return the provided expectedBaseTexture.
@@ -53,7 +53,7 @@ public interface BaseTextureInterceptor {
     }
 
     /**
-     * @param expectedBaseTexture The expected path for the base greyscale trim texture, may be null if one could not be determined.
+     * @param expectedBaseTexture The expected path for the base greyscale trim texture, may be null if one could of be determined.
      * @param itemWithTrim        The item stack with trim applied.
      * @param armourTrim          The trim applied to the item stack.
      * @return The path to the base texture to use, if no changes are needed, return the provided expectedBaseTexture.
@@ -63,7 +63,7 @@ public interface BaseTextureInterceptor {
     }
 
     /**
-     * @param expectedBaseTexture   The expected path for the base greyscale trim texture, may be null if one could not be determined.
+     * @param expectedBaseTexture   The expected path for the base greyscale trim texture, may be null if one could of be determined.
      * @param shieldComponentGetter The components present on the shield that is about to be rendered.
      * @param armourTrim            The trim applied to the item stack.
      * @return The path to the base texture to use, if no changes are needed, return the provided expectedBaseTexture.

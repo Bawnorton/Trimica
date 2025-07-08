@@ -1,11 +1,9 @@
 package com.bawnorton.trimica.client.mixin.render;
 
 import com.bawnorton.trimica.client.TrimicaClient;
-import com.bawnorton.trimica.client.model.TrimModelId;
 import com.bawnorton.trimica.client.palette.TrimPalette;
 import com.bawnorton.trimica.client.texture.DynamicTrimTextureAtlasSprite;
 import com.bawnorton.trimica.compat.Compat;
-import com.bawnorton.trimica.item.component.MaterialAdditions;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.model.ShieldModel;
@@ -14,12 +12,9 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.renderer.special.ShieldSpecialRenderer;
 import net.minecraft.core.component.DataComponentMap;
-import net.minecraft.core.component.DataComponents;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.profiling.Profiler;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.item.ItemDisplayContext;
-import net.minecraft.world.item.equipment.trim.ArmorTrim;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -41,16 +36,9 @@ public abstract class ShieldSpecialRendererMixin {
     private void renderTrim(DataComponentMap dataComponentMap, ItemDisplayContext itemDisplayContext, PoseStack poseStack, MultiBufferSource multiBufferSource, int i, int j, boolean bl, CallbackInfo ci) {
         ProfilerFiller profiler = Profiler.get();
         profiler.push("trimica:shield");
-        ArmorTrim trim = dataComponentMap != null ? dataComponentMap.get(DataComponents.TRIM) : null;
-        if (trim == null) return;
+        DynamicTrimTextureAtlasSprite dynamicSprite = TrimicaClient.getRuntimeAtlases().getShieldSprite(dataComponentMap);
+        if (dynamicSprite == null) return;
 
-        TrimModelId trimModelId = TrimModelId.fromTrim("shield", trim, null);
-        ResourceLocation overlayLocation = trimModelId.asSingle();
-        MaterialAdditions addition = dataComponentMap.get(MaterialAdditions.TYPE);
-        if (addition != null) {
-            overlayLocation = addition.apply(overlayLocation);
-        }
-        DynamicTrimTextureAtlasSprite dynamicSprite = TrimicaClient.getRuntimeAtlases().getShieldAtlas(trim.pattern().value()).getSprite(dataComponentMap, trim.material().value(), overlayLocation);
         TrimPalette palette = dynamicSprite.getPalette();
         int light = palette == null ? i : (palette.isEmissive() ? LightTexture.FULL_BRIGHT : i);
         if(palette != null && palette.isAnimated()) {

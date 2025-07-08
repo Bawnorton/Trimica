@@ -4,6 +4,8 @@ import com.bawnorton.trimica.Trimica;
 import com.bawnorton.trimica.client.TrimicaClient;
 import com.bawnorton.trimica.client.extend.ItemStackRenderState$LayerRenderStateExtender;
 import com.bawnorton.trimica.client.mixin.accessor.BlockModelWrapperAccessor;
+import com.bawnorton.trimica.client.model.TrimItemModelFactory;
+import com.bawnorton.trimica.client.model.TrimmedItemModelWrapper;
 import com.bawnorton.trimica.client.palette.TrimPalette;
 import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
@@ -60,7 +62,8 @@ public abstract class BlockModelWrapperMixin {
         ProfilerFiller profiler = Profiler.get();
         profiler.push("trimica:item_runtime_atlas");
         ArmorTrim trim = stack.get(DataComponents.TRIM);
-        ItemModel newModel = TrimicaClient.getItemModelFactory().getOrCreateModel((ItemModel) this, stack, trim);
+        TrimItemModelFactory itemModelFactory = TrimicaClient.getItemModelFactory();
+        TrimmedItemModelWrapper newModel = itemModelFactory.getOrCreateModel((ItemModel) this, stack, trim);
         profiler.pop();
         profiler.push("trimica:item_overlay");
         List<ItemTintSource> originalTints = new ArrayList<>(tints);
@@ -72,7 +75,7 @@ public abstract class BlockModelWrapperMixin {
                 properties.particleIcon(),
                 properties.transforms()
         );
-        if(newModel instanceof BlockModelWrapperAccessor blockModelWrapper) {
+        if(newModel.model() instanceof BlockModelWrapperAccessor blockModelWrapper) {
             tints = blockModelWrapper.trimica$tints();
             quads = blockModelWrapper.trimica$quads();
             extents = blockModelWrapper.trimica$extents();
@@ -105,11 +108,17 @@ public abstract class BlockModelWrapperMixin {
         ItemStackRenderState.LayerRenderState overlayRenderState = itemStackRenderState.newLayer();
         ItemStackRenderState$LayerRenderStateExtender extender = (ItemStackRenderState$LayerRenderStateExtender) overlayRenderState;
         extender.trimica$markAsTrimOverlay();
-        TrimPalette palette = TrimicaClient.getItemModelFactory().getPalette();
-        boolean emissive = palette != null && palette.isEmissive();
-        extender.trimica$setEmissive(emissive);
+        TrimPalette palette = newModel.palette();
+        ResourceLocation modelLocation = newModel.location();
+        itemStackRenderState.appendModelIdentityElement(modelLocation);
+        extender.trimica$setEmissive(palette != null && palette.isEmissive());
         if(stack.hasFoil()) {
-            overlayRenderState.setFoilType(ItemStackRenderState.FoilType.SPECIAL);
+            ItemStackRenderState.FoilType foilType = ItemStackRenderState.FoilType.SPECIAL;
+            overlayRenderState.setFoilType(foilType);
+            itemStackRenderState.appendModelIdentityElement(foilType);
+        }
+        if (palette != null && palette.isAnimated()) {
+            itemStackRenderState.setAnimated();
         }
 
         overlayRenderState.setRenderType(RenderType.itemEntityTranslucentCull(overlayAtlas));

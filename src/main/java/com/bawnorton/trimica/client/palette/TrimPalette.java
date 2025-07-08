@@ -71,6 +71,24 @@ public class TrimPalette {
         return ARGB.toABGR(hsbColours.getFirst().colour());
     }
 
+    public String getMetadataString() {
+        StringBuilder metadata = new StringBuilder();
+        if(isBuiltin()) {
+            metadata.append("built-in_");
+        }
+        if (isEmissive()) {
+            metadata.append("emissive_");
+        }
+        if (isAnimated()) {
+            metadata.append("animated_");
+        }
+        if (metadata.isEmpty()) {
+            metadata.append("default_");
+        }
+        metadata.deleteCharAt(metadata.length() - 1);
+        return metadata.toString();
+    }
+
     @Override
     public boolean equals(Object obj) {
         if(obj instanceof TrimPalette other) {

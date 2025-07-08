@@ -43,7 +43,7 @@ public class TrimItemSpriteFactory extends AbstractTrimSpriteFactory {
         TrimPalette palette = TrimicaClient.getPalettes().getOrGeneratePalette(material, assetResourceKey, texture, componentGetter);
         ResourceLocation basePatternTexture = getPatternBasedTrimOverlay(armourType, trim);
         basePatternTexture = TrimicaApiImpl.INSTANCE.applyBaseTextureInterceptorsForItem(basePatternTexture, stack, trim);
-        return new TrimSpriteMetadata(palette, basePatternTexture, armourType);
+        return new TrimSpriteMetadata(trim, palette, basePatternTexture, armourType);
     }
 
     @Override

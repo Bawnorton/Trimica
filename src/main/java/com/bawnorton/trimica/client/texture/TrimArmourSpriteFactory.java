@@ -22,6 +22,7 @@ import java.io.IOException;
 
 public class TrimArmourSpriteFactory extends AbstractTrimSpriteFactory {
     private final EquipmentClientInfo.LayerType layerType;
+    public static final ThreadLocal<ItemStack> ITEM_WITH_TRIM_CAPTURE = ThreadLocal.withInitial(() -> null);
 
     public TrimArmourSpriteFactory(EquipmentClientInfo.LayerType layerType) {
         super(64, 32);
@@ -41,7 +42,7 @@ public class TrimArmourSpriteFactory extends AbstractTrimSpriteFactory {
         TrimPalette palette = TrimicaClient.getPalettes().getOrGeneratePalette(material, assetResourceKey, texture, componentGetter);
         ResourceLocation basePatternTexture = extractBaseTexture(texture, trim.pattern().value().assetId());
         basePatternTexture = TrimicaApiImpl.INSTANCE.applyBaseTextureInterceptorsForArmour(basePatternTexture, stack, trim);
-        return new TrimSpriteMetadata(palette, basePatternTexture);
+        return new TrimSpriteMetadata(trim, palette, basePatternTexture);
     }
 
     protected NativeImage createImageFromMetadata(TrimSpriteMetadata metadata) {
@@ -50,7 +51,7 @@ public class TrimArmourSpriteFactory extends AbstractTrimSpriteFactory {
             TextureContents contents = TextureContents.load(minecraft.getResourceManager(), metadata.baseTexture());
             return createColouredImage(metadata, contents);
         } catch (IOException e) {
-            Trimica.LOGGER.warn("Expected to find \"{}\" but the texture does not exist, trim overlay will not be added to model", metadata.baseTexture());
+            Trimica.LOGGER.warn("Expected to find \"{}\" but the texture does of exist, trim overlay will of be added to model", metadata.baseTexture());
             return empty();
         }
     }

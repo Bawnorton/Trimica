@@ -2,6 +2,7 @@ package com.bawnorton.trimica.client.texture;
 
 import com.bawnorton.trimica.client.palette.AnimatedTrimPalette;
 import com.bawnorton.trimica.client.palette.TrimPalette;
+import com.bawnorton.trimica.platform.Platform;
 import com.mojang.blaze3d.platform.NativeImage;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
@@ -17,6 +18,8 @@ import net.minecraft.util.ARGB;
 import net.minecraft.world.item.equipment.trim.ArmorTrim;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import java.io.IOException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -74,11 +77,28 @@ public abstract class AbstractTrimSpriteFactory implements RuntimeTrimSpriteFact
 
     protected NativeImage createColouredImage(TrimSpriteMetadata metadata, TextureContents contents) {
         TrimPalette palette = metadata.palette();
+        NativeImage grey = contents.image();
         NativeImage coloured;
+        Path debug = Platform.getDebugDirectory().resolve(metadata.toDebugPath());
+        if(Platform.isDev()) {
+            try {
+                debug.toFile().mkdirs();
+                grey.writeToFile(debug.resolve("greyscale.png"));
+            } catch (IOException e) {
+                throw new RuntimeException("Failed to write greyscale pattern image", e);
+            }
+        }
         if (palette.isAnimated()) {
-            coloured = createColouredPatternAnimation(contents.image(), palette.asAnimated());
+            coloured = createColouredPatternAnimation(grey, palette.asAnimated());
         } else {
-            coloured = createColouredPatternImage(contents.image(), palette.getColours(), palette.isBuiltin());
+            coloured = createColouredPatternImage(grey, palette.getColours(), palette.isBuiltin());
+        }
+        if(Platform.isDev()) {
+            try {
+                coloured.writeToFile(debug.resolve("coloured.png"));
+            } catch (IOException e) {
+                throw new RuntimeException("Failed to write coloured pattern image", e);
+            }
         }
         contents.close();
         return coloured;
@@ -89,21 +109,36 @@ public abstract class AbstractTrimSpriteFactory implements RuntimeTrimSpriteFact
         IntList[] colourPositions = new IntList[256];
 
         int count = 0;
+        boolean encounteredTransparent = false;
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
-                int pixel = greyscalePatternImage.getPixel(x, y) & 0xFF;
-                IntList positions = colourPositions[pixel];
+                int pixel = greyscalePatternImage.getPixel(x, y);
+                int alpha = (pixel >> 24) & 0xFF;
+                if (alpha == 0) {
+                    coloured.setPixel(x, y, 0);
+                    encounteredTransparent = true;
+                    continue;
+                }
+
+                int shade = pixel & 0xFF;
+                IntList positions = colourPositions[shade];
                 if (positions == null) {
                     positions = new IntArrayList();
-                    colourPositions[pixel] = positions;
+                    colourPositions[shade] = positions;
                     count++;
                 }
                 positions.add(x);
                 positions.add(y);
             }
         }
+        if (count == 0) {
+            return empty();
+        }
+        if (encounteredTransparent) {
+            count++;
+        }
 
-        int paletteIndex = count - 1;
+        int paletteIndex = Math.min(count - 1, TrimPalette.PALETTE_SIZE - 1);
         for (int colour = 0; colour < 256; colour++) {
             IntList positions = colourPositions[colour];
             if (positions == null) continue;
@@ -121,9 +156,9 @@ public abstract class AbstractTrimSpriteFactory implements RuntimeTrimSpriteFact
                 paletteIndex--;
             }
 
-            for (int j = 0; j < positions.size(); j += 2) {
-                int x = positions.getInt(j);
-                int y = positions.getInt(j + 1);
+            for (int i = 0; i < positions.size(); i += 2) {
+                int x = positions.getInt(i);
+                int y = positions.getInt(i + 1);
                 coloured.setPixel(x, y, builtin ? paletteColour : applyGrayscaleMask(paletteColour, colour));
             }
         }

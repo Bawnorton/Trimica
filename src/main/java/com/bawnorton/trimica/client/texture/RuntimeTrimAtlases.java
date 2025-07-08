@@ -2,9 +2,14 @@ package com.bawnorton.trimica.client.texture;
 
 import com.bawnorton.trimica.Trimica;
 import com.bawnorton.trimica.client.TrimicaClient;
+import com.bawnorton.trimica.client.model.TrimModelId;
+import com.bawnorton.trimica.compat.Compat;
+import com.bawnorton.trimica.item.component.MaterialAdditions;
 import net.minecraft.client.resources.model.EquipmentClientInfo;
 import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
+import net.minecraft.core.component.DataComponentGetter;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.equipment.trim.ArmorTrim;
@@ -32,10 +37,15 @@ public final class RuntimeTrimAtlases {
         Registry<TrimPattern> patterns = registryAccess.lookup(Registries.TRIM_PATTERN).orElseThrow();
         Registry<TrimMaterial> materials = registryAccess.lookup(Registries.TRIM_MATERIAL).orElseThrow();
 
+        List<EquipmentClientInfo.LayerType> layerTypes = new ArrayList<>();
+        layerTypes.add(EquipmentClientInfo.LayerType.HUMANOID);
+        layerTypes.add(EquipmentClientInfo.LayerType.HUMANOID_LEGGINGS);
+        Compat.ifElytraTrimsPresent(() -> layerTypes.add(EquipmentClientInfo.LayerType.WINGS));
+
         for (TrimPattern pattern : patterns) {
             ResourceLocation patternId = pattern.assetId();
             Map<EquipmentClientInfo.LayerType, RuntimeTrimAtlas> atlases = new HashMap<>();
-            for (EquipmentClientInfo.LayerType layerType : List.of(EquipmentClientInfo.LayerType.HUMANOID, EquipmentClientInfo.LayerType.HUMANOID_LEGGINGS)) {
+            for (EquipmentClientInfo.LayerType layerType : layerTypes) {
                 atlases.put(layerType, new RuntimeTrimAtlas(
                         Trimica.rl("%s/%s/%s.png".formatted(patternId.getNamespace(), patternId.getPath(), layerType.getSerializedName())),
                         new TrimArmourSpriteFactory(layerType),
@@ -88,8 +98,17 @@ public final class RuntimeTrimAtlases {
         return shieldAtlases.get(pattern);
     }
 
-    public void registerModelAtlasModifiedListener(Consumer<RuntimeTrimAtlas> consumer) {
-        modelAtlasModifiedListeners.add(consumer);
+    public DynamicTrimTextureAtlasSprite getShieldSprite(DataComponentGetter getter) {
+        ArmorTrim trim = getter != null ? getter.get(DataComponents.TRIM) : null;
+        if (trim == null) return null;
+
+        TrimModelId trimModelId = TrimModelId.fromTrim("shield", trim, null);
+        ResourceLocation overlayLocation = trimModelId.asSingle();
+        MaterialAdditions addition = getter.get(MaterialAdditions.TYPE);
+        if (addition != null) {
+            overlayLocation = addition.apply(overlayLocation);
+        }
+        return getShieldAtlas(trim.pattern().value()).getSprite(getter, trim.material().value(), overlayLocation);
     }
 
     public interface TrimFactory {

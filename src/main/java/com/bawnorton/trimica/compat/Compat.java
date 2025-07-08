@@ -10,4 +10,10 @@ public class Compat {
             consumer.accept(new SodiumCompat());
         }
     }
+
+    public static void ifElytraTrimsPresent(Runnable runnable) {
+        if (Platform.isModLoaded("elytratrims")) {
+            runnable.run();
+        }
+    }
 }

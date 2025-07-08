@@ -40,17 +40,16 @@ public final class TrimItemModelFactory {
     private final Map<ResourceLocation, ItemModel> models = new HashMap<>();
     private final Map<ResourceLocation, TrimPalette> palettes = new HashMap<>();
     private ModelManager.ResolvedModels resolvedModels;
-    private TrimPalette currentPalette;
 
-    public ItemModel getOrCreateModel(ItemModel base, ItemStack stack, ArmorTrim trim) {
+    public TrimmedItemModelWrapper getOrCreateModel(ItemModel base, ItemStack stack, ArmorTrim trim) {
         Equippable equippable = stack.get(DataComponents.EQUIPPABLE);
         if (equippable == null) {
-            return base;
+            return TrimmedItemModelWrapper.noTrim(base);
         }
         Optional<ResourceKey<EquipmentAsset>> assetId = equippable.assetId();
         ArmorType armourType = ComponentUtil.getArmourType(stack);
         if (armourType == null) {
-            return base;
+            return TrimmedItemModelWrapper.noTrim(base);
         }
         TrimModelId trimModelId = TrimModelId.fromTrim(armourType.getName(), trim, assetId.orElse(null));
         ResourceLocation overlayLocation = trimModelId.asSingle();
@@ -61,13 +60,11 @@ public final class TrimItemModelFactory {
         ResourceLocation baseModelLocation = stack.getOrDefault(DataComponents.ITEM_MODEL, BuiltInRegistries.ITEM.getKey(stack.getItem()));
         ResourceLocation newModelLocation = overlayLocation.withPrefix(baseModelLocation.toString().replace(":", "_") + "/");
         if (models.containsKey(newModelLocation)) {
-            currentPalette = palettes.get(newModelLocation);
-            return models.get(newModelLocation);
+            return new TrimmedItemModelWrapper(models.get(newModelLocation), palettes.get(newModelLocation), newModelLocation);
         }
         ItemModel model = createModel(baseModelLocation, newModelLocation, overlayLocation, base, stack, trim);
         models.put(newModelLocation, model);
-        currentPalette = palettes.get(newModelLocation);
-        return model;
+        return new TrimmedItemModelWrapper(model, palettes.get(newModelLocation), newModelLocation);
     }
 
     private ItemModel createModel(ResourceLocation baseModelLocation, ResourceLocation newModelLocation, ResourceLocation overlayLocation, ItemModel base, ItemStack stack, ArmorTrim trim) {
@@ -122,7 +119,7 @@ public final class TrimItemModelFactory {
 
             @Override
             public @NotNull TextureAtlasSprite reportMissingReference(@NotNull String string, @NotNull ModelDebugName modelDebugName) {
-                return sprite;
+                throw new IllegalStateException("Dynamic sprite missing: \"%s\" in model: \"%s\"".formatted(string, modelDebugName.debugName()));
             }
         };
         ModelBakery.MissingModels missingModels = ((ModelManagerAccessor) modelManager).trimica$missingModels();
@@ -134,10 +131,6 @@ public final class TrimItemModelFactory {
         );
         BlockModelWrapper.Unbaked unbaked = new BlockModelWrapper.Unbaked(newModelLocation, ((BlockModelWrapperAccessor) base).trimica$tints());
         return unbaked.bake(bakingContext);
-    }
-
-    public TrimPalette getPalette() {
-        return currentPalette;
     }
 
     public void setResolvedModels(ModelManager.ResolvedModels resolvedModels) {

@@ -29,7 +29,7 @@ public class TrimShieldSpriteFactory extends AbstractTrimSpriteFactory {
         TrimPalette palette = TrimicaClient.getPalettes().getOrGeneratePalette(material, null, texture, componentGetter);
         ResourceLocation basePatternTexture = getPatternBasedTrimOverlay(trim);
         basePatternTexture = TrimicaApiImpl.INSTANCE.applyBaseTextureInterceptorsForShield(basePatternTexture, componentGetter, trim);
-        return new TrimSpriteMetadata(palette, basePatternTexture);
+        return new TrimSpriteMetadata(trim, palette, basePatternTexture);
     }
 
     @Override
@@ -44,7 +44,7 @@ public class TrimShieldSpriteFactory extends AbstractTrimSpriteFactory {
             }
             return createColouredImage(metadata, contents);
         } catch (IOException e) {
-            Trimica.LOGGER.warn("Expected to find \"{}\" but the texture does not exist, trim overlay will not be added to model", metadata.baseTexture());
+            Trimica.LOGGER.warn("Expected to find \"{}\" but the texture does of exist, trim overlay will of be added to model", metadata.baseTexture());
             return empty();
         }
     }

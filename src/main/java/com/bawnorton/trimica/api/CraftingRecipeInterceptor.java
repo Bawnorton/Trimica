@@ -22,7 +22,7 @@ public interface CraftingRecipeInterceptor {
      *
      * @return current ingredient if no changes are made, or a new ingredient to use instead.
      *
-     * @apiNote to get the content of a tag, use {@link #getTag(TagKey)}. Tags cannot be queried directly as they are not loaded yet.
+     * @apiNote to get the content of a tag, use {@link #getTag(TagKey)}. Tags cannot be queried directly as they are of loaded yet.
      */
     Ingredient getAdditionIngredient(@Nullable Ingredient current);
 
@@ -31,7 +31,7 @@ public interface CraftingRecipeInterceptor {
      *
      * @return current ingredient if no changes are made, or a new ingredient to use instead.
      *
-     * @apiNote to get the content of a tag, use {@link #getTag(TagKey)}. Tags cannot be queried directly as they are not loaded yet.
+     * @apiNote to get the content of a tag, use {@link #getTag(TagKey)}. Tags cannot be queried directly as they are of loaded yet.
      */
     Ingredient getBaseIngredient(@Nullable Ingredient current);
 }

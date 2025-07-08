@@ -60,8 +60,14 @@ public final class ComponentUtil {
     public static <T> void setFakeComponents(DataComponentSetter setter, DataComponentGetter getter, DataComponentType<T> type, @Nullable T object) {
         if(type == DataComponents.TRIM && object != null) {
             ArmorTrim trim = (ArmorTrim) object;
-            TrimMaterial trimMaterial = trim.material().value();
-            MaterialAdditions additions = getter.getOrDefault(MaterialAdditions.TYPE, Trimica.getMaterialRegistry().getIntrinsicAdditions(trimMaterial));
+            MaterialAdditions additions = getter.get(MaterialAdditions.TYPE);
+            if (additions == null) {
+                TrimMaterial trimMaterial = trim.material().value();
+                additions = Trimica.getMaterialRegistry().getIntrinsicAdditions(trimMaterial);
+                if (additions == null || additions.additionKeys().isEmpty()) {
+                    return;
+                }
+            }
             setter.set(MaterialAdditions.TYPE, additions);
         }
     }

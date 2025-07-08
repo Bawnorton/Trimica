@@ -43,6 +43,9 @@ public record MaterialAdditions(Set<ResourceLocation> additionKeys) {
     }
 
     public ResourceLocation apply(ResourceLocation id) {
+        if(additionKeys.isEmpty()) {
+            return id;
+        }
         String additionPrefix = "/additions/";
         String path = id.getPath();
         int index = path.indexOf(additionPrefix);

@@ -24,8 +24,11 @@
     "accessor.TextureAtlasAccessor",
     "accessor.TextureAtlasSprite$TickerAccessor",
     "accessor.TextureSlots$ValueAccessor",
+    "compat.ETRendererCompanionMixin",
+    "compat.ETTrimsRendererMixin",
     "model.BlockModelWrapperMixin",
     "model.ModelManagerMixin",
+    "model.SpecialModelWrapperMixin",
     "render.EquipmentLayerRendererMixin",
     "render.ItemStackRenderState$LayerRenderStateMixin",
     "render.ShieldSpecialRendererMixin"

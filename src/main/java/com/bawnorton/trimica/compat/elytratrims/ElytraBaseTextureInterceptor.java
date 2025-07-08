@@ -16,7 +16,7 @@ public class ElytraBaseTextureInterceptor implements BaseTextureInterceptor {
     public ResourceLocation interceptItemTexture(@Nullable ResourceLocation expectedBaseTexture, ItemStack itemWithTrim, ArmorTrim armourTrim) {
         if (itemWithTrim.getItem() != Items.ELYTRA) return expectedBaseTexture;
 
-        return ResourceLocation.withDefaultNamespace("textures/trims/items/elytra/default.png");
+        return ResourceLocation.withDefaultNamespace("textures/trims/items/wings_trim.png");
     }
 
     @Override
@@ -25,6 +25,6 @@ public class ElytraBaseTextureInterceptor implements BaseTextureInterceptor {
 
         TrimPattern pattern = armourTrim.pattern().value();
         String assetId = pattern.assetId().getPath();
-        return ResourceLocation.withDefaultNamespace("textures/trims/models/elytra/%s.png".formatted(assetId));
+        return ResourceLocation.withDefaultNamespace("textures/trims/entity/wings/%s.png".formatted(assetId));
     }
 }

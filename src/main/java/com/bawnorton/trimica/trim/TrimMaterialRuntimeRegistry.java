@@ -9,6 +9,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.equipment.trim.MaterialAssetGroup;
 import net.minecraft.world.item.equipment.trim.TrimMaterial;
+import org.jetbrains.annotations.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -49,7 +50,7 @@ public final class TrimMaterialRuntimeRegistry {
         intrinsicAdditions.put(trimMaterial.assets().base().suffix(), addition);
     }
 
-    public MaterialAdditions getIntrinsicAdditions(TrimMaterial trimMaterial) {
+    public @Nullable MaterialAdditions getIntrinsicAdditions(TrimMaterial trimMaterial) {
         return intrinsicAdditions.get(trimMaterial.assets().base().suffix());
     }
 }

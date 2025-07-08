@@ -21,6 +21,7 @@ repositories {
     maven("https://api.modrinth.com/maven")
     maven("https://maven.blamejared.com/")
     maven("https://maven.shedaniel.me/")
+    maven("https://thedarkcolour.github.io/KotlinForForge/")
 }
 
 dependencies {
@@ -31,13 +32,17 @@ dependencies {
     modstitch.moddevgradle {
     }
 
-    deps("advanced_netherite") { modstitchModRuntimeOnly("maven.modrinth:advanced-netherite:$loader-$it-mc$minecraft") }
-    deps("sodium") { modstitchModImplementation("maven.modrinth:sodium:mc$minecraft-$it-$loader") }
-    deps("iris") {
-        modstitchModRuntimeOnly("maven.modrinth:iris:$it+$minecraft-$loader")
-        modstitchRuntimeOnly("org.antlr:antlr4-runtime:4.13.1")
-        modstitchRuntimeOnly("io.github.douira:glsl-transformer:2.0.1")
-        modstitchRuntimeOnly("org.anarres:jcpp:1.4.14")
+    deps("advanced-netherite") {
+        modstitchModRuntimeOnly("maven.modrinth:advanced-netherite:$loader-$it-mc$minecraft")
+    }
+    deps("sodium") { it ->
+        modstitchModImplementation("maven.modrinth:sodium:mc$minecraft-$it-$loader")
+        deps("iris") {
+            modstitchModRuntimeOnly("maven.modrinth:iris:$it+$minecraft-$loader")
+            modstitchRuntimeOnly("org.antlr:antlr4-runtime:4.13.1")
+            modstitchRuntimeOnly("io.github.douira:glsl-transformer:2.0.1")
+            modstitchRuntimeOnly("org.anarres:jcpp:1.4.14")
+        }
     }
     deps("jei") {
         modstitchModCompileOnly("mezz.jei:jei-$minecraft-$loader-api:$it")
@@ -47,6 +52,15 @@ dependencies {
         modstitchModCompileOnly("me.shedaniel:RoughlyEnoughItems-api-$loader:$it")
         modstitchModCompileOnly("me.shedaniel:RoughlyEnoughItems-default-plugin-$loader:$it")
 //        modstitchModRuntimeOnly("me.shedaniel:RoughlyEnoughItems-$loader:$it")
+    }
+    deps("elytra-trims") { it ->
+        modstitchModImplementation("maven.modrinth:elytra-trims:$it")
+        deps("fabric-language-kotlin") {
+            modstitchModRuntimeOnly("net.fabricmc:fabric-language-kotlin:$it")
+        }
+        deps("kotlinforforge-neoforge") {
+            modstitchModRuntimeOnly("thedarkcolour:kotlinforforge-neoforge:$it")
+        }
     }
 }
 
@@ -234,8 +248,9 @@ tasks {
     }
 
     processResources {
+        // work around modstitch mixin cache issue
         duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-        outputs.upToDateWhen { false } // work around modstitch mixin cache issue
+        outputs.upToDateWhen { false }
 
         val refmap = "refmap" to "${modstitch.metadata.modId.get()}.refmap.json"
         inputs.properties(refmap)

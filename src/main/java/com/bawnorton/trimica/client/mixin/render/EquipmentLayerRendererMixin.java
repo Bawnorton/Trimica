@@ -5,6 +5,7 @@ import com.bawnorton.trimica.client.palette.TrimPalette;
 import com.bawnorton.trimica.client.texture.DynamicTrimTextureAtlasSprite;
 import com.bawnorton.trimica.client.texture.RuntimeTrimAtlas;
 import com.bawnorton.trimica.client.texture.RuntimeTrimAtlases;
+import com.bawnorton.trimica.client.texture.TrimArmourSpriteFactory;
 import com.bawnorton.trimica.compat.Compat;
 import com.bawnorton.trimica.item.component.MaterialAdditions;
 import com.llamalad7.mixinextras.injector.ModifyReceiver;
@@ -37,9 +38,6 @@ import java.util.function.Function;
 
 @Mixin(EquipmentLayerRenderer.class)
 public abstract class EquipmentLayerRendererMixin {
-    @Unique
-    private static final ThreadLocal<ItemStack> ITEM_WITH_TRIM_CAPTURE = ThreadLocal.withInitial(() -> null);
-
     @ModifyReceiver(
             method = "renderLayers(Lnet/minecraft/client/resources/model/EquipmentClientInfo$LayerType;Lnet/minecraft/resources/ResourceKey;Lnet/minecraft/client/model/Model;Lnet/minecraft/world/item/ItemStack;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;ILnet/minecraft/resources/ResourceLocation;)V",
             at = @At(
@@ -48,7 +46,7 @@ public abstract class EquipmentLayerRendererMixin {
             )
     )
     private ItemStack captureItemWithTrim(ItemStack instance, DataComponentType<?> dataComponentType) {
-        ITEM_WITH_TRIM_CAPTURE.set(instance);
+        TrimArmourSpriteFactory.ITEM_WITH_TRIM_CAPTURE.set(instance);
         return instance;
     }
 
@@ -72,7 +70,7 @@ public abstract class EquipmentLayerRendererMixin {
             ProfilerFiller profiler = Profiler.get();
             profiler.push("trimica:armour_runtime_atlas");
             TrimMaterial material = trimSpriteKey.trim().material().value();
-            ItemStack stack = ITEM_WITH_TRIM_CAPTURE.get();
+            ItemStack stack = TrimArmourSpriteFactory.ITEM_WITH_TRIM_CAPTURE.get();
             MaterialAdditions addition = stack.get(MaterialAdditions.TYPE);
             if (!sprite.contents().name().equals(MissingTextureAtlasSprite.getLocation()) && addition == null) return sprite;
 
@@ -86,10 +84,6 @@ public abstract class EquipmentLayerRendererMixin {
                 overlayLocation = addition.apply(overlayLocation);
             }
             DynamicTrimTextureAtlasSprite dynamicSprite = atlas.getSprite(stack, material, overlayLocation);
-            TrimPalette palette = dynamicSprite.getPalette();
-            if(palette != null && palette.isAnimated()) {
-                Compat.ifSodiumPresent(compat -> compat.markSpriteAsActive(dynamicSprite));
-            }
             profiler.pop();
             return dynamicSprite;
         };
@@ -103,9 +97,13 @@ public abstract class EquipmentLayerRendererMixin {
             )
     )
     private VertexConsumer useDynamicRenderType(MultiBufferSource instance, RenderType renderType, Operation<VertexConsumer> original, @Local TextureAtlasSprite textureAtlasSprite, @Share("palette") LocalRef<TrimPalette> paletteLocalRef) {
-        if (textureAtlasSprite instanceof DynamicTrimTextureAtlasSprite dynamicTrimTextureAtlasSprite) {
-            paletteLocalRef.set(dynamicTrimTextureAtlasSprite.getPalette());
-            return original.call(instance, dynamicTrimTextureAtlasSprite.getRenderType());
+        if (textureAtlasSprite instanceof DynamicTrimTextureAtlasSprite dynamicSprite) {
+            TrimPalette palette = dynamicSprite.getPalette();
+            paletteLocalRef.set(palette);
+            if(palette != null && palette.isAnimated()) {
+                Compat.ifSodiumPresent(compat -> compat.markSpriteAsActive(dynamicSprite));
+            }
+            return original.call(instance, dynamicSprite.getRenderType());
         }
         return original.call(instance, renderType);
     }
