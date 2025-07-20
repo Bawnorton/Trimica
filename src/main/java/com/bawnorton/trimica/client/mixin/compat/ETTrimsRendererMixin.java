@@ -12,6 +12,7 @@ import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import dev.kikugie.elytratrims.render.ETRenderer;
 import dev.kikugie.elytratrims.render.ETTrimsRenderer;
+import dev.kikugie.fletching_table.annotation.MixinEnvironment;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.EquipmentClientInfo;
 import net.minecraft.resources.ResourceLocation;
@@ -22,6 +23,7 @@ import net.minecraft.world.item.equipment.trim.TrimPattern;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
+@MixinEnvironment(value = "client")
 @Mixin(ETTrimsRenderer.class)
 public abstract class ETTrimsRendererMixin {
     @WrapOperation(

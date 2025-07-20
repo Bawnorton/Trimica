@@ -22,6 +22,7 @@ public final class Platform {
 /*import net.neoforged.fml.ModList;
 import net.neoforged.fml.loading.LoadingModList;
 import net.neoforged.fml.loading.FMLLoader;
+import java.nio.file.Path;
 
 public final class Platform {
     public static boolean isModLoaded(String modId) {
@@ -37,7 +38,11 @@ public final class Platform {
     }
 
     public static boolean isDev() {
-        return FMLLoader.getLaunchHandler().isDevelopmentEnvironment();
+        return !FMLLoader.isProduction();
+    }
+
+    public static Path getDebugDirectory() {
+        return FMLLoader.getGamePath().resolve(".trimica_debug");
     }
 }
 *///?}

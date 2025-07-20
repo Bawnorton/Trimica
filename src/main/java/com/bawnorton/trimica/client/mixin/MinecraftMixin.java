@@ -2,6 +2,7 @@ package com.bawnorton.trimica.client.mixin;
 
 import com.bawnorton.trimica.client.TrimicaClient;
 import com.bawnorton.trimica.client.palette.AnimatedTrimPalette;
+import dev.kikugie.fletching_table.annotation.MixinEnvironment;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.ReceivingLevelScreen;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -10,6 +11,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+@MixinEnvironment(value = "client")
 @Mixin(Minecraft.class)
 public abstract class MinecraftMixin {
     @Inject(

@@ -2,6 +2,7 @@ package com.bawnorton.trimica.client.mixin;
 
 import com.bawnorton.trimica.tags.TrimicaTags;
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
+import dev.kikugie.fletching_table.annotation.MixinEnvironment;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.component.DataComponentHolder;
@@ -16,6 +17,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import java.util.List;
 
+@MixinEnvironment(value = "client", type = MixinEnvironment.Env.MAIN)
 @Mixin(value = ItemStack.class, priority = 1500)
 public abstract class ItemStackMixin implements DataComponentHolder {
     @Shadow public abstract boolean is(TagKey<Item> tag);

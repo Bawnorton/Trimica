@@ -2,10 +2,12 @@ package com.bawnorton.trimica.client.mixin.model;
 
 import com.bawnorton.trimica.client.TrimicaClient;
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
+import dev.kikugie.fletching_table.annotation.MixinEnvironment;
 import net.minecraft.client.resources.model.ModelManager;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
+@MixinEnvironment(value = "client")
 @Mixin(ModelManager.class)
 public abstract class ModelManagerMixin {
     @ModifyReturnValue(

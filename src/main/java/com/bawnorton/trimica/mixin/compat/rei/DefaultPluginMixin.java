@@ -1,5 +1,5 @@
 //? if rei {
-package com.bawnorton.trimica.mixin.compat.rei;
+/*package com.bawnorton.trimica.mixin.compat.rei;
 
 import com.bawnorton.trimica.compat.rei.TrimicaSmithingDisplayFactory;
 import me.shedaniel.rei.plugin.common.DefaultPlugin;
@@ -35,4 +35,4 @@ public abstract class DefaultPluginMixin {
         return TrimicaSmithingDisplayFactory::create;
     }
 }
-//?}
+*///?}

@@ -1,7 +1,7 @@
 pluginManagement {
     repositories {
-        gradlePluginPortal()
         mavenCentral()
+        gradlePluginPortal()
         maven("https://maven.fabricmc.net/")
         maven("https://maven.neoforged.net/releases/")
         maven("https://maven.kikugie.dev/releases")
@@ -11,21 +11,19 @@ pluginManagement {
 }
 
 plugins {
-    id("dev.kikugie.stonecutter") version "0.6+"
+    id("dev.kikugie.stonecutter") version "0.7.1"
 }
 
 stonecutter {
-    kotlinController = true
-    centralScript = "build.gradle.kts"
-
     create(rootProject) {
         fun mc(mcVersion: String, name: String = mcVersion, loaders: Iterable<String>) =
-            loaders.forEach { vers("$name-$it", mcVersion) }
+            loaders.forEach { vers("$name-$it", mcVersion).buildscript = "build.$it.gradle.kts" }
 
         mc("1.21.5", loaders = listOf("fabric", "neoforge"))
         mc("1.21.6", loaders = listOf("fabric", "neoforge"))
+        mc("1.21.8", loaders = listOf("fabric", "neoforge"))
 
-        vcsVersion = "1.21.5-fabric"
+        vcsVersion = "1.21.8-fabric"
     }
 }
 

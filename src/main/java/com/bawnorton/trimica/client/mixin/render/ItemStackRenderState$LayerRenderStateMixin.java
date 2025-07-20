@@ -5,6 +5,7 @@ import com.bawnorton.trimica.client.palette.TrimPalette;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.mojang.blaze3d.vertex.PoseStack;
+import dev.kikugie.fletching_table.annotation.MixinEnvironment;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
@@ -18,6 +19,7 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import java.util.List;
 
+@MixinEnvironment(value = "client")
 @Mixin(ItemStackRenderState.LayerRenderState.class)
 public abstract class ItemStackRenderState$LayerRenderStateMixin implements ItemStackRenderState$LayerRenderStateExtender {
     @Unique

@@ -4,6 +4,7 @@ import com.bawnorton.trimica.client.TrimicaClient;
 import com.bawnorton.trimica.client.palette.TrimPalette;
 import com.bawnorton.trimica.client.texture.DynamicTrimTextureAtlasSprite;
 import com.bawnorton.trimica.compat.Compat;
+import dev.kikugie.fletching_table.annotation.MixinEnvironment;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.item.ItemModelResolver;
 import net.minecraft.client.renderer.item.ItemStackRenderState;
@@ -16,6 +17,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+@MixinEnvironment(value = "client")
 @Mixin(SpecialModelWrapper.class)
 public abstract class SpecialModelWrapperMixin {
     @Inject(
@@ -32,7 +34,9 @@ public abstract class SpecialModelWrapperMixin {
         TrimPalette palette = dynamicSprite.getPalette();
         if(palette != null && palette.isAnimated()) {
             Compat.ifSodiumPresent(compat -> compat.markSpriteAsActive(dynamicSprite));
+            //? if >1.21.5 {
             itemStackRenderState.setAnimated();
+            //?}
         }
     }
 }

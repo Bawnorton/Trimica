@@ -11,6 +11,7 @@ import com.llamalad7.mixinextras.sugar.ref.LocalRef;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import dev.kikugie.elytratrims.render.ETRenderer;
+import dev.kikugie.fletching_table.annotation.MixinEnvironment;
 import net.minecraft.client.model.Model;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -19,6 +20,7 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
+@MixinEnvironment(value = "client")
 @Mixin(ETRenderer.Companion.class)
 public abstract class ETRendererCompanionMixin {
     @WrapOperation(

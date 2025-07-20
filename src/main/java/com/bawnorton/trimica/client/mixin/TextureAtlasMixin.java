@@ -2,6 +2,7 @@ package com.bawnorton.trimica.client.mixin;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import dev.kikugie.fletching_table.annotation.MixinEnvironment;
 import net.minecraft.client.renderer.texture.SpriteLoader;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.resources.ResourceLocation;
@@ -12,6 +13,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 
+@MixinEnvironment(value = "client")
 @Mixin(TextureAtlas.class)
 public abstract class TextureAtlasMixin {
     @Shadow @Final private ResourceLocation location;

@@ -4,6 +4,7 @@ package com.bawnorton.trimica.platform.fabric.test;
 import com.bawnorton.trimica.item.TrimicaItems;
 import com.bawnorton.trimica.item.component.ComponentUtil;
 import com.bawnorton.trimica.item.component.MaterialAdditions;
+import dev.kikugie.fletching_table.annotation.fabric.Entrypoint;
 import net.fabricmc.fabric.api.client.gametest.v1.FabricClientGameTest;
 import net.fabricmc.fabric.api.client.gametest.v1.context.ClientGameTestContext;
 import net.fabricmc.fabric.api.client.gametest.v1.context.TestServerContext;
@@ -46,6 +47,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 @SuppressWarnings("UnstableApiUsage")
+@Entrypoint("fabric-client-gametest")
 public class TrimicaTests implements FabricClientGameTest {
     private final AtomicReference<ServerPlayer> playerRef = new AtomicReference<>();
 

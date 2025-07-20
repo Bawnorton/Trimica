@@ -16,6 +16,7 @@ import com.llamalad7.mixinextras.sugar.Share;
 import com.llamalad7.mixinextras.sugar.ref.LocalRef;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import dev.kikugie.fletching_table.annotation.MixinEnvironment;
 import net.minecraft.client.model.Model;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -36,6 +37,7 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import java.util.function.Function;
 
+@MixinEnvironment(value = "client")
 @Mixin(EquipmentLayerRenderer.class)
 public abstract class EquipmentLayerRendererMixin {
     @ModifyReceiver(

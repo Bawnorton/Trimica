@@ -4,6 +4,7 @@ import com.bawnorton.trimica.client.TrimicaClient;
 import com.bawnorton.trimica.client.palette.TrimPalette;
 import com.bawnorton.trimica.item.component.MaterialAdditions;
 import com.llamalad7.mixinextras.sugar.Local;
+import dev.kikugie.fletching_table.annotation.MixinEnvironment;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponentGetter;
@@ -27,6 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
+@MixinEnvironment(value = "client", type = MixinEnvironment.Env.MAIN)
 @Mixin(ArmorTrim.class)
 public abstract class ArmorTrimMixin {
     @Shadow public abstract Holder<TrimMaterial> material();

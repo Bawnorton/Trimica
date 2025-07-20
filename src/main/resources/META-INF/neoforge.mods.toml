@@ -1,6 +1,6 @@
 modLoader = "javafml"
 loaderVersion = "[2,)"
-issueTrackerURL = "${mod_issue_tracker}"
+issueTrackerURL = "https://github.com/Bawnorton/${mod_name}/issues"
 license = "${mod_license}"
 
 [[mods]]
@@ -8,7 +8,7 @@ license = "${mod_license}"
     version = "${mod_version}"
     displayName = "${mod_name}"
     description = '''${mod_description}'''
-    authors = "${mod_author}"
+    authors = "Bawnorton"
 
 [[dependencies.${mod_id}]]
     modId = "neoforge"

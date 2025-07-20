@@ -9,6 +9,7 @@ import com.bawnorton.trimica.client.model.TrimmedItemModelWrapper;
 import com.bawnorton.trimica.client.palette.TrimPalette;
 import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import dev.kikugie.fletching_table.annotation.MixinEnvironment;
 import net.minecraft.client.color.item.ItemTintSource;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.RenderType;
@@ -35,6 +36,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
+@MixinEnvironment(value = "client")
 @Mixin(BlockModelWrapper.class)
 public abstract class BlockModelWrapperMixin {
     @Shadow @Final @Mutable
@@ -110,16 +112,22 @@ public abstract class BlockModelWrapperMixin {
         extender.trimica$markAsTrimOverlay();
         TrimPalette palette = newModel.palette();
         ResourceLocation modelLocation = newModel.location();
+        //? if >1.21.5 {
         itemStackRenderState.appendModelIdentityElement(modelLocation);
+        //?}
         extender.trimica$setEmissive(palette != null && palette.isEmissive());
         if(stack.hasFoil()) {
             ItemStackRenderState.FoilType foilType = ItemStackRenderState.FoilType.SPECIAL;
             overlayRenderState.setFoilType(foilType);
+            //? if >1.21.5 {
             itemStackRenderState.appendModelIdentityElement(foilType);
+            //?}
         }
+        //? if >1.21.5 {
         if (palette != null && palette.isAnimated()) {
             itemStackRenderState.setAnimated();
         }
+        //?}
 
         overlayRenderState.setRenderType(RenderType.itemEntityTranslucentCull(overlayAtlas));
         properties.applyToLayer(overlayRenderState, itemDisplayContext);

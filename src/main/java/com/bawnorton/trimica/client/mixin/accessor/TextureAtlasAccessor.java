@@ -1,5 +1,6 @@
 package com.bawnorton.trimica.client.mixin.accessor;
 
+import dev.kikugie.fletching_table.annotation.MixinEnvironment;
 import net.minecraft.client.renderer.texture.SpriteContents;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -9,6 +10,7 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 import java.util.List;
 import java.util.Map;
 
+@MixinEnvironment(value = "client")
 @Mixin(TextureAtlas.class)
 public interface TextureAtlasAccessor {
     @Accessor("missingSprite")

@@ -6,6 +6,7 @@ import com.bawnorton.trimica.client.texture.DynamicTrimTextureAtlasSprite;
 import com.bawnorton.trimica.compat.Compat;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import dev.kikugie.fletching_table.annotation.MixinEnvironment;
 import net.minecraft.client.model.ShieldModel;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -22,6 +23,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+@MixinEnvironment(value = "client")
 @Mixin(ShieldSpecialRenderer.class)
 public abstract class ShieldSpecialRendererMixin {
     @Shadow @Final private ShieldModel model;
