@@ -2,6 +2,7 @@
 package com.bawnorton.trimica.mixin.compat.jei;
 
 import com.bawnorton.trimica.item.TrimicaItems;
+import dev.kikugie.fletching_table.annotation.MixinEnvironment;
 import mezz.jei.api.gui.builder.IIngredientAcceptor;
 import mezz.jei.api.gui.ingredient.IRecipeSlotDrawable;
 import mezz.jei.api.recipe.IFocusGroup;
@@ -12,6 +13,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+@MixinEnvironment(value = "client")
 @Mixin(SmithingTrimCategoryExtension.class)
 public abstract class SmithingTrimCategoryExtensionMixin {
     @Inject(

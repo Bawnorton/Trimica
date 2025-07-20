@@ -44,7 +44,7 @@ dependencies {
     deps("jei") {
         val (mc, version) = it.split(':')
         compileOnly("mezz.jei:jei-$mc-$loader-api:$version")
-        implementation("mezz.jei:jei-$mc-$loader:$version")
+        compileOnly("mezz.jei:jei-$mc-$loader:$version")
     }
     deps("rei") {
         compileOnly("me.shedaniel:RoughlyEnoughItems-api-$loader:$it")

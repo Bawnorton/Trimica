@@ -2,6 +2,7 @@
 /*package com.bawnorton.trimica.mixin.compat.rei;
 
 import com.bawnorton.trimica.compat.rei.TrimicaSmithingDisplayFactory;
+import dev.kikugie.fletching_table.annotation.MixinEnvironment;
 import me.shedaniel.rei.plugin.common.DefaultPlugin;
 import me.shedaniel.rei.plugin.common.displays.DefaultSmithingDisplay;
 import net.minecraft.world.item.crafting.RecipeHolder;
@@ -13,6 +14,7 @@ import org.spongepowered.asm.mixin.injection.Slice;
 import java.util.List;
 import java.util.function.Function;
 
+@MixinEnvironment(value = "client")
 @Mixin(DefaultPlugin.class)
 public abstract class DefaultPluginMixin {
     @ModifyArg(
