@@ -42,13 +42,14 @@ dependencies {
         }
 
     deps("jei") {
-        compileOnly("mezz.jei:jei-$minecraft-$loader-api:$it")
-        implementation("mezz.jei:jei-$minecraft-$loader:$it")
+        val (mc, version) = it.split(':')
+        compileOnly("mezz.jei:jei-$mc-$loader-api:$version")
+        implementation("mezz.jei:jei-$mc-$loader:$version")
     }
     deps("rei") {
         compileOnly("me.shedaniel:RoughlyEnoughItems-api-$loader:$it")
         compileOnly("me.shedaniel:RoughlyEnoughItems-default-plugin-$loader:$it")
-        runtimeOnly("me.shedaniel:RoughlyEnoughItems-$loader:$it")
+//        runtimeOnly("me.shedaniel:RoughlyEnoughItems-$loader:$it")
     }
 }
 

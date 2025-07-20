@@ -1,5 +1,5 @@
 //? if jei {
-/*package com.bawnorton.trimica.mixin.compat.jei;
+package com.bawnorton.trimica.mixin.compat.jei;
 
 import com.bawnorton.trimica.item.TrimicaItems;
 import mezz.jei.api.gui.builder.IIngredientAcceptor;
@@ -23,4 +23,4 @@ public abstract class SmithingTrimCategoryExtensionMixin {
         ingredientAcceptor.add(TrimicaItems.FAKE_ADDITION);
     }
 }
-*///?}
+//?}

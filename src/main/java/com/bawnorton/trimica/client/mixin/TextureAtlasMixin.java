@@ -26,17 +26,24 @@ public abstract class TextureAtlasMixin {
     private int trimica$lastHeight;
 
     @WrapOperation(
-            method = "upload",
+            //? if >1.21.6 {
+            method = "createTexture",
+            //?} else {
+            /*method = "upload",
+            *///?}
             at = @At(
                     value = "INVOKE",
                     target = "Lorg/slf4j/Logger;info(Ljava/lang/String;[Ljava/lang/Object;)V",
                     remap = false
             )
     )
-    private void betterLoggingInfoOnRepeatedUploads(Logger instance, String s, Object[] objects, Operation<Void> original, SpriteLoader.Preparations preparations) {
+    //? if >1.21.6 {
+    private void betterLoggingInfoOnRepeatedUploads(Logger instance, String s, Object[] objects, Operation<Void> original, int width, int height) {
+    //?} else {
+    /*private void betterLoggingInfoOnRepeatedUploads(Logger instance, String s, Object[] objects, Operation<Void> original, SpriteLoader.Preparations preparations) {
         int width = preparations.width();
         int height = preparations.height();
-
+    *///?}
         if (trimica$lastHeight == 0 && trimica$lastWidth == 0) {
             trimica$lastHeight = height;
             trimica$lastWidth = width;

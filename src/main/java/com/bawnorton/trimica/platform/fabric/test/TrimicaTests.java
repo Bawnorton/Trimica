@@ -1,6 +1,7 @@
 //? if fabric {
 package com.bawnorton.trimica.platform.fabric.test;
 
+import com.bawnorton.trimica.Trimica;
 import com.bawnorton.trimica.item.TrimicaItems;
 import com.bawnorton.trimica.item.component.ComponentUtil;
 import com.bawnorton.trimica.item.component.MaterialAdditions;
@@ -130,6 +131,8 @@ public class TrimicaTests implements FabricClientGameTest {
             // validate rendering of custom trim
             createTrimmedArmourStand(context, serverContext, enderPearlMaterial, silencePattern, () -> context.assertScreenshotEquals("ender_pearl_silence_armour_stand"));
         }
+
+        Trimica.LOGGER.info("Trimica Tests Passed");
     }
 
     private void createTrimmedArmourStand(

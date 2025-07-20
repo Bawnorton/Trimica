@@ -60,13 +60,14 @@ dependencies {
         }
 
     deps("jei") {
-        modCompileOnly("mezz.jei:jei-$minecraft-$loader-api:$it")
-        modImplementation("mezz.jei:jei-$minecraft-$loader:$it")
+        val (mc, version) = it.split(':')
+        modCompileOnly("mezz.jei:jei-$mc-$loader-api:$version")
+        modImplementation("mezz.jei:jei-$mc-$loader:$version")
     }
     deps("rei") {
         modCompileOnly("me.shedaniel:RoughlyEnoughItems-api-$loader:$it")
         modCompileOnly("me.shedaniel:RoughlyEnoughItems-default-plugin-$loader:$it")
-        runtimeOnly("me.shedaniel:RoughlyEnoughItems-$loader:$it")
+//        runtimeOnly("me.shedaniel:RoughlyEnoughItems-$loader:$it")
     }
 }
 

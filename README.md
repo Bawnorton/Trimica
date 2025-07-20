@@ -134,14 +134,14 @@ Once cloned you can set the active project version to the one you want to work o
 
 #### Running
 To run the mod, set the project version to the one you want to run and run the matchting generated run config.
-For example for `1.21.5-fabric` you would run `Fabric Client (:1.21.5-fabric)`. If you attempt to run a different version,
-it will fail to load the mod and crash.
+For example for `1.21.5-fabric` you would run `Fabric Client 1.21.5`. If you attempt to run a different version,
+it may fail to load the mod and crash.
 
 #### Testing
 Fabric provides client gametests as a part of their API, NeoForge does not, thus, the tests are only avaliable for Fabric.
-Set your active project version to a version of Fabric and run the `Minecraft Client Game Test (:<version>-fabric)`
+Set your active project version to a version of Fabric and run the `Fabric Client Game Test <version>`
 task. The tests are located at `src/main/java/com/bawnorton/trimica/platform/fabric/test`.
 
 #### Building
-To build the mod, run the `Tasks/project/build` task. This will build the mod for all versions which can then be 
-found in the root `build/versions/` directory. 
+To build the mod, run the `Tasks/project/buildAndCollect` task. This will build the mod for all versions which can 
+then be found in the root `build/libs/` directory. 
