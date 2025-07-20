@@ -133,9 +133,10 @@ fletchingTable {
 
     mixins.register("main") {
         mixin("default", "trimica.mixins.json")
-        mixin("client", "trimica-client.mixins.json") {
+        mixin("client", "trimica.client.mixins.json") {
             environment = MixinEnvironment.Env.CLIENT
         }
+        mixin("fabric", "trimica.fabric.mixins.json")
     }
 }
 
@@ -150,5 +151,33 @@ tasks {
     processResources {
         exclude("META-INF/neoforge.mods.toml")
         exclude { it.name.endsWith("-accesstransformer.cfg") }
+    }
+}
+
+publishMods {
+    val mrToken = providers.gradleProperty("MODRINTH_TOKEN")
+    val cfToken = providers.gradleProperty("CURSEFORGE_TOKEN")
+
+    type = BETA
+    file = tasks.remapJar.map { it.archiveFile.get() }
+    additionalFiles.from(tasks.remapSourcesJar.map { it.archiveFile.get() })
+
+    displayName = "${mod("name")} Fabric ${mod("version")} for $minecraft"
+    version = mod("version")
+    changelog = provider { rootProject.file("CHANGELOG.md").readText() }
+    modLoaders.add(loader)
+
+    modrinth {
+        projectId = property("publishing.modrinth") as String
+        accessToken = mrToken
+        minecraftVersions.add(minecraft)
+        requires("fabric-api")
+    }
+
+    curseforge {
+        projectId = property("publishing.curseforge") as String
+        accessToken = cfToken
+        minecraftVersions.add(minecraft)
+        requires("fabric-api")
     }
 }

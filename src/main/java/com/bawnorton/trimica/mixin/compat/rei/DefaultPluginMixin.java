@@ -14,7 +14,7 @@ import org.spongepowered.asm.mixin.injection.Slice;
 import java.util.List;
 import java.util.function.Function;
 
-@MixinEnvironment(value = "client")
+@MixinEnvironment(type = MixinEnvironment.Env.CLIENT)
 @Mixin(DefaultPlugin.class)
 public abstract class DefaultPluginMixin {
     @ModifyArg(

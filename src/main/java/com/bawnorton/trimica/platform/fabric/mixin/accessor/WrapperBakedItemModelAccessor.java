@@ -7,7 +7,7 @@ import net.minecraft.client.renderer.item.ItemModel;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
-@MixinEnvironment(value = "client")
+@MixinEnvironment(value = "fabric", type = MixinEnvironment.Env.CLIENT)
 @Mixin(WrapperBakedItemModel.class)
 public interface WrapperBakedItemModelAccessor {
     @Accessor("wrapped")

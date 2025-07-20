@@ -130,3 +130,29 @@ tasks {
         exclude { it.name.endsWith(".accesswidener") }
     }
 }
+
+publishMods {
+    val mrToken = providers.gradleProperty("MODRINTH_TOKEN")
+    val cfToken = providers.gradleProperty("CURSEFORGE_TOKEN")
+
+    type = BETA
+    file = tasks.jar.map { it.archiveFile.get() }
+    additionalFiles.from(tasks.named<org.gradle.jvm.tasks.Jar>("sourcesJar").map { it.archiveFile.get() })
+
+    displayName = "${mod("name")} Neoforge ${mod("version")} for $minecraft"
+    version = mod("version")
+    changelog = provider { rootProject.file("CHANGELOG.md").readText() }
+    modLoaders.add(loader)
+
+    modrinth {
+        projectId = property("publishing.modrinth") as String
+        accessToken = mrToken
+        minecraftVersions.add(minecraft)
+    }
+
+    curseforge {
+        projectId = property("publishing.curseforge") as String
+        accessToken = cfToken
+        minecraftVersions.add(minecraft)
+    }
+}

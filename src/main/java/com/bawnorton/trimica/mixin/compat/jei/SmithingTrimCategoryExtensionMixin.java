@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@MixinEnvironment(value = "client")
+@MixinEnvironment(type = MixinEnvironment.Env.CLIENT)
 @Mixin(SmithingTrimCategoryExtension.class)
 public abstract class SmithingTrimCategoryExtensionMixin {
     @Inject(
