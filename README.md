@@ -1,6 +1,7 @@
 # Trimica
 
-:warning: Not Published Yet :warning:
+[![Modrinth](https://img.shields.io/modrinth/dt/trimica?colour=00AF5C&label=downloads&logo=modrinth)](https://modrinth.com/mod/trimica)
+[![CurseForge](https://cf.way2muchnoise.eu/full_1310701_downloads.svg)](https://curseforge.com/minecraft/mc-mods/trimica)
 
 All in one mod for your item trimming needs.
 
