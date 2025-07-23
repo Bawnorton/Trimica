@@ -103,7 +103,7 @@ neoForge {
 fletchingTable {
     mixins.register("main") {
         mixin("default", "trimica.mixins.json")
-        mixin("client", "trimica-client.mixins.json") {
+        mixin("client", "trimica.client.mixins.json") {
             environment = MixinEnvironment.Env.CLIENT
         }
     }
@@ -127,7 +127,7 @@ tasks {
     }
 
     processResources {
-        exclude("fabric.mod.json")
+        exclude("fabric.mod.json", "trimica.fabric.mixins.json")
         exclude { it.name.endsWith(".accesswidener") }
     }
 }
