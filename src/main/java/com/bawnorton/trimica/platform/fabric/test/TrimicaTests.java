@@ -10,6 +10,8 @@ import net.fabricmc.fabric.api.client.gametest.v1.FabricClientGameTest;
 import net.fabricmc.fabric.api.client.gametest.v1.context.ClientGameTestContext;
 import net.fabricmc.fabric.api.client.gametest.v1.context.TestServerContext;
 import net.fabricmc.fabric.api.client.gametest.v1.context.TestSingleplayerContext;
+import net.fabricmc.fabric.api.client.gametest.v1.screenshot.TestScreenshotComparisonAlgorithm;
+import net.fabricmc.fabric.api.client.gametest.v1.screenshot.TestScreenshotComparisonOptions;
 import net.minecraft.commands.arguments.EntityAnchorArgument;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
@@ -104,7 +106,10 @@ public class TrimicaTests implements FabricClientGameTest {
                 }
             });
 
-            context.runOnClient(client -> client.options.hideGui = true);
+            context.runOnClient(client -> {
+                client.options.hideGui = true;
+                client.options.fov().set(70);
+            });
 
             Holder<TrimPattern> silencePattern = serverContext.computeOnServer(server -> {
                 Registry<TrimPattern> trimPatterns = server.registryAccess().lookup(Registries.TRIM_PATTERN).orElseThrow();
@@ -117,7 +122,7 @@ public class TrimicaTests implements FabricClientGameTest {
             });
 
             // validate rendering of builtin trim
-            createTrimmedArmourStand(context, serverContext, goldMaterial, silencePattern, () -> context.assertScreenshotEquals("gold_silence_armour_stand"));
+            createTrimmedArmourStand(context, serverContext, goldMaterial, silencePattern, () -> context.assertScreenshotEquals(TestScreenshotComparisonOptions.of("gold_silence_armour_stand").withAlgorithm(TestScreenshotComparisonAlgorithm.meanSquaredDifference(0.001f))));
 
             Holder<TrimMaterial> enderPearlMaterial = serverContext.computeOnServer(server -> {
                 ItemStack enderPearl = Items.ENDER_PEARL.getDefaultInstance();
@@ -129,7 +134,7 @@ public class TrimicaTests implements FabricClientGameTest {
             });
 
             // validate rendering of custom trim
-            createTrimmedArmourStand(context, serverContext, enderPearlMaterial, silencePattern, () -> context.assertScreenshotEquals("ender_pearl_silence_armour_stand"));
+            createTrimmedArmourStand(context, serverContext, enderPearlMaterial, silencePattern, () -> context.assertScreenshotEquals(TestScreenshotComparisonOptions.of("ender_pearl_silence_armour_stand").withAlgorithm(TestScreenshotComparisonAlgorithm.meanSquaredDifference(0.001f))));
         }
 
         Trimica.LOGGER.info("Trimica Tests Passed");

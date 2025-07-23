@@ -119,7 +119,7 @@ loom {
     }
 
     afterEvaluate {
-        runs.configureEach {
+        runConfigs.configureEach {
             applyMixinDebugSettings(::vmArg, ::property)
         }
     }
@@ -127,6 +127,7 @@ loom {
 
 fletchingTable {
     fabric {
+        entrypointMappings.put("elytratrims-client", "dev.kikugie.elytratrims.api.ETClientInitializer")
         entrypointMappings.put("fabric-datagen", "net.fabricmc.fabric.api.datagen.v1.FabricDataGeneratorEntrypoint")
         entrypointMappings.put("fabric-client-gametest", "net.fabricmc.fabric.api.client.gametest.v1.FabricClientGameTest")
     }

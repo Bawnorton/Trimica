@@ -2,6 +2,7 @@ package com.bawnorton.trimica.client.mixin.render;
 
 import com.bawnorton.trimica.client.extend.ItemStackRenderState$LayerRenderStateExtender;
 import com.bawnorton.trimica.client.palette.TrimPalette;
+import com.bawnorton.trimica.compat.Compat;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.mojang.blaze3d.vertex.PoseStack;

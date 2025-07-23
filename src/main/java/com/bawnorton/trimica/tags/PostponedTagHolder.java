@@ -11,6 +11,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+//? if fabric {
+import net.fabricmc.loader.api.FabricLoader;
+import net.fabricmc.loader.api.MappingResolver;
+//?}
+
 public class PostponedTagHolder {
     private static final Map<Registry.PendingTags<?>, Map<TagKey<?>, List<?>>> postponedContentsCache = new HashMap<>();
     private static final Map<TagKey<?>, List<?>> postponedTagsContentCache = new HashMap<>();
@@ -44,10 +49,18 @@ public class PostponedTagHolder {
         Map<TagKey<?>, List<?>> contents = postponedContentsCache.computeIfAbsent(
                 pendingTags, key -> {
                     try {
+                        Class<?> clazz = pendingTags.getClass();
                         //? if fabric {
-                        Field pendingContentsField = pendingTags.getClass().getDeclaredField("val$pendingContents");
+                        MappingResolver resolver = FabricLoader.getInstance().getMappingResolver();
+                        String name = resolver.mapFieldName(
+                                "intermediary",
+                                resolver.unmapClassName("intermediary", clazz.getName()),
+                                "field_54031",
+                                "Ljava/util/Map;"
+                        );
+                        Field pendingContentsField = clazz.getDeclaredField(name);
                         //?} else {
-                        /*Field pendingContentsField = pendingTags.getClass().getDeclaredField("val$map");
+                        /*Field pendingContentsField = clazz.getDeclaredField("val$map");
                         *///?}
                         pendingContentsField.setAccessible(true);
                         Map<TagKey<?>, List<?>> pendingContent = (Map<TagKey<?>, List<?>>) pendingContentsField.get(pendingTags);

@@ -91,10 +91,11 @@ neoForge {
             server()
         }
 
-        afterEvaluate {
-            configureEach {
-                applyMixinDebugSettings(::jvmArgument, ::systemProperty)
-            }
+    }
+
+    afterEvaluate {
+        runs.configureEach {
+            applyMixinDebugSettings(::jvmArgument, ::systemProperty)
         }
     }
 }

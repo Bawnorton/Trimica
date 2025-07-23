@@ -2,11 +2,13 @@ package com.bawnorton.trimica.mixin.component;
 
 import com.bawnorton.trimica.item.component.ComponentUtil;
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
+import dev.kikugie.fletching_table.annotation.MixinEnvironment;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponentType;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
+@MixinEnvironment
 @Mixin(targets = "net/minecraft/core/component/DataComponentMap$Builder$SimpleMap")
 public abstract class DataComponentMap$Builder$SimpleMapMixin implements DataComponentMap {
     @ModifyReturnValue(

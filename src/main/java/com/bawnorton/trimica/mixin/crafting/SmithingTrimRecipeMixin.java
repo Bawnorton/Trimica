@@ -1,6 +1,7 @@
 package com.bawnorton.trimica.mixin.crafting;
 
 import com.bawnorton.trimica.api.impl.TrimicaApiImpl;
+import dev.kikugie.fletching_table.annotation.MixinEnvironment;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.SmithingTrimRecipe;
 import org.spongepowered.asm.mixin.Final;
@@ -11,6 +12,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+@MixinEnvironment
 @Mixin(SmithingTrimRecipe.class)
 public abstract class SmithingTrimRecipeMixin {
     @Shadow @Final @Mutable

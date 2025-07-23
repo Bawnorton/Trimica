@@ -173,7 +173,7 @@ public abstract class AbstractTrimSpriteFactory implements RuntimeTrimSpriteFact
         NativeImage stitchedImage = new NativeImage(frameWidth, totalHeight, false);
         for (int frameCount = 0; frameCount < frames.size(); frameCount++) {
             List<Integer> frame = frames.get(frameCount);
-            NativeImage coloured = createColouredPatternImage(image, frame, false);
+            NativeImage coloured = createColouredPatternImage(image, frame, palette.isBuiltin());
             for (int y = 0; y < image.getHeight(); y++) {
                 for (int x = 0; x < image.getWidth(); x++) {
                     int pixel = coloured.getPixel(x, y);

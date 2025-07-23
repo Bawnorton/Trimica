@@ -5,6 +5,7 @@ import com.bawnorton.trimica.item.component.MaterialAdditions;
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.mojang.datafixers.kinds.App;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import dev.kikugie.fletching_table.annotation.MixinEnvironment;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.equipment.trim.TrimMaterial;
@@ -14,6 +15,7 @@ import org.spongepowered.asm.mixin.injection.ModifyArg;
 import java.util.Optional;
 import java.util.function.Function;
 
+@MixinEnvironment
 @Mixin(TrimMaterial.class)
 public abstract class TrimMaterialMixin {
     @ModifyArg(

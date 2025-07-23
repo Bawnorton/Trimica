@@ -3,10 +3,12 @@ package com.bawnorton.trimica.mixin.crafting;
 import com.bawnorton.trimica.mixin.accessor.ReloadableServerResourcesAccessor;
 import com.bawnorton.trimica.tags.PostponedTagHolder;
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
+import dev.kikugie.fletching_table.annotation.MixinEnvironment;
 import net.minecraft.server.ReloadableServerResources;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
+@MixinEnvironment
 @Mixin(ReloadableServerResources.class)
 public abstract class ReloadableServerResourcesMixin {
     @ModifyExpressionValue(

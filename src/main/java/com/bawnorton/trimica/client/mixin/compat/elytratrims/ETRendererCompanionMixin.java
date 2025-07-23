@@ -1,4 +1,5 @@
-package com.bawnorton.trimica.client.mixin.compat;
+/*
+package com.bawnorton.trimica.client.mixin.compat.elytratrims;
 
 import com.bawnorton.trimica.client.palette.TrimPalette;
 import com.bawnorton.trimica.client.texture.DynamicTrimTextureAtlasSprite;
@@ -24,7 +25,10 @@ import org.spongepowered.asm.mixin.injection.At;
 @Mixin(ETRenderer.Companion.class)
 public abstract class ETRendererCompanionMixin {
     @WrapOperation(
-            method = "*(Lnet/minecraft/client/model/Model;Lnet/minecraft/client/renderer/texture/TextureAtlasSprite;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;Lnet/minecraft/world/item/ItemStack;IILnet/minecraft/resources/ResourceLocation;)V",
+            method = {
+                    "*(Lnet/minecraft/client/model/Model;Lnet/minecraft/client/renderer/texture/TextureAtlasSprite;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;Lnet/minecraft/world/item/ItemStack;IILnet/minecraft/resources/ResourceLocation;)V",
+                    "*(Lnet/minecraft/class_3879;Lnet/minecraft/class_1058;Lnet/minecraft/class_4587;Lnet/minecraft/class_4597;Lnet/minecraft/class_1799;IILnet/minecraft/class_2960;)V"
+            },
             at = @At(
                     value = "INVOKE",
                     target = "net/minecraft/client/renderer/entity/ItemRenderer.getArmorFoilBuffer(Lnet/minecraft/client/renderer/MultiBufferSource;Lnet/minecraft/client/renderer/RenderType;Z)Lcom/mojang/blaze3d/vertex/VertexConsumer;"
@@ -43,7 +47,10 @@ public abstract class ETRendererCompanionMixin {
     }
 
     @WrapOperation(
-            method = "*(Lnet/minecraft/client/model/Model;Lnet/minecraft/client/renderer/texture/TextureAtlasSprite;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;Lnet/minecraft/world/item/ItemStack;IILnet/minecraft/resources/ResourceLocation;)V",
+            method = {
+                    "*(Lnet/minecraft/client/model/Model;Lnet/minecraft/client/renderer/texture/TextureAtlasSprite;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;Lnet/minecraft/world/item/ItemStack;IILnet/minecraft/resources/ResourceLocation;)V",
+                    "*(Lnet/minecraft/class_3879;Lnet/minecraft/class_1058;Lnet/minecraft/class_4587;Lnet/minecraft/class_4597;Lnet/minecraft/class_1799;IILnet/minecraft/class_2960;)V"
+            },
             at = @At(
                     value = "INVOKE",
                     target = "Lnet/minecraft/client/model/Model;renderToBuffer(Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;III)V"
@@ -55,3 +62,4 @@ public abstract class ETRendererCompanionMixin {
         original.call(instance, poseStack, vertexConsumer, light, packedOverlay, color);
     }
 }
+*/

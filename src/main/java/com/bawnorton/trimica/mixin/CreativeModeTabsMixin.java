@@ -1,6 +1,7 @@
 package com.bawnorton.trimica.mixin;
 
 import com.bawnorton.trimica.item.TrimicaItems;
+import dev.kikugie.fletching_table.annotation.MixinEnvironment;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.CreativeModeTabs;
 import org.spongepowered.asm.mixin.Mixin;
@@ -8,6 +9,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+@MixinEnvironment
 @Mixin(CreativeModeTabs.class)
 public abstract class CreativeModeTabsMixin {
     @Inject(

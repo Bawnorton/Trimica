@@ -7,6 +7,7 @@ import com.bawnorton.trimica.mixin.accessor.LootTable$BuilderAccessor;
 import com.bawnorton.trimica.mixin.accessor.LootTableAccessor;
 import com.google.common.collect.ImmutableList;
 import com.llamalad7.mixinextras.injector.ModifyReceiver;
+import dev.kikugie.fletching_table.annotation.MixinEnvironment;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.ReloadableServerRegistries;
 import net.minecraft.world.item.Item;
@@ -23,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
 
+@MixinEnvironment
 @Mixin(ReloadableServerRegistries.class)
 public abstract class ReloadableServerRegistriesMixin {
     @SuppressWarnings({"unchecked", "ConstantValue"})
