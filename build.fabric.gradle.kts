@@ -5,6 +5,7 @@ import trimica.utils.*
 
 plugins {
     kotlin("jvm")
+    `maven-publish`
     id("trimica.common")
     id("fabric-loom")
     id("me.modmuss50.mod-publish-plugin")
@@ -152,6 +153,28 @@ tasks {
     processResources {
         exclude("META-INF/neoforge.mods.toml")
         exclude { it.name.endsWith("-accesstransformer.cfg") }
+    }
+}
+
+extensions.configure<PublishingExtension> {
+    repositories {
+        maven {
+            name = "bawnorton"
+            url = uri("https://maven.bawnorton.com/releases")
+            credentials(PasswordCredentials::class)
+            authentication {
+                create<BasicAuthentication>("basic")
+            }
+        }
+    }
+    publications {
+        create<MavenPublication>("maven") {
+            groupId = "${mod("group")}.${mod("id")}"
+            artifactId = "${mod("id")}-$loader"
+            version = "${mod("version")}+$minecraft"
+
+            from(components["java"])
+        }
     }
 }
 
