@@ -1,5 +1,6 @@
 package com.bawnorton.trimica.trim;
 
+import com.bawnorton.configurable.Configurable;
 import com.bawnorton.trimica.item.component.MaterialAdditions;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -17,6 +18,14 @@ public final class TrimMaterialRuntimeRegistry {
     private final Map<String, Item> materialProviders = new HashMap<>();
     private final Map<String, MaterialAdditions> intrinsicAdditions = new HashMap<>();
     private final Map<ResourceLocation, TrimMaterial> materials = new HashMap<>();
+
+    /**
+     * Whether you can trim anything with anything.
+     * Disabling this will prevent non-builtin materials from being used for trimming
+     * and prevent any armour that doesn't support trimming from being trimmed
+     */
+    @Configurable(onSet = "com.bawnorton.trimica.Trimica#refreshEverything")
+    public static boolean enableTrimEverything = true;
 
     public Item getMaterialProvider(String suffix) {
         return materialProviders.computeIfAbsent(suffix, k -> {

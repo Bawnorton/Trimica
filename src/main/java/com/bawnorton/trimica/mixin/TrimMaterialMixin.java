@@ -29,7 +29,7 @@ public abstract class TrimMaterialMixin {
     private static Function<RecordCodecBuilder.Instance<TrimMaterial>, ? extends App<RecordCodecBuilder.Mu<TrimMaterial>, TrimMaterial>> wrapCodec(Function<RecordCodecBuilder.Instance<TrimMaterial>, ? extends App<RecordCodecBuilder.Mu<TrimMaterial>, TrimMaterial>> builder) {
         return instance -> instance.group(
                 RecordCodecBuilder.mapCodec(builder).forGetter(Function.identity()),
-                MaterialAdditions.CODEC.optionalFieldOf("trimica$additions").forGetter(material -> Optional.of(Trimica.getMaterialRegistry().getIntrinsicAdditions(material)))
+                MaterialAdditions.CODEC.lenientOptionalFieldOf("trimica$additions").forGetter(material -> Optional.ofNullable(Trimica.getMaterialRegistry().getIntrinsicAdditions(material)))
         ).apply(
                 instance, (trimMaterial, animated) -> {
                     Trimica.getMaterialRegistry().setIntrinsicAdditions(trimMaterial, animated.orElse(null));

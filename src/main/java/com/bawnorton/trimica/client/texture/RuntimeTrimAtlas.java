@@ -98,5 +98,11 @@ public final class RuntimeTrimAtlas extends TextureAtlas {
         return (TextureAtlasAccessor) (Object) this;
     }
 
+    public void clear() {
+        dynamicSprites.clear();
+        dynamicSprites.add(createMissing());
+        clearTextureData();
+    }
+
     private record TrimTextureAtlasSprite(TextureAtlasSprite sprite, TrimPalette palette) {}
 }

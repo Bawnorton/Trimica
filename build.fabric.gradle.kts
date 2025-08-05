@@ -19,6 +19,7 @@ repositories {
         filter { groups.forEach(::includeGroup) }
     }
 
+    maven("https://maven.bawnorton.com/releases")
     maven("https://maven.quiltmc.org/repository/release/")
     maven("https://maven.blamejared.com/")
     maven("https://maven.shedaniel.me/")
@@ -69,6 +70,9 @@ dependencies {
         modCompileOnly("me.shedaniel:RoughlyEnoughItems-api-$loader:$it")
         modCompileOnly("me.shedaniel:RoughlyEnoughItems-default-plugin-$loader:$it")
 //        runtimeOnly("me.shedaniel:RoughlyEnoughItems-$loader:$it")
+    }
+    deps("configurable") {
+        modImplementation(annotationProcessor("com.bawnorton.configurable:configurable-$loader:$it")!!)
     }
 }
 

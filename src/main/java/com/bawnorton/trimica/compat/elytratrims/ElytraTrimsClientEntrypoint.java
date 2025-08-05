@@ -51,9 +51,12 @@ public class ElytraTrimsClientEntrypoint implements ETClientInitializer {
         }
 
         ResourceLocation overlayLocation = trim.layerAssetId(EquipmentClientInfo.LayerType.WINGS.trimAssetPrefix(), EquipmentAssets.ELYTRA);
-        MaterialAdditions additions = stack.get(MaterialAdditions.TYPE);
-        if (additions != null) {
-            overlayLocation = additions.apply(overlayLocation);
+        MaterialAdditions additions = null;
+        if (MaterialAdditions.enableMaterialAdditions) {
+            additions = stack.get(MaterialAdditions.TYPE);
+            if (additions != null) {
+                overlayLocation = additions.apply(overlayLocation);
+            }
         }
 
         TrimMaterial material = trim.material().value();

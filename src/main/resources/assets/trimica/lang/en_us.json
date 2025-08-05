@@ -5,6 +5,7 @@
   "item.trimica.animator": "Animator",
   "item.trimica.fake_addition": "Any Item",
   "trimica.trim_material": "Trim Material",
+  "trimica.trim_material.disabled": "Custom trim materials are disabled.",
   "trimica.material_addition.no_shift": "Trim Material Addition [+]",
   "trimica.material_addition.shift": "Trim Material Addition [-]",
   "trimica.material_addition.details.1": "Add to a trimmed item in the smithing table.",

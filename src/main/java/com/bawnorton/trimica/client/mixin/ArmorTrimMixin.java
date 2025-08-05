@@ -3,6 +3,7 @@ package com.bawnorton.trimica.client.mixin;
 import com.bawnorton.trimica.client.TrimicaClient;
 import com.bawnorton.trimica.client.palette.TrimPalette;
 import com.bawnorton.trimica.item.component.MaterialAdditions;
+import com.bawnorton.trimica.trim.TrimMaterialRuntimeRegistry;
 import com.llamalad7.mixinextras.sugar.Local;
 import dev.kikugie.fletching_table.annotation.MixinEnvironment;
 import net.minecraft.ChatFormatting;
@@ -59,9 +60,17 @@ public abstract class ArmorTrimMixin {
             method = "addToTooltip",
             at = @At("RETURN")
     )
-    private void addTrimMaterialAdditionLine(Item.TooltipContext tooltipContext, Consumer<Component> consumer, TooltipFlag tooltipFlag, DataComponentGetter dataComponentGetter, CallbackInfo ci) {
-        MaterialAdditions additions = dataComponentGetter.get(MaterialAdditions.TYPE);
-        if (additions != null) {
+    private void addAdditionLines(Item.TooltipContext tooltipContext, Consumer<Component> consumer, TooltipFlag tooltipFlag, DataComponentGetter componentGetter, CallbackInfo ci) {
+        if (!TrimMaterialRuntimeRegistry.enableTrimEverything) {
+            TrimPalette palette = TrimicaClient.getPalettes().getPalette(material().value(), null, componentGetter);
+            if (palette == TrimPalette.DISABLED) {
+                consumer.accept(CommonComponents.space().append(Component.translatable("trimica.trim_material.disabled").withStyle(ChatFormatting.RED)));
+            }
+        }
+        if (MaterialAdditions.enableMaterialAdditions) {
+            MaterialAdditions additions = componentGetter.get(MaterialAdditions.TYPE);
+            if (additions == null) return;
+
             List<Component> additionsList = new ArrayList<>();
             for (ResourceLocation addition : additions.additionKeys()) {
                 Item additionItem = BuiltInRegistries.ITEM.getValue(addition);
@@ -69,11 +78,11 @@ public abstract class ArmorTrimMixin {
                     additionsList.add(CommonComponents.space().append(additionItem.getName()).withStyle(ChatFormatting.AQUA));
                 }
             }
-            if (!additionsList.isEmpty()) {
-                consumer.accept(Component.translatable("trimica.material_addition_list").withStyle(ChatFormatting.GRAY));
-                for (Component addition : additionsList) {
-                    consumer.accept(addition);
-                }
+            if (additionsList.isEmpty()) return;
+
+            consumer.accept(Component.translatable("trimica.material_addition_list").withStyle(ChatFormatting.GRAY));
+            for (Component addition : additionsList) {
+                consumer.accept(addition);
             }
         }
     }

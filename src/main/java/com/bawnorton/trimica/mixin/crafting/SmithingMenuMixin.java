@@ -1,6 +1,7 @@
 package com.bawnorton.trimica.mixin.crafting;
 
 import com.bawnorton.trimica.crafting.MaterialAdditionRecipe;
+import com.bawnorton.trimica.item.component.MaterialAdditions;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import dev.kikugie.fletching_table.annotation.MixinEnvironment;
@@ -43,6 +44,10 @@ public abstract class SmithingMenuMixin extends ItemCombinerMenu {
             )
     )
     private void orAdditionRecipeHasError(DataSlot instance, int i, Operation<Void> original) {
+        if (!MaterialAdditions.enableMaterialAdditions) {
+            original.call(instance, i);
+            return;
+        }
         if(i == 0) {
             if (level instanceof ServerLevel serverLevel) {
                 Optional<RecipeHolder<SmithingRecipe>> optional = serverLevel.recipeAccess()

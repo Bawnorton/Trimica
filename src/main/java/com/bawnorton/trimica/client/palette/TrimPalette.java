@@ -10,6 +10,16 @@ import java.util.Objects;
 
 public class TrimPalette {
     public static final TrimPalette DEFAULT = new TrimPalette(ARGB.color(255, 255, 255, 255));
+    public static final TrimPalette DISABLED = new TrimPalette(List.of(
+            ARGB.color(255, 255, 0, 255),
+            ARGB.color(255, 0, 0, 0),
+            ARGB.color(255, 255, 0, 255),
+            ARGB.color(255, 0, 0, 0),
+            ARGB.color(255, 255, 0, 255),
+            ARGB.color(255, 0, 0, 0),
+            ARGB.color(255, 255, 0, 255),
+            ARGB.color(255, 0, 0, 0)
+    ));
     public static final int PALETTE_SIZE = 8;
     private final List<Integer> colours;
     private final boolean builtin;

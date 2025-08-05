@@ -1,5 +1,6 @@
 package com.bawnorton.trimica.mixin;
 
+import com.bawnorton.trimica.Trimica;
 import com.bawnorton.trimica.item.TrimicaItems;
 import dev.kikugie.fletching_table.annotation.MixinEnvironment;
 import net.minecraft.world.item.CreativeModeTab;
@@ -24,7 +25,13 @@ public abstract class CreativeModeTabsMixin {
             )
     )
     private static void addTrimicaItems(CreativeModeTab.ItemDisplayParameters itemDisplayParameters, CreativeModeTab.Output output, CallbackInfo ci) {
-        output.accept(TrimicaItems.RAINBOWIFIER);
-        output.accept(TrimicaItems.ANIMATOR);
+        if(Trimica.enableItems) {
+            if(Trimica.enableRainbowifier) {
+                output.accept(TrimicaItems.RAINBOWIFIER);
+            }
+            if(Trimica.enableAnimator) {
+                output.accept(TrimicaItems.ANIMATOR);
+            }
+        }
     }
 }

@@ -1,5 +1,6 @@
 package com.bawnorton.trimica.client.mixin;
 
+import com.bawnorton.trimica.item.component.MaterialAdditions;
 import com.bawnorton.trimica.tags.TrimicaTags;
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import dev.kikugie.fletching_table.annotation.MixinEnvironment;
@@ -27,7 +28,7 @@ public abstract class ItemStackMixin implements DataComponentHolder {
             at = @At("RETURN:LAST")
     )
     private List<Component> addTrimMaterialAdditionLine(List<Component> original) {
-        if(is(TrimicaTags.MATERIAL_ADDITIONS)) {
+        if(is(TrimicaTags.MATERIAL_ADDITIONS) && MaterialAdditions.enableMaterialAdditions) {
             if (Screen.hasShiftDown()) {
                 original.add(Component.translatable("trimica.material_addition.shift").withStyle(ChatFormatting.GOLD));
                 original.add(CommonComponents.space().append(Component.translatable("trimica.material_addition.details.1").withStyle(ChatFormatting.GRAY)));

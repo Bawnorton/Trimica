@@ -1,6 +1,7 @@
 package com.bawnorton.trimica.mixin.crafting;
 
 import com.bawnorton.trimica.api.impl.TrimicaApiImpl;
+import com.bawnorton.trimica.trim.TrimMaterialRuntimeRegistry;
 import dev.kikugie.fletching_table.annotation.MixinEnvironment;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.SmithingTrimRecipe;
@@ -26,7 +27,9 @@ public abstract class SmithingTrimRecipeMixin {
             at = @At("TAIL")
     )
     private void useTrimicaIngredients(CallbackInfo ci) {
-        addition = TrimicaApiImpl.INSTANCE.applyCraftingRecipeInterceptorsForAddition(addition);
-        base = TrimicaApiImpl.INSTANCE.applyCraftingRecipeInterceptorsForBase(base);
+        if (TrimMaterialRuntimeRegistry.enableTrimEverything) {
+            addition = TrimicaApiImpl.INSTANCE.applyCraftingRecipeInterceptorsForAddition(addition);
+            base = TrimicaApiImpl.INSTANCE.applyCraftingRecipeInterceptorsForBase(base);
+        }
     }
 }

@@ -5,6 +5,7 @@ import com.bawnorton.trimica.client.mixin.accessor.*;
 import com.bawnorton.trimica.client.colour.ColourGroup;
 import com.bawnorton.trimica.client.colour.ColourHSB;
 import com.bawnorton.trimica.client.colour.OkLabHelper;
+import com.bawnorton.trimica.trim.TrimMaterialRuntimeRegistry;
 import com.mojang.blaze3d.platform.NativeImage;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -44,6 +45,10 @@ public final class TrimPaletteGenerator {
         Item materialProvider = Trimica.getMaterialRegistry().getMaterialProvider(suffix);
         if (materialProvider == null) {
             return generatePaletteFromBuiltIn(material, suffix);
+        }
+        if (!TrimMaterialRuntimeRegistry.enableTrimEverything) {
+            Trimica.LOGGER.warn("Trim palette generation is disabled, cannot generate palette for material: {}", BuiltInRegistries.ITEM.getKey(materialProvider));
+            return TrimPalette.DISABLED;
         }
         ItemModelResolver modelResolver = Minecraft.getInstance().getItemModelResolver();
         ItemModel model = ((ItemModelResolverAccessor) modelResolver).trimica$modelGetter().apply(BuiltInRegistries.ITEM.getKey(materialProvider));
@@ -233,5 +238,10 @@ public final class TrimPaletteGenerator {
         }
 
         return colourData;
+    }
+
+    public void clear() {
+        TRIM_PALETTES.clear();
+        BUILT_IN_PALETTES.clear();
     }
 }

@@ -60,7 +60,7 @@ public final class RuntimeTrimAtlases {
                             Trimica.rl("%s/%s/item.png".formatted(patternId.getNamespace(), patternId.getPath())),
                             new TrimItemSpriteFactory(),
                             (m) -> new ArmorTrim(materials.wrapAsHolder(m), patterns.wrapAsHolder(pattern)),
-                            atlas -> TrimicaClient.getItemModelFactory().clear()
+                            atlas -> TrimicaClient.getItemModelFactory().clearModels()
                     ))
             );
             shieldAtlases.put(
@@ -102,11 +102,31 @@ public final class RuntimeTrimAtlases {
 
         TrimModelId trimModelId = TrimModelId.fromTrim("shield", trim, null);
         ResourceLocation overlayLocation = trimModelId.asSingle();
-        MaterialAdditions addition = getter.get(MaterialAdditions.TYPE);
-        if (addition != null) {
-            overlayLocation = addition.apply(overlayLocation);
+        if (MaterialAdditions.enableMaterialAdditions) {
+            MaterialAdditions addition = getter.get(MaterialAdditions.TYPE);
+            if (addition != null) {
+                overlayLocation = addition.apply(overlayLocation);
+            }
         }
         return getShieldAtlas(trim.pattern().value()).getSprite(getter, trim.material().value(), overlayLocation);
+    }
+
+    public void clear() {
+        equipmentAtlases.forEach((pattern, lazyMap) -> lazyMap.forEach((layer, lazy) -> {
+            if (lazy.isPresent()) {
+                lazy.get().clear();
+            }
+        }));
+        itemAtlases.forEach((pattern, lazy) -> {
+            if (lazy.isPresent()) {
+                lazy.get().clear();
+            }
+        });
+        shieldAtlases.forEach((pattern, lazy) -> {
+            if (lazy.isPresent()) {
+                lazy.get().clear();
+            }
+        });
     }
 
     public interface TrimFactory {

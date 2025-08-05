@@ -13,16 +13,9 @@ import java.util.function.Function;
 public final class TrimicaItems {
     private static final List<ItemHolder> ITEMS = new ArrayList<>();
 
-    public static final Item RAINBOWIFIER = create("rainbowifier", Item::new, new Item.Properties()
-            .rarity(Rarity.UNCOMMON)
-            .trimMaterial(ResourceKey.create(Registries.TRIM_MATERIAL, Trimica.rl("rainbow")))
-    );
-
-    public static final Item ANIMATOR = create("animator", Item::new, new Item.Properties()
-            .rarity(Rarity.UNCOMMON)
-    );
-
-    public static final Item FAKE_ADDITION = create("fake_addition", Item::new, new Item.Properties());
+    public static final Item RAINBOWIFIER;
+    public static final Item ANIMATOR;
+    public static final Item FAKE_ADDITION;
 
     public static void forEach(BiConsumer<ResourceKey<Item>, Item> consumer) {
         for (ItemHolder itemHolder : ITEMS) {
@@ -36,6 +29,31 @@ public final class TrimicaItems {
         Item item = factory.apply(properties);
         ITEMS.add(new ItemHolder(key, item));
         return item;
+    }
+
+    static {
+        if (Trimica.enableItems) {
+            if(Trimica.enableRainbowifier) {
+                RAINBOWIFIER = create("rainbowifier", Item::new, new Item.Properties()
+                        .rarity(Rarity.UNCOMMON)
+                        .trimMaterial(ResourceKey.create(Registries.TRIM_MATERIAL, Trimica.rl("rainbow")))
+                );
+            } else {
+                RAINBOWIFIER = null;
+            }
+            if (Trimica.enableAnimator) {
+                ANIMATOR = create("animator", Item::new, new Item.Properties()
+                        .rarity(Rarity.UNCOMMON)
+                );
+            } else {
+                ANIMATOR = null;
+            }
+            FAKE_ADDITION = create("fake_addition", Item::new, new Item.Properties());
+        } else {
+            RAINBOWIFIER = null;
+            ANIMATOR = null;
+            FAKE_ADDITION = null;
+        }
     }
 
     private record ItemHolder(ResourceKey<Item> key, Item item) {

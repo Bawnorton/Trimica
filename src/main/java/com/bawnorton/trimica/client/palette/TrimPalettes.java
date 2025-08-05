@@ -20,11 +20,11 @@ public final class TrimPalettes {
         String suffix = equipmentAssetKey == null ? material.assets().base().suffix() : material.assets().assetId(equipmentAssetKey).suffix();
         ResourceLocation key = Trimica.rl(suffix);
         MaterialAdditions additions;
-        if (componentGetter == null) {
+        if (componentGetter == null || !MaterialAdditions.enableMaterialAdditions) {
             additions = null;
         } else {
             additions = componentGetter.get(MaterialAdditions.TYPE);
-            if(additions != null) {
+            if (additions != null) {
                 key = additions.apply(key);
             }
         }
@@ -40,12 +40,17 @@ public final class TrimPalettes {
     public @Nullable TrimPalette getPalette(TrimMaterial material, ResourceKey<EquipmentAsset> equipmentAssetKey, @Nullable DataComponentGetter componentGetter) {
         String suffix = equipmentAssetKey == null ? material.assets().base().suffix() : material.assets().assetId(equipmentAssetKey).suffix();
         ResourceLocation key = Trimica.rl(suffix);
-        if (componentGetter != null) {
+        if (componentGetter != null && MaterialAdditions.enableMaterialAdditions) {
             MaterialAdditions addition = componentGetter.get(MaterialAdditions.TYPE);
             if(addition != null) {
                 key = addition.apply(key);
             }
         }
         return cache.get(key);
+    }
+
+    public void clear() {
+        cache.clear();
+        generator.clear();
     }
 }

@@ -1,6 +1,7 @@
 package com.bawnorton.trimica.item.component;
 
 import com.bawnorton.trimica.Trimica;
+import com.bawnorton.trimica.trim.TrimMaterialRuntimeRegistry;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponentGetter;
 import net.minecraft.core.component.DataComponentType;
@@ -52,23 +53,27 @@ public final class ComponentUtil {
         if(original != null) return original;
 
         if (type == DataComponents.PROVIDES_TRIM_MATERIAL && instance instanceof ItemStack stack) {
-            return (T) new ProvidesTrimMaterial(Holder.direct(Trimica.getMaterialRegistry().getOrCreate(stack)));
+            if (TrimMaterialRuntimeRegistry.enableTrimEverything) {
+                return (T) new ProvidesTrimMaterial(Holder.direct(Trimica.getMaterialRegistry().getOrCreate(stack)));
+            }
         }
         return null;
     }
 
     public static <T> void setFakeComponents(DataComponentSetter setter, DataComponentGetter getter, DataComponentType<T> type, @Nullable T object) {
-        if(type == DataComponents.TRIM && object != null) {
-            ArmorTrim trim = (ArmorTrim) object;
-            MaterialAdditions additions = getter.get(MaterialAdditions.TYPE);
-            if (additions == null) {
-                TrimMaterial trimMaterial = trim.material().value();
-                additions = Trimica.getMaterialRegistry().getIntrinsicAdditions(trimMaterial);
-                if (additions == null || additions.additionKeys().isEmpty()) {
-                    return;
+        if(MaterialAdditions.enableMaterialAdditions) {
+            if(type == DataComponents.TRIM && object != null) {
+                ArmorTrim trim = (ArmorTrim) object;
+                MaterialAdditions additions = getter.get(MaterialAdditions.TYPE);
+                if (additions == null) {
+                    TrimMaterial trimMaterial = trim.material().value();
+                    additions = Trimica.getMaterialRegistry().getIntrinsicAdditions(trimMaterial);
+                    if (additions == null || additions.additionKeys().isEmpty()) {
+                        return;
+                    }
                 }
+                setter.set(MaterialAdditions.TYPE, additions);
             }
-            setter.set(MaterialAdditions.TYPE, additions);
         }
     }
 }

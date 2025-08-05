@@ -1,9 +1,11 @@
 package com.bawnorton.trimica.client.texture;
 
+import com.bawnorton.configurable.Configurable;
 import com.bawnorton.trimica.Trimica;
 import com.bawnorton.trimica.api.impl.TrimicaApiImpl;
 import com.bawnorton.trimica.client.TrimicaClient;
 import com.bawnorton.trimica.client.palette.TrimPalette;
+import com.bawnorton.trimica.item.TrimicaItems;
 import com.bawnorton.trimica.item.component.ComponentUtil;
 import com.mojang.blaze3d.platform.NativeImage;
 import net.minecraft.client.Minecraft;
@@ -41,8 +43,12 @@ public class TrimItemSpriteFactory extends AbstractTrimSpriteFactory {
         ResourceKey<EquipmentAsset> assetResourceKey = equippable.assetId().orElse(null);
         TrimMaterial material = trim.material().value();
         TrimPalette palette = TrimicaClient.getPalettes().getOrGeneratePalette(material, assetResourceKey, texture, componentGetter);
-        ResourceLocation basePatternTexture = getPatternBasedTrimOverlay(armourType, trim);
-        basePatternTexture = TrimicaApiImpl.INSTANCE.applyBaseTextureInterceptorsForItem(basePatternTexture, stack, trim);
+        ResourceLocation basePatternTexture;
+        if(Trimica.enablePerPatternItemTextures) {
+            basePatternTexture = TrimicaApiImpl.INSTANCE.applyBaseTextureInterceptorsForItem(getPatternBasedTrimOverlay(armourType, trim), stack, trim);
+        } else {
+            basePatternTexture = getDefaultTrimOverlay(armourType);
+        }
         return new TrimSpriteMetadata(trim, palette, basePatternTexture, armourType);
     }
 

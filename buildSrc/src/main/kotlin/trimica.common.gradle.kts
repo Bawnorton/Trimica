@@ -38,10 +38,6 @@ tasks {
             expand(props)
         }
     }
-
-    named("clean") {
-        delete(rootProject.layout.buildDirectory)
-    }
 }
 
 apply {

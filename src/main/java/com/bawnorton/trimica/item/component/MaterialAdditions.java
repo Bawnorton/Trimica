@@ -1,5 +1,6 @@
 package com.bawnorton.trimica.item.component;
 
+import com.bawnorton.configurable.Configurable;
 import com.mojang.serialization.Codec;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.core.component.DataComponentType;
@@ -11,6 +12,14 @@ import java.util.List;
 import java.util.Set;
 
 public record MaterialAdditions(Set<ResourceLocation> additionKeys) {
+    /**
+     * Whether material additions are enabled.
+     * Disabling this will prevent any material additions from being applied
+     * and will prevent any recipes that use material additions from working.
+     */
+    @Configurable(onSet = "com.bawnorton.trimica.Trimica#refreshEverything")
+    public static boolean enableMaterialAdditions = true;
+
     public static DataComponentType<MaterialAdditions> TYPE;
 
     public static final Codec<MaterialAdditions> CODEC = ResourceLocation.CODEC.listOf().xmap(

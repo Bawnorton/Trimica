@@ -36,6 +36,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+//? if >1.21.5 {
+import com.bawnorton.trimica.client.mixin.accessor.GameRendererAccessor;
+import com.bawnorton.trimica.client.mixin.accessor.GuiRendererAccessor;
+//?}
+
 public final class TrimItemModelFactory {
     private final Map<ResourceLocation, ItemModel> models = new HashMap<>();
     private final Map<ResourceLocation, TrimPalette> palettes = new HashMap<>();
@@ -53,9 +58,11 @@ public final class TrimItemModelFactory {
         }
         TrimModelId trimModelId = TrimModelId.fromTrim(armourType.getName(), trim, assetId.orElse(null));
         ResourceLocation overlayLocation = trimModelId.asSingle();
-        MaterialAdditions addition = stack.get(MaterialAdditions.TYPE);
-        if(addition != null) {
-            overlayLocation = addition.apply(overlayLocation);
+        if (MaterialAdditions.enableMaterialAdditions) {
+            MaterialAdditions addition = stack.get(MaterialAdditions.TYPE);
+            if(addition != null) {
+                overlayLocation = addition.apply(overlayLocation);
+            }
         }
         ResourceLocation baseModelLocation = stack.getOrDefault(DataComponents.ITEM_MODEL, BuiltInRegistries.ITEM.getKey(stack.getItem()));
         ResourceLocation newModelLocation = overlayLocation.withPrefix(baseModelLocation.toString().replace(":", "_") + "/");
@@ -137,7 +144,15 @@ public final class TrimItemModelFactory {
         this.resolvedModels = resolvedModels;
     }
 
-    public void clear() {
+    public void clearModels() {
         models.clear();
+    }
+
+    public void clear() {
+        clearModels();
+        //? if >1.21.5 {
+        ((GuiRendererAccessor) ((GameRendererAccessor) Minecraft.getInstance().gameRenderer).trimica$guiRenderer()).trimica$invalidateItemAtlas();
+        //?}
+        palettes.clear();
     }
 }

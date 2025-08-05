@@ -10,6 +10,9 @@ license = "${mod_license}"
     description = '''${mod_description}'''
     authors = "Bawnorton"
 
+[[accessTransformers]]
+    file="${minecraft_version}-accesstransformer.cfg"
+
 [[dependencies.${mod_id}]]
     modId = "neoforge"
     type = "required"
@@ -19,3 +22,8 @@ license = "${mod_license}"
 [[dependencies.${mod_id}]]
     modId = "minecraft"
     type = "required"
+
+[[dependencies.${mod_id}]]
+    modId = "configurable"
+    type = "required"
+    versionRange = "[3.0.0,)"

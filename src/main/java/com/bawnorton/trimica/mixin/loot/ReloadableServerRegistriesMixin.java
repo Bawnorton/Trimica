@@ -40,6 +40,8 @@ public abstract class ReloadableServerRegistriesMixin {
             )
     )
     private static <T> Map<ResourceLocation, T> modifyLootTables(Map<ResourceLocation, T> instance, BiConsumer<ResourceLocation, T> consumer) {
+        if(!Trimica.enableItems || !Trimica.enableAnimator) return instance;
+
         int counter = 0;
         for (Map.Entry<ResourceLocation, T> entry : instance.entrySet()) {
             T value = entry.getValue();

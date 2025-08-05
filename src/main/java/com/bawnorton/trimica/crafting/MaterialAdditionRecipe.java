@@ -50,6 +50,8 @@ public class MaterialAdditionRecipe implements SmithingRecipe {
     }
 
     public static @NotNull ItemStack applyMaterialAddition(ItemStack base, ItemStack addition) {
+        if(!MaterialAdditions.enableMaterialAdditions) return ItemStack.EMPTY;
+
         ArmorTrim existing = base.get(DataComponents.TRIM);
         if(existing == null) return ItemStack.EMPTY;
 
