@@ -7,11 +7,11 @@ import net.minecraft.core.component.DataComponentType;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
-import java.util.HashSet;
+import net.minecraft.world.item.ItemStack;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
-public record MaterialAdditions(Set<ResourceLocation> additionKeys) {
+public record MaterialAdditions(List<ResourceLocation> additionKeys) {
     /**
      * Whether material additions are enabled.
      * Disabling this will prevent any material additions from being applied
@@ -23,21 +23,27 @@ public record MaterialAdditions(Set<ResourceLocation> additionKeys) {
     public static DataComponentType<MaterialAdditions> TYPE;
 
     public static final Codec<MaterialAdditions> CODEC = ResourceLocation.CODEC.listOf().xmap(
-            list -> new MaterialAdditions(Set.copyOf(list)),
+            list -> new MaterialAdditions(List.copyOf(list)),
             materialAddition -> materialAddition == null ? List.of() : List.copyOf(materialAddition.additionKeys)
     );
 
     public static final StreamCodec<ByteBuf, MaterialAdditions> STREAM_CODEC = ByteBufCodecs.<ByteBuf, ResourceLocation>list().apply(ResourceLocation.STREAM_CODEC).map(
-            list -> new MaterialAdditions(Set.copyOf(list)),
+            list -> new MaterialAdditions(List.copyOf(list)),
             materialAddition -> materialAddition == null ? List.of() : List.copyOf(materialAddition.additionKeys)
     );
 
     public MaterialAdditions(ResourceLocation addition) {
-        this(Set.of(addition));
+        this(List.of(addition));
+    }
+
+    public static MaterialAdditions empty() {
+        return new MaterialAdditions(new ArrayList<>());
     }
 
     public MaterialAdditions and(ResourceLocation addition) {
-        Set<ResourceLocation> additions = new HashSet<>(this.additionKeys);
+        List<ResourceLocation> additions = new ArrayList<>(this.additionKeys);
+        if (additions.contains(addition)) return this;
+
         additions.add(addition);
         return new MaterialAdditions(additions);
     }
@@ -69,4 +75,23 @@ public record MaterialAdditions(Set<ResourceLocation> additionKeys) {
         }
         return id.withPath(newPath.toString());
     }
+
+    public static int removeMaterials(ItemStack stack, int count) {
+        if (!enableMaterialAdditions) return count;
+
+        MaterialAdditions additions = stack.get(MaterialAdditions.TYPE);
+        if (additions == null || additions.additionKeys.isEmpty()) return count;
+
+        List<ResourceLocation> newAdditions = new ArrayList<>(additions.additionKeys);
+        for(; count > 0 && !newAdditions.isEmpty(); count--) {
+            newAdditions.removeLast();
+        }
+        if (newAdditions.isEmpty()) {
+            stack.remove(MaterialAdditions.TYPE);
+        } else {
+            stack.set(MaterialAdditions.TYPE, new MaterialAdditions(newAdditions));
+        }
+        return count;
+    }
+
 }

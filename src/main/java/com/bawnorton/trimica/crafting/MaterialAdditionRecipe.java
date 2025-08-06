@@ -55,7 +55,7 @@ public class MaterialAdditionRecipe implements SmithingRecipe {
         ArmorTrim existing = base.get(DataComponents.TRIM);
         if(existing == null) return ItemStack.EMPTY;
 
-        MaterialAdditions materialAdditions = base.getOrDefault(MaterialAdditions.TYPE, new MaterialAdditions(Set.of()));
+        MaterialAdditions materialAdditions = base.getOrDefault(MaterialAdditions.TYPE, MaterialAdditions.empty());
         ResourceLocation additionKey = BuiltInRegistries.ITEM.getKey(addition.getItem());
         MaterialAdditions newMaterialAdditon = materialAdditions.and(additionKey);
         if(Objects.equals(materialAdditions, newMaterialAdditon)) return ItemStack.EMPTY;

@@ -1,5 +1,6 @@
 package com.bawnorton.trimica.mixin.loot;
 
+import com.bawnorton.trimica.TrimicaToggles;
 import com.bawnorton.trimica.Trimica;
 import com.bawnorton.trimica.item.TrimicaItems;
 import com.bawnorton.trimica.loot.LootTableReader;
@@ -40,7 +41,7 @@ public abstract class ReloadableServerRegistriesMixin {
             )
     )
     private static <T> Map<ResourceLocation, T> modifyLootTables(Map<ResourceLocation, T> instance, BiConsumer<ResourceLocation, T> consumer) {
-        if(!Trimica.enableItems || !Trimica.enableAnimator) return instance;
+        if(!TrimicaToggles.enableItems || !TrimicaToggles.enableAnimator) return instance;
 
         int counter = 0;
         for (Map.Entry<ResourceLocation, T> entry : instance.entrySet()) {

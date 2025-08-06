@@ -177,11 +177,13 @@ publishMods {
         projectId = property("publishing.modrinth") as String
         accessToken = mrToken
         minecraftVersions.add(minecraft)
+        requires("configurable")
     }
 
     curseforge {
         projectId = property("publishing.curseforge") as String
         accessToken = cfToken
         minecraftVersions.add(minecraft)
+        requires("configurable")
     }
 }

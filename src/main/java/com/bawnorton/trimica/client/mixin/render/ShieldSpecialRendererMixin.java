@@ -22,6 +22,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import java.util.List;
 
 @MixinEnvironment(value = "client")
 @Mixin(ShieldSpecialRenderer.class)
@@ -38,16 +39,17 @@ public abstract class ShieldSpecialRendererMixin {
     private void renderTrim(DataComponentMap dataComponentMap, ItemDisplayContext itemDisplayContext, PoseStack poseStack, MultiBufferSource multiBufferSource, int i, int j, boolean bl, CallbackInfo ci) {
         ProfilerFiller profiler = Profiler.get();
         profiler.push("trimica:shield");
-        DynamicTrimTextureAtlasSprite dynamicSprite = TrimicaClient.getRuntimeAtlases().getShieldSprite(dataComponentMap);
-        if (dynamicSprite == null) return;
-
-        TrimPalette palette = dynamicSprite.getPalette();
-        int light = palette == null ? i : (palette.isEmissive() ? LightTexture.FULL_BRIGHT : i);
-        if(palette != null && palette.isAnimated()) {
-            Compat.ifSodiumPresent(compat -> compat.markSpriteAsActive(dynamicSprite));
+        List<DynamicTrimTextureAtlasSprite> dynamicSprites = TrimicaClient.getRuntimeAtlases().getShieldSprites(dataComponentMap);
+        for (DynamicTrimTextureAtlasSprite dynamicSprite : dynamicSprites) {
+            TrimPalette palette = dynamicSprite.getPalette();
+            int light = palette == null ? i : (palette.isEmissive() ? LightTexture.FULL_BRIGHT : i);
+            if(palette != null && palette.isAnimated()) {
+                Compat.ifSodiumPresent(compat -> compat.markSpriteAsActive(dynamicSprite));
+            }
+            VertexConsumer vertexConsumer = dynamicSprite.wrap(ItemRenderer.getFoilBuffer(multiBufferSource, dynamicSprite.getRenderType(), itemDisplayContext == ItemDisplayContext.GUI, bl));
+            this.model.plate().render(poseStack, vertexConsumer, light, j);
         }
-        VertexConsumer vertexConsumer = dynamicSprite.wrap(ItemRenderer.getFoilBuffer(multiBufferSource, dynamicSprite.getRenderType(), itemDisplayContext == ItemDisplayContext.GUI, bl));
-        this.model.plate().render(poseStack, vertexConsumer, light, j);
+
         profiler.pop();
     }
 }

@@ -1,3 +1,8 @@
+# 1.2.0
+
+- Add support for additional trims on already trimmed items
+  - Disabled by default but can be enabled in the config or via `/trimica toggle additionalTrims true`
+
 # 1.1.0
 
 - Add Configurable

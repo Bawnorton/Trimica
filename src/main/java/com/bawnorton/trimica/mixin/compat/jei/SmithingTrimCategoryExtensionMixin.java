@@ -1,7 +1,7 @@
 //? if jei {
 package com.bawnorton.trimica.mixin.compat.jei;
 
-import com.bawnorton.trimica.Trimica;
+import com.bawnorton.trimica.TrimicaToggles;
 import com.bawnorton.trimica.item.TrimicaItems;
 import dev.kikugie.fletching_table.annotation.MixinEnvironment;
 import mezz.jei.api.gui.builder.IIngredientAcceptor;
@@ -22,7 +22,7 @@ public abstract class SmithingTrimCategoryExtensionMixin {
             at = @At("HEAD")
     )
     private void overrideAdditionDisplay(SmithingTrimRecipe recipe, IRecipeSlotDrawable templateSlot, IRecipeSlotDrawable baseSlot, IRecipeSlotDrawable additionSlot, IRecipeSlotDrawable outputSlot, IFocusGroup focuses, CallbackInfo ci) {
-        if(Trimica.enableItems) {
+        if(TrimicaToggles.enableItems) {
             IIngredientAcceptor<?> ingredientAcceptor = additionSlot.createDisplayOverrides();
             ingredientAcceptor.add(TrimicaItems.FAKE_ADDITION);
         }

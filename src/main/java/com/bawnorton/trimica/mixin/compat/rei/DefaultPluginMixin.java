@@ -1,6 +1,7 @@
 //? if rei {
-/*package com.bawnorton.trimica.mixin.compat.rei;
+package com.bawnorton.trimica.mixin.compat.rei;
 
+import com.bawnorton.trimica.TrimicaToggles;
 import com.bawnorton.trimica.compat.rei.TrimicaSmithingDisplayFactory;
 import dev.kikugie.fletching_table.annotation.MixinEnvironment;
 import me.shedaniel.rei.plugin.common.DefaultPlugin;
@@ -34,7 +35,9 @@ public abstract class DefaultPluginMixin {
             remap = false
     )
     private Function<RecipeHolder<SmithingTrimRecipe>, List<DefaultSmithingDisplay>> overrideDefaultTrimmingDisplay(Function<RecipeHolder<SmithingTrimRecipe>, List<DefaultSmithingDisplay>> original) {
+        if (!TrimicaToggles.enableItems) return original;
+
         return TrimicaSmithingDisplayFactory::create;
     }
 }
-*///?}
+//?}

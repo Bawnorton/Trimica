@@ -7,6 +7,9 @@ import net.minecraft.world.item.equipment.EquipmentAsset;
 import net.minecraft.world.item.equipment.trim.ArmorTrim;
 import net.minecraft.world.item.equipment.trim.MaterialAssetGroup;
 import org.jetbrains.annotations.Nullable;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 
 public record TrimModelId(String equipment, ResourceLocation patternId, ResourceLocation materialId, @Nullable ResourceLocation assetId) {
     public ResourceLocation asSingle() {

@@ -3,6 +3,7 @@ package com.bawnorton.trimica.client.texture;
 import com.bawnorton.trimica.Trimica;
 import com.bawnorton.trimica.client.TrimicaClient;
 import com.bawnorton.trimica.client.model.TrimModelId;
+import com.bawnorton.trimica.item.component.AdditionalTrims;
 import com.bawnorton.trimica.item.component.MaterialAdditions;
 import com.bawnorton.trimica.util.Lazy;
 import net.minecraft.client.resources.model.EquipmentClientInfo;
@@ -20,7 +21,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 public final class RuntimeTrimAtlases {
     private final Map<TrimPattern, Map<EquipmentClientInfo.LayerType, Lazy<RuntimeTrimAtlas>>> equipmentAtlases = new HashMap<>();
@@ -96,19 +96,22 @@ public final class RuntimeTrimAtlases {
         return shieldAtlases.get(pattern).get();
     }
 
-    public DynamicTrimTextureAtlasSprite getShieldSprite(DataComponentGetter getter) {
-        ArmorTrim trim = getter != null ? getter.get(DataComponents.TRIM) : null;
-        if (trim == null) return null;
+    public List<DynamicTrimTextureAtlasSprite> getShieldSprites(DataComponentGetter getter) {
+        List<DynamicTrimTextureAtlasSprite> sprites = new ArrayList<>();
+        List<ArmorTrim> trims = AdditionalTrims.getAllTrims(getter);
+        for (ArmorTrim trim : trims) {
 
-        TrimModelId trimModelId = TrimModelId.fromTrim("shield", trim, null);
-        ResourceLocation overlayLocation = trimModelId.asSingle();
-        if (MaterialAdditions.enableMaterialAdditions) {
-            MaterialAdditions addition = getter.get(MaterialAdditions.TYPE);
-            if (addition != null) {
-                overlayLocation = addition.apply(overlayLocation);
+            TrimModelId trimModelId = TrimModelId.fromTrim("shield", trim, null);
+            ResourceLocation overlayLocation = trimModelId.asSingle();
+            if (MaterialAdditions.enableMaterialAdditions) {
+                MaterialAdditions addition = getter.get(MaterialAdditions.TYPE);
+                if (addition != null) {
+                    overlayLocation = addition.apply(overlayLocation);
+                }
             }
+            sprites.add(getShieldAtlas(trim.pattern().value()).getSprite(getter, trim.material().value(), overlayLocation));
         }
-        return getShieldAtlas(trim.pattern().value()).getSprite(getter, trim.material().value(), overlayLocation);
+        return sprites;
     }
 
     public void clear() {

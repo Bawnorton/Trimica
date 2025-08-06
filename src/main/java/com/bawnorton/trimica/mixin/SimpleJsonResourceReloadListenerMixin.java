@@ -1,5 +1,6 @@
 package com.bawnorton.trimica.mixin;
 
+import com.bawnorton.trimica.TrimicaToggles;
 import com.bawnorton.trimica.Trimica;
 import com.bawnorton.trimica.item.component.MaterialAdditions;
 import com.google.common.collect.Iterators;
@@ -31,15 +32,15 @@ public abstract class SimpleJsonResourceReloadListenerMixin {
             List<Pair<ResourceLocation, Boolean>> disableList = new ArrayList<>();
             disableList.add(Pair.of(
                     Trimica.rl("advancement/adventure/add_material_addition.json"),
-                    !Trimica.enableItems || !Trimica.enableAnimator || !MaterialAdditions.enableMaterialAdditions
+                    !TrimicaToggles.enableItems || !TrimicaToggles.enableAnimator || !MaterialAdditions.enableMaterialAdditions
             ));
             disableList.add(Pair.of(
                     Trimica.rl("recipe/rainbowifier.json"),
-                    !Trimica.enableItems || !Trimica.enableRainbowifier
+                    !TrimicaToggles.enableItems || !TrimicaToggles.enableRainbowifier
             ));
             disableList.add(Pair.of(
                     Trimica.rl("advancement/adventure/add_rainbowifier_material.json"),
-                    !Trimica.enableItems || !Trimica.enableRainbowifier
+                    !TrimicaToggles.enableItems || !TrimicaToggles.enableRainbowifier
             ));
             ResourceLocation id = entry.getKey();
             for (Pair<ResourceLocation, Boolean> pair : disableList) {

@@ -27,6 +27,6 @@ public abstract class MinecraftMixin {
             at = @At("TAIL")
     )
     private void tickAnimations(CallbackInfo ci) {
-        AnimatedTrimPalette.computeColours();
+        AnimatedTrimPalette.updateOffset();
     }
 }

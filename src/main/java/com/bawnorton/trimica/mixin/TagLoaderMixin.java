@@ -1,6 +1,6 @@
 package com.bawnorton.trimica.mixin;
 
-import com.bawnorton.trimica.Trimica;
+import com.bawnorton.trimica.TrimicaToggles;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import dev.kikugie.fletching_table.annotation.MixinEnvironment;
@@ -23,17 +23,17 @@ public abstract class TagLoaderMixin {
     private <E> boolean dontRecordDisabledItems(List<E> instance, E e, Operation<Boolean> original) {
         TagLoader.EntryWithSource entryWithSource = (TagLoader.EntryWithSource) e;
         String entry = entryWithSource.entry().toString();
-        if(!Trimica.enableRainbowifier || !Trimica.enableItems) {
+        if(!TrimicaToggles.enableRainbowifier || !TrimicaToggles.enableItems) {
             if(entry.equals("trimica:rainbowifier")) {
                 return false;
             }
         }
-        if(!Trimica.enableAnimator || !Trimica.enableItems) {
+        if(!TrimicaToggles.enableAnimator || !TrimicaToggles.enableItems) {
             if(entry.equals("trimica:animator")) {
                 return false;
             }
         }
-        if(!Trimica.enableItems) {
+        if(!TrimicaToggles.enableItems) {
             if(entry.equals("trimica:fake_addition")) {
                 return false;
             }

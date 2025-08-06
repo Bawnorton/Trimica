@@ -1,5 +1,5 @@
 //? if rei {
-/*package com.bawnorton.trimica.compat.rei;
+package com.bawnorton.trimica.compat.rei;
 
 import com.bawnorton.trimica.item.TrimicaItems;
 import com.bawnorton.trimica.mixin.accessor.SmithingTrimRecipeAccessor;
@@ -35,4 +35,4 @@ public class TrimicaSmithingDisplayFactory {
         return displays;
     }
 }
-*///?}
+//?}

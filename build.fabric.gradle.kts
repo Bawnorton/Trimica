@@ -199,13 +199,13 @@ publishMods {
         projectId = property("publishing.modrinth") as String
         accessToken = mrToken
         minecraftVersions.add(minecraft)
-        requires("fabric-api")
+        requires("fabric-api", "configurable")
     }
 
     curseforge {
         projectId = property("publishing.curseforge") as String
         accessToken = cfToken
         minecraftVersions.add(minecraft)
-        requires("fabric-api")
+        requires("fabric-api", "configurable")
     }
 }

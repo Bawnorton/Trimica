@@ -16,6 +16,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import java.util.List;
 
 @MixinEnvironment(value = "client")
 @Mixin(SpecialModelWrapper.class)
@@ -28,15 +29,23 @@ public abstract class SpecialModelWrapperMixin {
             )
     )
     private void applyPaletteToSpecialModelRenderState(ItemStackRenderState itemStackRenderState, ItemStack itemStack, ItemModelResolver itemModelResolver, ItemDisplayContext itemDisplayContext, ClientLevel clientLevel, LivingEntity livingEntity, int i, CallbackInfo ci) {
-        DynamicTrimTextureAtlasSprite dynamicSprite = TrimicaClient.getRuntimeAtlases().getShieldSprite(itemStack);
-        if (dynamicSprite == null) return;
+        List<DynamicTrimTextureAtlasSprite> dynamicSprites = TrimicaClient.getRuntimeAtlases().getShieldSprites(itemStack);
+        if (dynamicSprites.isEmpty()) return;
 
-        TrimPalette palette = dynamicSprite.getPalette();
-        if(palette != null && palette.isAnimated()) {
-            Compat.ifSodiumPresent(compat -> compat.markSpriteAsActive(dynamicSprite));
-            //? if >1.21.5 {
-            itemStackRenderState.setAnimated();
-            //?}
+        boolean anyAnimated = false;
+        for (DynamicTrimTextureAtlasSprite sprite : dynamicSprites) {
+            TrimPalette palette = sprite.getPalette();
+            if(palette != null && palette.isAnimated()) {
+                anyAnimated = true;
+            }
+        }
+        if (!anyAnimated) return;
+
+        //? if >1.21.5 {
+        itemStackRenderState.setAnimated();
+        //?}
+        for (DynamicTrimTextureAtlasSprite sprite : dynamicSprites) {
+            Compat.ifSodiumPresent(compat -> compat.markSpriteAsActive(sprite));
         }
     }
 }

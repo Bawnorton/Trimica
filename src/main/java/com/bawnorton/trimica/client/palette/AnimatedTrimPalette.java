@@ -6,11 +6,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public final class AnimatedTrimPalette extends TrimPalette {
-    private static final List<AnimatedTrimPalette> ANIMATED_PALETTES = new ArrayList<>();
     public static final int ANIMATED_PALETTE_SIZE = 9 * PALETTE_SIZE;
 
+    private static int offset = 0;
+
     private final List<Integer> interpolatedColours;
-    private int offset = 0;
 
     AnimatedTrimPalette(List<Integer> colours) {
         super(colours);
@@ -21,7 +21,6 @@ public final class AnimatedTrimPalette extends TrimPalette {
         List<double[]> okLab = OkLabHelper.rgbToOklab(base);
         List<double[]> stretched = OkLabHelper.strechOkLab(ANIMATED_PALETTE_SIZE, PALETTE_SIZE + 1, okLab);
         interpolatedColours = OkLabHelper.okLabToRgb(stretched);
-        ANIMATED_PALETTES.add(this);
     }
 
     @Override
@@ -34,13 +33,7 @@ public final class AnimatedTrimPalette extends TrimPalette {
         return true;
     }
 
-    public static void computeColours() {
-        for (AnimatedTrimPalette palette : ANIMATED_PALETTES) {
-            palette.updateColours();
-        }
-    }
-
-    private void updateColours() {
+    public static void updateOffset() {
         offset = (offset + 1) % ANIMATED_PALETTE_SIZE;
     }
 

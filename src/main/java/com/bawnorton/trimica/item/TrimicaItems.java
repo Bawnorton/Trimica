@@ -1,5 +1,6 @@
 package com.bawnorton.trimica.item;
 
+import com.bawnorton.trimica.TrimicaToggles;
 import com.bawnorton.trimica.Trimica;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
@@ -32,8 +33,8 @@ public final class TrimicaItems {
     }
 
     static {
-        if (Trimica.enableItems) {
-            if(Trimica.enableRainbowifier) {
+        if (TrimicaToggles.enableItems) {
+            if(TrimicaToggles.enableRainbowifier) {
                 RAINBOWIFIER = create("rainbowifier", Item::new, new Item.Properties()
                         .rarity(Rarity.UNCOMMON)
                         .trimMaterial(ResourceKey.create(Registries.TRIM_MATERIAL, Trimica.rl("rainbow")))
@@ -41,7 +42,7 @@ public final class TrimicaItems {
             } else {
                 RAINBOWIFIER = null;
             }
-            if (Trimica.enableAnimator) {
+            if (TrimicaToggles.enableAnimator) {
                 ANIMATOR = create("animator", Item::new, new Item.Properties()
                         .rarity(Rarity.UNCOMMON)
                 );

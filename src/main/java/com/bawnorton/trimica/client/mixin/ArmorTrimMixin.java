@@ -2,20 +2,19 @@ package com.bawnorton.trimica.client.mixin;
 
 import com.bawnorton.trimica.client.TrimicaClient;
 import com.bawnorton.trimica.client.palette.TrimPalette;
-import com.bawnorton.trimica.item.component.MaterialAdditions;
+import com.bawnorton.trimica.item.component.AdditionalTrims;
 import com.bawnorton.trimica.trim.TrimMaterialRuntimeRegistry;
+import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
 import com.llamalad7.mixinextras.sugar.Local;
 import dev.kikugie.fletching_table.annotation.MixinEnvironment;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponentGetter;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.TextColor;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.equipment.trim.ArmorTrim;
 import net.minecraft.world.item.equipment.trim.TrimMaterial;
@@ -25,8 +24,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.function.Consumer;
 
 @MixinEnvironment(value = "client", type = MixinEnvironment.Env.MAIN)
@@ -56,6 +53,17 @@ public abstract class ArmorTrimMixin {
         return original;
     }
 
+    @WrapWithCondition(
+            method = "addToTooltip",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Ljava/util/function/Consumer;accept(Ljava/lang/Object;)V"
+            )
+    )
+    private <T> boolean dontAddToTooltipIfAdditionalTrimsEnabled(Consumer<T> instance, T t) {
+        return !AdditionalTrims.enableAdditionalTrims;
+    }
+
     @Inject(
             method = "addToTooltip",
             at = @At("RETURN")
@@ -65,24 +73,6 @@ public abstract class ArmorTrimMixin {
             TrimPalette palette = TrimicaClient.getPalettes().getPalette(material().value(), null, componentGetter);
             if (palette == TrimPalette.DISABLED) {
                 consumer.accept(CommonComponents.space().append(Component.translatable("trimica.trim_material.disabled").withStyle(ChatFormatting.RED)));
-            }
-        }
-        if (MaterialAdditions.enableMaterialAdditions) {
-            MaterialAdditions additions = componentGetter.get(MaterialAdditions.TYPE);
-            if (additions == null) return;
-
-            List<Component> additionsList = new ArrayList<>();
-            for (ResourceLocation addition : additions.additionKeys()) {
-                Item additionItem = BuiltInRegistries.ITEM.getValue(addition);
-                if (additionItem != Items.AIR) {
-                    additionsList.add(CommonComponents.space().append(additionItem.getName()).withStyle(ChatFormatting.AQUA));
-                }
-            }
-            if (additionsList.isEmpty()) return;
-
-            consumer.accept(Component.translatable("trimica.material_addition_list").withStyle(ChatFormatting.GRAY));
-            for (Component addition : additionsList) {
-                consumer.accept(addition);
             }
         }
     }

@@ -3,6 +3,7 @@ package com.bawnorton.trimica.command;
 import com.bawnorton.configurable.api.ConfigurableApi;
 import com.bawnorton.trimica.Trimica;
 import com.bawnorton.trimica.client.texture.TrimItemSpriteFactory;
+import com.bawnorton.trimica.item.component.AdditionalTrims;
 import com.bawnorton.trimica.item.component.ComponentUtil;
 import com.bawnorton.trimica.item.component.MaterialAdditions;
 import com.bawnorton.trimica.trim.TrimMaterialRuntimeRegistry;
@@ -59,7 +60,8 @@ public class TrimicaCommandManager {
                                         List.of(
                                                 "trimEverything",
                                                 "materialAdditions",
-                                                "perPatternItemTextures"
+                                                "perPatternItemTextures",
+                                                "additionalTrims"
                                         ),
                                         builder
                                 ))
@@ -162,6 +164,10 @@ public class TrimicaCommandManager {
             }
             case "perPatternItemTextures" -> {
                 Trimica.enablePerPatternItemTextures = newValue;
+                ConfigurableApi.saveChanges(source.getLevel(), true);
+            }
+            case "additionalTrims" -> {
+                AdditionalTrims.enableAdditionalTrims = newValue;
                 ConfigurableApi.saveChanges(source.getLevel(), true);
             }
             default -> {

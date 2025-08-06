@@ -66,4 +66,9 @@ public abstract class ItemStackRenderState$LayerRenderStateMixin implements Item
     public void trimica$setEmissive(boolean emissive) {
         this.trimica$emissive = emissive;
     }
+
+    @Override
+    public boolean trimica$isEmissive() {
+        return this.trimica$emissive;
+    }
 }
