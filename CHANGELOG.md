@@ -1,3 +1,8 @@
+# 1.2.1
+
+- Fix crash when loading into world
+- Fix intrinsic additional materials not applying to additional trims
+
 # 1.2.0
 
 - Add support for additional trims on already trimmed items
