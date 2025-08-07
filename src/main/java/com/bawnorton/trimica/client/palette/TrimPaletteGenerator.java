@@ -59,8 +59,7 @@ public final class TrimPaletteGenerator {
         return BUILT_IN_PALETTES.computeIfAbsent(suffix, k -> {
             List<Integer> colours = getColoursFromBuiltIn(material, suffix);
             if(colours.isEmpty()) {
-                Trimica.LOGGER.warn("Trim palette colour could of determined for builtin material {}", suffix);
-                return TrimPalette.DEFAULT;
+                return null;
             }
             return new TrimPalette(colours, true);
         });

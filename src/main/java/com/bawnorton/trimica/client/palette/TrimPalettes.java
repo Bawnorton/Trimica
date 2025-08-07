@@ -28,13 +28,18 @@ public final class TrimPalettes {
                 key = additions.apply(key);
             }
         }
-        return cache.computeIfAbsent(key, k -> {
+        TrimPalette trimPalette = cache.computeIfAbsent(key, k -> {
             TrimPalette palette = generator.generatePalette(material, suffix, location);
+            if (palette == null) return null;
+
             if (additions != null) {
                 palette = TrimicaApiImpl.INSTANCE.applyPaletteInterceptorsForMaterialAdditions(palette, additions);
             }
             return TrimicaApiImpl.INSTANCE.applyPaletteInterceptorsForGeneration(palette, material);
         });
+        if (trimPalette == null) return TrimPalette.DEFAULT;
+
+        return trimPalette;
     }
 
     public @Nullable TrimPalette getPalette(TrimMaterial material, ResourceKey<EquipmentAsset> equipmentAssetKey, @Nullable DataComponentGetter componentGetter) {

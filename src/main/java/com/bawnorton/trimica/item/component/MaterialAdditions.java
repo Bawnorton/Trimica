@@ -48,6 +48,18 @@ public record MaterialAdditions(List<ResourceLocation> additionKeys) {
         return new MaterialAdditions(additions);
     }
 
+    public MaterialAdditions and(MaterialAdditions additions) {
+        if (additions == null || additions.isEmpty()) return this;
+
+        List<ResourceLocation> newAdditions = new ArrayList<>(this.additionKeys);
+        for (ResourceLocation addition : additions.additionKeys) {
+            if (!newAdditions.contains(addition)) {
+                newAdditions.add(addition);
+            }
+        }
+        return new MaterialAdditions(newAdditions);
+    }
+
     public boolean matches(ResourceLocation key) {
         for (ResourceLocation additionKey : additionKeys) {
             if (key.equals(additionKey)) {
@@ -55,6 +67,10 @@ public record MaterialAdditions(List<ResourceLocation> additionKeys) {
             }
         }
         return false;
+    }
+
+    public boolean isEmpty() {
+        return additionKeys.isEmpty();
     }
 
     public ResourceLocation apply(ResourceLocation id) {

@@ -31,8 +31,8 @@ public abstract class TrimMaterialMixin {
                 RecordCodecBuilder.mapCodec(builder).forGetter(Function.identity()),
                 MaterialAdditions.CODEC.lenientOptionalFieldOf("trimica$additions").forGetter(material -> Optional.ofNullable(Trimica.getMaterialRegistry().getIntrinsicAdditions(material)))
         ).apply(
-                instance, (trimMaterial, animated) -> {
-                    Trimica.getMaterialRegistry().setIntrinsicAdditions(trimMaterial, animated.orElse(null));
+                instance, (trimMaterial, additions) -> {
+                    Trimica.getMaterialRegistry().setIntrinsicAdditions(trimMaterial, additions.orElse(null));
                     return trimMaterial;
                 }
         );
@@ -49,8 +49,8 @@ public abstract class TrimMaterialMixin {
         return StreamCodec.composite(
                 original, Function.identity(),
                 MaterialAdditions.STREAM_CODEC, (trimMaterial) -> Trimica.getMaterialRegistry().getIntrinsicAdditions(trimMaterial),
-                (trimMaterial, animated) -> {
-                    Trimica.getMaterialRegistry().setIntrinsicAdditions(trimMaterial, animated);
+                (trimMaterial, additions) -> {
+                    Trimica.getMaterialRegistry().setIntrinsicAdditions(trimMaterial, additions);
                     return trimMaterial;
                 }
         );

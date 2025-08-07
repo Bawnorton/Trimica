@@ -61,19 +61,27 @@ public final class ComponentUtil {
     }
 
     public static <T> void setFakeComponents(DataComponentSetter setter, DataComponentGetter getter, DataComponentType<T> type, @Nullable T object) {
-        if(MaterialAdditions.enableMaterialAdditions) {
-            if(type == DataComponents.TRIM && object != null) {
-                ArmorTrim trim = (ArmorTrim) object;
-                MaterialAdditions additions = getter.get(MaterialAdditions.TYPE);
-                if (additions == null) {
-                    TrimMaterial trimMaterial = trim.material().value();
-                    additions = Trimica.getMaterialRegistry().getIntrinsicAdditions(trimMaterial);
-                    if (additions == null || additions.additionKeys().isEmpty()) {
-                        return;
-                    }
-                }
-                setter.set(MaterialAdditions.TYPE, additions);
+        if (!MaterialAdditions.enableMaterialAdditions) return;
+        if (object == null) return;
+
+        if(type == DataComponents.TRIM) {
+            ArmorTrim trim = (ArmorTrim) object;
+            MaterialAdditions additions = getter.getOrDefault(MaterialAdditions.TYPE, MaterialAdditions.empty());
+            TrimMaterial trimMaterial = trim.material().value();
+            additions = additions.and(Trimica.getMaterialRegistry().getIntrinsicAdditions(trimMaterial));
+            if (additions.isEmpty()) return;
+
+            setter.set(MaterialAdditions.TYPE, additions);
+        } else if (AdditionalTrims.enableAdditionalTrims && type == AdditionalTrims.TYPE) {
+            AdditionalTrims additionalTrims = (AdditionalTrims) object;
+            MaterialAdditions additions = getter.getOrDefault(MaterialAdditions.TYPE, MaterialAdditions.empty());
+            for (ArmorTrim trim : additionalTrims.trims()) {
+                TrimMaterial trimMaterial = trim.material().value();
+                additions = additions.and(Trimica.getMaterialRegistry().getIntrinsicAdditions(trimMaterial));
             }
+            if (additions.isEmpty()) return;
+
+            setter.set(MaterialAdditions.TYPE, additions);
         }
     }
 }
