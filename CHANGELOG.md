@@ -1,3 +1,8 @@
+# 1.2.2
+
+- Update configurable dep
+- Include icon in neo dist
+
 # 1.2.1
 
 - Fix crash when loading into world
