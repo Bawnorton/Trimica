@@ -8,7 +8,7 @@ plugins {
     id("trimica.common")
     id("me.modmuss50.mod-publish-plugin")
     id("com.google.devtools.ksp") version "2.2.0-2.0.2"
-    id("dev.kikugie.fletching-table.fabric") version "0.1.0-alpha.22"
+    id("dev.kikugie.fletching-table.neoforge") version "0.1.0-alpha.22"
 }
 
 repositories {
@@ -75,6 +75,12 @@ neoForge {
 
     validateAccessTransformers = true
     accessTransformers.from(rootProject.file("src/main/resources/$minecraft-accesstransformer.cfg"))
+
+    mods {
+        register(mod("id")!!) {
+            sourceSet(sourceSets["main"])
+        }
+    }
 
     deps("parchment") {
         parchment {

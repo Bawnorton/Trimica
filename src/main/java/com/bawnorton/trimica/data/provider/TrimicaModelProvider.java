@@ -43,7 +43,7 @@ public class TrimicaModelProvider extends FabricModelProvider {
 	}
 
 	private void itemModel(ItemModelGenerators generators, Item item) {
-		ResourceLocation id = BuiltInRegistries.ITEM.getKey(item).withPrefix("item/");
+		ResourceLocation id = item.builtInRegistryHolder().key().location().withPrefix("item/");
 		ResourceLocation modelLoc = ModelTemplates.FLAT_ITEM.create(item, TextureMapping.layer0(id), generators.modelOutput);
 		generators.itemModelOutput.accept(item, ItemModelUtils.plainModel(modelLoc));
 	}

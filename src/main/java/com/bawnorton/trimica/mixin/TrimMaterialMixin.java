@@ -4,11 +4,16 @@ import com.bawnorton.trimica.Trimica;
 import com.bawnorton.trimica.item.component.MaterialAdditions;
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.mojang.datafixers.kinds.App;
+import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.core.Holder;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.equipment.trim.TrimMaterial;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Mutable;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
 
@@ -17,6 +22,15 @@ import java.util.function.Function;
 
 @Mixin(TrimMaterial.class)
 public abstract class TrimMaterialMixin {
+	@Shadow
+	@Final
+	@Mutable
+	public static Codec<Holder<TrimMaterial>> CODEC;
+
+	static {
+		CODEC = CODEC.xmap(Trimica.getRuntimeTags()::convertHolder, Trimica.getRuntimeTags()::convertHolder);
+	}
+
 	@ModifyArg(
 			method = "<clinit>",
 			at = @At(

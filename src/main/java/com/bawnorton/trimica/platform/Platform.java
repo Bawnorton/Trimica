@@ -31,19 +31,33 @@ public final class Platform {
 		if (modList != null) {
 			return modList.isLoaded(modId);
 		}
-		LoadingModList loadingModList = LoadingModList.get();
+		//? if >=1.21.10 {
+		LoadingModList loadingModList = FMLLoader.getCurrent().getLoadingModList();
+		//?} else {
+		/^LoadingModList loadingModList = LoadingModList.get();
+		^///?}
 		if (loadingModList != null) {
 			return loadingModList.getModFileById(modId) != null;
 		}
 		return false;
 	}
 
+	//? if >=1.21.10 {
 	public static boolean isDev() {
+		return !FMLLoader.getCurrent().isProduction();
+	}
+
+	public static Path getDebugDirectory() {
+		return FMLLoader.getCurrent().getGameDir().resolve(".trimica_debug");
+	}
+	//?} else {
+	/^public static boolean isDev() {
 		return !FMLLoader.isProduction();
 	}
 
 	public static Path getDebugDirectory() {
 		return FMLLoader.getGamePath().resolve(".trimica_debug");
 	}
+	^///?}
 }
 *///?}
