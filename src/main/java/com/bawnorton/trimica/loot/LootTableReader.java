@@ -20,62 +20,63 @@ import net.minecraft.world.level.storage.loot.LootPool;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.entries.LootPoolEntryContainer;
 import net.minecraft.world.level.storage.loot.entries.LootPoolSingletonContainer;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
 public class LootTableReader {
-    public static List<Item> read(LootTableGetter getter, LootTable lootTable) {
-        LootTableAccessor accessor = (LootTableAccessor) lootTable;
-        List<LootPool> pools = accessor.trimica$pools();
-        List<Item> items = new ArrayList<>();
-        for(LootPool pool : pools) {
-            List<LootPoolEntryContainer> entries = ((LootPoolAccessor) pool).trimica$entries();
-            for(LootPoolEntryContainer entry : entries) {
-                items.addAll(readEntry(getter, entry));
-            }
-        }
-        return items;
-    }
+	public static List<Item> read(LootTableGetter getter, LootTable lootTable) {
+		LootTableAccessor accessor = (LootTableAccessor) lootTable;
+		List<LootPool> pools = accessor.trimica$pools();
+		List<Item> items = new ArrayList<>();
+		for (LootPool pool : pools) {
+			List<LootPoolEntryContainer> entries = ((LootPoolAccessor) pool).trimica$entries();
+			for (LootPoolEntryContainer entry : entries) {
+				items.addAll(readEntry(getter, entry));
+			}
+		}
+		return items;
+	}
 
-    private static List<Item> readEntry(LootTableGetter getter, LootPoolEntryContainer entry) {
-        return switch (entry) {
-            case CompositeEntryBaseAccessor compositeEntryBase -> {
-                List<Item> items = new ArrayList<>();
-                for(LootPoolEntryContainer lootPoolEntry : compositeEntryBase.trimica$children()) {
-                    items.addAll(readEntry(getter, lootPoolEntry));
-                }
-                yield items;
-            }
-            case LootPoolSingletonContainer singletonContainer -> switch (singletonContainer) {
-                case DynamicLootAccessor dynamicLoot -> {
-                    ResourceLocation name = dynamicLoot.trimica$name();
-                    if(name.equals(DecoratedPotBlock.SHERDS_DYNAMIC_DROP_ID)) {
-                        yield List.of(Items.DECORATED_POT);
-                    } else if (name.equals(ShulkerBoxBlock.CONTENTS)) {
-                        yield List.of(Items.SHULKER_BOX);
-                    }
-                    yield List.of();
-                }
-                case LootItemAccessor lootItem -> List.of(lootItem.trimica$item().value());
-                case NestedLootTableAccessor nestedLootTable -> {
-                    Either<ResourceKey<LootTable>, LootTable> value = nestedLootTable.trimica$contents();
-                    LootTable table = value.map(key -> getter.get(key.location()), Function.identity());
-                    yield read(getter, table);
-                }
-                case TagEntryAccessor tagEntry -> {
-                    TagKey<Item> tagKey = tagEntry.trimica$tag();
-                    List<Item> items = new ArrayList<>();
-                    BuiltInRegistries.ITEM.get(tagKey).ifPresent(named -> named.forEach(holder -> items.add(holder.value())));
-                    yield items;
-                }
-                default -> List.of();
-            };
-            default -> List.of();
-        };
-    }
+	private static List<Item> readEntry(LootTableGetter getter, LootPoolEntryContainer entry) {
+		return switch (entry) {
+			case CompositeEntryBaseAccessor compositeEntryBase -> {
+				List<Item> items = new ArrayList<>();
+				for (LootPoolEntryContainer lootPoolEntry : compositeEntryBase.trimica$children()) {
+					items.addAll(readEntry(getter, lootPoolEntry));
+				}
+				yield items;
+			}
+			case LootPoolSingletonContainer singletonContainer -> switch (singletonContainer) {
+				case DynamicLootAccessor dynamicLoot -> {
+					ResourceLocation name = dynamicLoot.trimica$name();
+					if (name.equals(DecoratedPotBlock.SHERDS_DYNAMIC_DROP_ID)) {
+						yield List.of(Items.DECORATED_POT);
+					} else if (name.equals(ShulkerBoxBlock.CONTENTS)) {
+						yield List.of(Items.SHULKER_BOX);
+					}
+					yield List.of();
+				}
+				case LootItemAccessor lootItem -> List.of(lootItem.trimica$item().value());
+				case NestedLootTableAccessor nestedLootTable -> {
+					Either<ResourceKey<LootTable>, LootTable> value = nestedLootTable.trimica$contents();
+					LootTable table = value.map(key -> getter.get(key.location()), Function.identity());
+					yield read(getter, table);
+				}
+				case TagEntryAccessor tagEntry -> {
+					TagKey<Item> tagKey = tagEntry.trimica$tag();
+					List<Item> items = new ArrayList<>();
+					BuiltInRegistries.ITEM.get(tagKey).ifPresent(named -> named.forEach(holder -> items.add(holder.value())));
+					yield items;
+				}
+				default -> List.of();
+			};
+			default -> List.of();
+		};
+	}
 
-    public interface LootTableGetter {
-        LootTable get(ResourceLocation id);
-    }
+	public interface LootTableGetter {
+		LootTable get(ResourceLocation id);
+	}
 }

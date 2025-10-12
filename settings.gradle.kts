@@ -11,7 +11,7 @@ pluginManagement {
 }
 
 plugins {
-    id("dev.kikugie.stonecutter") version "0.7.1"
+    id("dev.kikugie.stonecutter") version "0.7.7"
 }
 
 stonecutter {
@@ -19,11 +19,10 @@ stonecutter {
         fun mc(mcVersion: String, name: String = mcVersion, loaders: Iterable<String>) =
             loaders.forEach { vers("$name-$it", mcVersion).buildscript = "build.$it.gradle.kts" }
 
-        mc("1.21.5", loaders = listOf("fabric", "neoforge"))
-        mc("1.21.6", loaders = listOf("fabric", "neoforge"))
         mc("1.21.8", loaders = listOf("fabric", "neoforge"))
+        mc("1.21.10", loaders = listOf("fabric", "neoforge"))
 
-        vcsVersion = "1.21.8-fabric"
+        vcsVersion = "1.21.10-fabric"
     }
 }
 

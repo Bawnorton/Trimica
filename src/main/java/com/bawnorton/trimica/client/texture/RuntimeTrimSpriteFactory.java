@@ -6,5 +6,5 @@ import net.minecraft.world.item.equipment.trim.ArmorTrim;
 import org.jetbrains.annotations.Nullable;
 
 public interface RuntimeTrimSpriteFactory {
-    TrimSpriteContents create(ResourceLocation texture, @Nullable ArmorTrim trim, @Nullable DataComponentGetter componentGetter);
+	TrimSpriteContents create(ResourceLocation texture, @Nullable ArmorTrim trim, @Nullable DataComponentGetter componentGetter);
 }

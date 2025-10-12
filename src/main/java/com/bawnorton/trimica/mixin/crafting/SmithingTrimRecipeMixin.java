@@ -5,7 +5,6 @@ import com.bawnorton.trimica.item.component.AdditionalTrims;
 import com.bawnorton.trimica.trim.TrimMaterialRuntimeRegistry;
 import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
-import dev.kikugie.fletching_table.annotation.MixinEnvironment;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponents;
@@ -23,58 +22,62 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
 import java.util.Optional;
 
-@MixinEnvironment
 @Mixin(SmithingTrimRecipe.class)
 public abstract class SmithingTrimRecipeMixin {
-    @Shadow @Final @Mutable
-    Ingredient addition;
+	@Shadow
+	@Final
+	@Mutable
+	Ingredient addition;
 
-    @Shadow @Final @Mutable
-    Ingredient base;
+	@Shadow
+	@Final
+	@Mutable
+	Ingredient base;
 
-    @Inject(
-            method = "<init>",
-            at = @At("TAIL")
-    )
-    private void useTrimicaIngredients(CallbackInfo ci) {
-        if (TrimMaterialRuntimeRegistry.enableTrimEverything) {
-            addition = TrimicaApiImpl.INSTANCE.applyCraftingRecipeInterceptorsForAddition(addition);
-            base = TrimicaApiImpl.INSTANCE.applyCraftingRecipeInterceptorsForBase(base);
-        }
-    }
+	@Inject(
+			method = "<init>",
+			at = @At("TAIL")
+	)
+	private void useTrimicaIngredients(CallbackInfo ci) {
+		if (TrimMaterialRuntimeRegistry.enableTrimEverything) {
+			addition = TrimicaApiImpl.INSTANCE.applyCraftingRecipeInterceptorsForAddition(addition);
+			base = TrimicaApiImpl.INSTANCE.applyCraftingRecipeInterceptorsForBase(base);
+		}
+	}
 
-    @WrapMethod(
-            method = "applyTrim"
-    )
-    private static ItemStack applyAdditionalTrims(HolderLookup.Provider registries, ItemStack base, ItemStack addition, Holder<TrimPattern> pattern, Operation<ItemStack> original) {
-        if (!AdditionalTrims.enableAdditionalTrims) {
-            return original.call(registries, base, addition, pattern);
-        }
+	@WrapMethod(
+			method = "applyTrim"
+	)
+	private static ItemStack applyAdditionalTrims(HolderLookup.Provider registries, ItemStack base, ItemStack addition, Holder<TrimPattern> pattern, Operation<ItemStack> original) {
+		if (!AdditionalTrims.enableAdditionalTrims) {
+			return original.call(registries, base, addition, pattern);
+		}
 
-        AdditionalTrims.correctTrimComponents(base);
-        ArmorTrim existingTrim = base.get(DataComponents.TRIM);
-        if (existingTrim == null) {
-            return original.call(registries, base, addition, pattern);
-        }
+		AdditionalTrims.correctTrimComponents(base);
+		ArmorTrim existingTrim = base.get(DataComponents.TRIM);
+		if (existingTrim == null) {
+			return original.call(registries, base, addition, pattern);
+		}
 
-        Optional<Holder<TrimMaterial>> optionalMaterial = TrimMaterials.getFromIngredient(registries, addition);
-        if (optionalMaterial.isEmpty()) {
-            return ItemStack.EMPTY;
-        }
+		Optional<Holder<TrimMaterial>> optionalMaterial = TrimMaterials.getFromIngredient(registries, addition);
+		if (optionalMaterial.isEmpty()) {
+			return ItemStack.EMPTY;
+		}
 
-        Holder<TrimMaterial> material = optionalMaterial.get();
-        ArmorTrim newTrim = new ArmorTrim(material, pattern);
-        if (AdditionalTrims.hasTrim(base, newTrim)) {
-            return ItemStack.EMPTY;
-        }
+		Holder<TrimMaterial> material = optionalMaterial.get();
+		ArmorTrim newTrim = new ArmorTrim(material, pattern);
+		if (AdditionalTrims.hasTrim(base, newTrim)) {
+			return ItemStack.EMPTY;
+		}
 
-        ItemStack result = base.copyWithCount(1);
-        if (AdditionalTrims.tryAddTrim(result, newTrim)) {
-            return result;
-        } else {
-            return ItemStack.EMPTY;
-        }
-    }
+		ItemStack result = base.copyWithCount(1);
+		if (AdditionalTrims.tryAddTrim(result, newTrim)) {
+			return result;
+		} else {
+			return ItemStack.EMPTY;
+		}
+	}
 }

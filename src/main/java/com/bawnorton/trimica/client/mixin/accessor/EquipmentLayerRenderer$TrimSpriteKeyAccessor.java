@@ -12,8 +12,8 @@ import org.spongepowered.asm.mixin.gen.Invoker;
 @MixinEnvironment(value = "client")
 @Mixin(EquipmentLayerRenderer.TrimSpriteKey.class)
 public interface EquipmentLayerRenderer$TrimSpriteKeyAccessor {
-    @Invoker("<init>")
-    static EquipmentLayerRenderer.TrimSpriteKey trimica$init(ArmorTrim trim, EquipmentClientInfo.LayerType layerType, ResourceKey<EquipmentAsset> equipmentAssetId) {
-        throw new AssertionError();
-    }
+	@Invoker("<init>")
+	static EquipmentLayerRenderer.TrimSpriteKey trimica$init(ArmorTrim trim, EquipmentClientInfo.LayerType layerType, ResourceKey<EquipmentAsset> equipmentAssetId) {
+		throw new AssertionError();
+	}
 }

@@ -11,11 +11,11 @@ import org.spongepowered.asm.mixin.gen.Invoker;
 @MixinEnvironment(value = "client")
 @Mixin(ModelDiscovery.ModelWrapper.class)
 public interface ModelDiscover$ModelWrapperAccessor {
-    @Invoker("<init>")
-    static ModelDiscovery.ModelWrapper trimica$init(ResourceLocation resourceLocation, UnbakedModel unbakedModel, boolean bl) {
-        throw new AssertionError();
-    }
+	@Invoker("<init>")
+	static ModelDiscovery.ModelWrapper trimica$init(ResourceLocation resourceLocation, UnbakedModel unbakedModel, boolean bl) {
+		throw new AssertionError();
+	}
 
-    @Accessor("parent")
-    void trimica$parent(ModelDiscovery.ModelWrapper parent);
+	@Accessor("parent")
+	void trimica$parent(ModelDiscovery.ModelWrapper parent);
 }

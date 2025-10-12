@@ -1,4 +1,3 @@
-//? if >1.21.5 {
 package com.bawnorton.trimica.client.mixin.accessor;
 
 import dev.kikugie.fletching_table.annotation.MixinEnvironment;
@@ -9,7 +8,6 @@ import org.spongepowered.asm.mixin.gen.Invoker;
 @MixinEnvironment(value = "client")
 @Mixin(value = GuiRenderer.class)
 public interface GuiRendererAccessor {
-    @Invoker("invalidateItemAtlas")
-    void trimica$invalidateItemAtlas();
+	@Invoker("invalidateItemAtlas")
+	void trimica$invalidateItemAtlas();
 }
-//?}

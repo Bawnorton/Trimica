@@ -8,16 +8,16 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.Items;
 
 public class DefaultPaletteInterceptor implements PaletteInterceptor {
-    @Override
-    public TrimPalette interceptMaterialAdditions(TrimPalette palette, MaterialAdditions additions) {
-        if (TrimicaToggles.enableItems && TrimicaToggles.enableAnimator) {
-            if(additions.matches(BuiltInRegistries.ITEM.getKey(TrimicaItems.ANIMATOR))) {
-                palette = palette.asAnimated();
-            }
-        }
-        if (additions.matches(BuiltInRegistries.ITEM.getKey(Items.GLOW_INK_SAC))) {
-            palette.setEmissive(true);
-        }
-        return palette;
-    }
+	@Override
+	public TrimPalette interceptMaterialAdditions(TrimPalette palette, MaterialAdditions additions) {
+		if (TrimicaToggles.enableItems && TrimicaToggles.enableAnimator) {
+			if (additions.matches(BuiltInRegistries.ITEM.getKey(TrimicaItems.ANIMATOR))) {
+				palette = palette.asAnimated();
+			}
+		}
+		if (additions.matches(BuiltInRegistries.ITEM.getKey(Items.GLOW_INK_SAC))) {
+			palette.setEmissive(true);
+		}
+		return palette;
+	}
 }

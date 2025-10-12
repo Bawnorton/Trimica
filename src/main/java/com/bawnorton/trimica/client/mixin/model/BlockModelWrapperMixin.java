@@ -32,128 +32,139 @@ import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Mutable;
 import org.spongepowered.asm.mixin.Shadow;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
+//? if >=1.21.10
+import net.minecraft.world.entity.ItemOwner;
+
 @MixinEnvironment(value = "client")
 @Mixin(BlockModelWrapper.class)
 public abstract class BlockModelWrapperMixin {
-    @Shadow @Final @Mutable
-    private List<ItemTintSource> tints;
+	@Shadow
+	@Final
+	@Mutable
+	private List<ItemTintSource> tints;
 
-    @Shadow @Final @Mutable
-    private List<BakedQuad> quads;
+	@Shadow
+	@Final
+	@Mutable
+	private List<BakedQuad> quads;
 
-    @Shadow @Final @Mutable
-    private Supplier<Vector3f[]> extents;
+	@Shadow
+	@Final
+	@Mutable
+	private Supplier<Vector3f[]> extents;
 
-    @Shadow @Final @Mutable
-    private ModelRenderProperties properties;
+	@Shadow
+	@Final
+	@Mutable
+	private ModelRenderProperties properties;
 
-    @WrapMethod(
-            method = "update"
-    )
-    private void createNewLayerRenderStateForTrimOverlay(ItemStackRenderState itemStackRenderState, ItemStack stack, ItemModelResolver itemModelResolver, ItemDisplayContext itemDisplayContext, ClientLevel clientLevel, LivingEntity livingEntity, int i, Operation<Void> original) {
-        Runnable callOriginal = () -> original.call(itemStackRenderState, stack, itemModelResolver, itemDisplayContext, clientLevel, livingEntity, i);
+	@WrapMethod(
+			method = "update"
+	)
+	//? if >=1.21.10 {
+	private void createNewLayerRenderStateForTrimOverlay(ItemStackRenderState renderState, ItemStack stack, ItemModelResolver itemModelResolver, ItemDisplayContext displayContext, ClientLevel level, ItemOwner owner, int seed, Operation<Void> original) {
+		Runnable callOriginal = () -> original.call(renderState, stack, itemModelResolver, displayContext, level, owner, seed);
+	//?} else {
+	/*private void createNewLayerRenderStateForTrimOverlay(ItemStackRenderState renderState, ItemStack stack, ItemModelResolver itemModelResolver, ItemDisplayContext displayContext, ClientLevel level, LivingEntity livingEntity, int i, Operation<Void> original) {
+		Runnable callOriginal = () -> original.call(renderState, stack, itemModelResolver, displayContext, level, livingEntity, i);
+	*///?}
 
-        List<ArmorTrim> trims = AdditionalTrims.getAllTrims(stack);
-        if (trims.isEmpty()) {
-            callOriginal.run();
-            return;
-        }
-        ProfilerFiller profiler = Profiler.get();
+		List<ArmorTrim> trims = AdditionalTrims.getAllTrims(stack);
+		if (trims.isEmpty()) {
+			callOriginal.run();
+			return;
+		}
+		ProfilerFiller profiler = Profiler.get();
 
-        boolean isEmissive = false;
-        boolean isAnimated = false;
-        List<TrimmedItemModelWrapper> trimModelWrappers = new ArrayList<>();
-        for (ArmorTrim trim : trims) {
-            profiler.push("trimica:item_runtime_atlas");
-            TrimItemModelFactory itemModelFactory = TrimicaClient.getItemModelFactory();
-            TrimmedItemModelWrapper newModel = itemModelFactory.getOrCreateModel((ItemModel) this, stack, trim);
-            trimModelWrappers.add(newModel);
-            profiler.pop();
-            TrimPalette palette = newModel.palette();
-            if (palette != null) {
-                if (palette.isEmissive()) {
-                    isEmissive = true;
-                }
-                if (palette.isAnimated()) {
-                    isAnimated = true;
-                }
-            }
-        }
+		boolean isEmissive = false;
+		boolean isAnimated = false;
+		List<TrimmedItemModelWrapper> trimModelWrappers = new ArrayList<>();
+		for (ArmorTrim trim : trims) {
+			profiler.push("trimica:item_runtime_atlas");
+			TrimItemModelFactory itemModelFactory = TrimicaClient.getItemModelFactory();
+			TrimmedItemModelWrapper newModel = itemModelFactory.getOrCreateModel((ItemModel) this, level, stack, trim);
+			trimModelWrappers.add(newModel);
+			profiler.pop();
+			TrimPalette palette = newModel.palette();
+			if (palette != null) {
+				if (palette.isEmissive()) {
+					isEmissive = true;
+				}
+				if (palette.isAnimated()) {
+					isAnimated = true;
+				}
+			}
+		}
 
-        //? if >1.21.5 {
-        if (isAnimated) {
-            itemStackRenderState.setAnimated();
-        }
-        //?}
-        ItemStackRenderState.FoilType foilType = ItemStackRenderState.FoilType.SPECIAL;
-        if(stack.hasFoil()) {
-            //? if >1.21.5 {
-            itemStackRenderState.appendModelIdentityElement(foilType);
-            //?}
-        }
+		if (isAnimated) {
+			renderState.setAnimated();
+		}
+		ItemStackRenderState.FoilType foilType = ItemStackRenderState.FoilType.SPECIAL;
+		if (stack.hasFoil()) {
+			renderState.appendModelIdentityElement(foilType);
+		}
 
-        for(TrimmedItemModelWrapper newModel : trimModelWrappers) {
-            List<ItemTintSource> originalTints = new ArrayList<>(tints);
-            List<BakedQuad> originalQuads = new ArrayList<>(quads);
-            Vector3f[] originalExtents = extents.get();
-            Supplier<Vector3f[]> originalExtentsSupplier = () -> originalExtents;
-            ModelRenderProperties originalProperties = new ModelRenderProperties(
-                    properties.usesBlockLight(),
-                    properties.particleIcon(),
-                    properties.transforms()
-            );
-            if(newModel.model() instanceof BlockModelWrapperAccessor blockModelWrapper) {
-                tints = blockModelWrapper.trimica$tints();
-                quads = blockModelWrapper.trimica$quads();
-                extents = blockModelWrapper.trimica$extents();
-                properties = blockModelWrapper.trimica$properties();
-            }
+		for (TrimmedItemModelWrapper newModel : trimModelWrappers) {
+			List<ItemTintSource> originalTints = new ArrayList<>(tints);
+			List<BakedQuad> originalQuads = new ArrayList<>(quads);
+			Vector3f[] originalExtents = extents.get();
+			Supplier<Vector3f[]> originalExtentsSupplier = () -> originalExtents;
+			ModelRenderProperties originalProperties = new ModelRenderProperties(
+					properties.usesBlockLight(),
+					properties.particleIcon(),
+					properties.transforms()
+			);
+			if (newModel.model() instanceof BlockModelWrapperAccessor blockModelWrapper) {
+				tints = blockModelWrapper.trimica$tints();
+				quads = blockModelWrapper.trimica$quads();
+				extents = blockModelWrapper.trimica$extents();
+				properties = blockModelWrapper.trimica$properties();
+			}
 
-            int lastBaseTextureIndex = -1;
-            ResourceLocation overlayAtlas = null;
-            for (int j = 0; j < quads.size(); j++) {
-                BakedQuad quad = quads.get(j);
-                if (quad.sprite().atlasLocation().getNamespace().equals(Trimica.MOD_ID)) {
-                    lastBaseTextureIndex = j;
-                    overlayAtlas = quad.sprite().atlasLocation();
-                    break;
-                }
-            }
-            if (overlayAtlas == null) {
-                tints = originalTints;
-                quads = originalQuads;
-                extents = originalExtentsSupplier;
-                properties = originalProperties;
-                callOriginal.run();
-                return;
-            }
+			int lastBaseTextureIndex = -1;
+			ResourceLocation overlayAtlas = null;
+			for (int j = 0; j < quads.size(); j++) {
+				BakedQuad quad = quads.get(j);
+				if (quad.sprite().atlasLocation().getNamespace().equals(Trimica.MOD_ID)) {
+					lastBaseTextureIndex = j;
+					overlayAtlas = quad.sprite().atlasLocation();
+					break;
+				}
+			}
+			if (overlayAtlas == null) {
+				tints = originalTints;
+				quads = originalQuads;
+				extents = originalExtentsSupplier;
+				properties = originalProperties;
+				callOriginal.run();
+				return;
+			}
 
-            List<BakedQuad> overlayQuads = new ArrayList<>(quads.subList(lastBaseTextureIndex, quads.size()));
-            quads = new ArrayList<>(quads.subList(0, lastBaseTextureIndex));
-            callOriginal.run();
+			List<BakedQuad> overlayQuads = new ArrayList<>(quads.subList(lastBaseTextureIndex, quads.size()));
+			quads = new ArrayList<>(quads.subList(0, lastBaseTextureIndex));
+			callOriginal.run();
 
-            ItemStackRenderState.LayerRenderState overlayRenderState = itemStackRenderState.newLayer();
-            ItemStackRenderState$LayerRenderStateExtender extender = (ItemStackRenderState$LayerRenderStateExtender) overlayRenderState;
-            extender.trimica$markAsTrimOverlay();
-            ResourceLocation modelLocation = newModel.location();
-            //? if >1.21.5 {
-            itemStackRenderState.appendModelIdentityElement(modelLocation);
-            //?}
-            extender.trimica$setEmissive(isEmissive);
-            if(stack.hasFoil()) {
-                overlayRenderState.setFoilType(foilType);
-            }
+			ItemStackRenderState.LayerRenderState overlayRenderState = renderState.newLayer();
+			ItemStackRenderState$LayerRenderStateExtender extender = (ItemStackRenderState$LayerRenderStateExtender) overlayRenderState;
+			extender.trimica$markAsTrimOverlay();
+			ResourceLocation modelLocation = newModel.location();
+			renderState.appendModelIdentityElement(modelLocation);
+			extender.trimica$setEmissive(isEmissive);
+			if (stack.hasFoil()) {
+				overlayRenderState.setFoilType(foilType);
+			}
 
-            overlayRenderState.setRenderType(RenderType.itemEntityTranslucentCull(overlayAtlas));
-            properties.applyToLayer(overlayRenderState, itemDisplayContext);
-            overlayRenderState.prepareQuadList().addAll(overlayQuads);
+			overlayRenderState.setRenderType(RenderType.itemEntityTranslucentCull(overlayAtlas));
+			properties.applyToLayer(overlayRenderState, displayContext);
+			overlayRenderState.prepareQuadList().addAll(overlayQuads);
 
-            quads = originalQuads;
-            profiler.pop();
-        }
-    }
+			quads = originalQuads;
+			profiler.pop();
+		}
+	}
 }

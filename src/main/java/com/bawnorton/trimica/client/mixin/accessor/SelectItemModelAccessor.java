@@ -8,6 +8,6 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 @MixinEnvironment(value = "client")
 @Mixin(SelectItemModel.class)
 public interface SelectItemModelAccessor {
-    @Accessor("models")
-    SelectItemModel.ModelSelector<?> trimica$models();
+	@Accessor("models")
+	SelectItemModel.ModelSelector<?> trimica$models();
 }

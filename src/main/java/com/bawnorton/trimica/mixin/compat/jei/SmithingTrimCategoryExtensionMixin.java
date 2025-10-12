@@ -1,5 +1,5 @@
 //? if jei {
-package com.bawnorton.trimica.mixin.compat.jei;
+/*package com.bawnorton.trimica.mixin.compat.jei;
 
 import com.bawnorton.trimica.TrimicaToggles;
 import com.bawnorton.trimica.item.TrimicaItems;
@@ -28,4 +28,4 @@ public abstract class SmithingTrimCategoryExtensionMixin {
         }
     }
 }
-//?}
+*///?}

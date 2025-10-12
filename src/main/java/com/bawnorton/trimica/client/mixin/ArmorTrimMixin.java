@@ -24,56 +24,58 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
 import java.util.function.Consumer;
 
 @MixinEnvironment(value = "client", type = MixinEnvironment.Env.MAIN)
 @Mixin(ArmorTrim.class)
 public abstract class ArmorTrimMixin {
-    @Shadow public abstract Holder<TrimMaterial> material();
+	@Shadow
+	public abstract Holder<TrimMaterial> material();
 
-    @ModifyArg(
-            method = "addToTooltip",
-            at = @At(
-                    value = "INVOKE",
-                    target = "Lnet/minecraft/network/chat/MutableComponent;append(Lnet/minecraft/network/chat/Component;)Lnet/minecraft/network/chat/MutableComponent;"
-            )
-    )
-    private Component correctMaterialColour(Component original, @Local(argsOnly = true) DataComponentGetter componentGetter) {
-        TrimPalette palette = TrimicaClient.getPalettes().getPalette(material().value(), null, componentGetter);
-        if (palette == null) return original;
+	@ModifyArg(
+			method = "addToTooltip",
+			at = @At(
+					value = "INVOKE",
+					target = "Lnet/minecraft/network/chat/MutableComponent;append(Lnet/minecraft/network/chat/Component;)Lnet/minecraft/network/chat/MutableComponent;"
+			)
+	)
+	private Component correctMaterialColour(Component original, @Local(argsOnly = true) DataComponentGetter componentGetter) {
+		TrimPalette palette = TrimicaClient.getPalettes().getPalette(material().value(), null, componentGetter);
+		if (palette == null) return original;
 
-        if(palette.isAnimated()) {
-            return original.copy().withColor(palette.getTooltipColour());
-        } else {
-            TextColor color = original.getStyle().getColor();
-            if(color == null) {
-                return original.copy().withColor(palette.getTooltipColour());
-            }
-        }
-        return original;
-    }
+		if (palette.isAnimated()) {
+			return original.copy().withColor(palette.getTooltipColour());
+		} else {
+			TextColor color = original.getStyle().getColor();
+			if (color == null) {
+				return original.copy().withColor(palette.getTooltipColour());
+			}
+		}
+		return original;
+	}
 
-    @WrapWithCondition(
-            method = "addToTooltip",
-            at = @At(
-                    value = "INVOKE",
-                    target = "Ljava/util/function/Consumer;accept(Ljava/lang/Object;)V"
-            )
-    )
-    private <T> boolean dontAddToTooltipIfAdditionalTrimsEnabled(Consumer<T> instance, T t) {
-        return !AdditionalTrims.enableAdditionalTrims;
-    }
+	@WrapWithCondition(
+			method = "addToTooltip",
+			at = @At(
+					value = "INVOKE",
+					target = "Ljava/util/function/Consumer;accept(Ljava/lang/Object;)V"
+			)
+	)
+	private <T> boolean dontAddToTooltipIfAdditionalTrimsEnabled(Consumer<T> instance, T t) {
+		return !AdditionalTrims.enableAdditionalTrims;
+	}
 
-    @Inject(
-            method = "addToTooltip",
-            at = @At("RETURN")
-    )
-    private void addAdditionLines(Item.TooltipContext tooltipContext, Consumer<Component> consumer, TooltipFlag tooltipFlag, DataComponentGetter componentGetter, CallbackInfo ci) {
-        if (!TrimMaterialRuntimeRegistry.enableTrimEverything) {
-            TrimPalette palette = TrimicaClient.getPalettes().getPalette(material().value(), null, componentGetter);
-            if (palette == TrimPalette.DISABLED) {
-                consumer.accept(CommonComponents.space().append(Component.translatable("trimica.trim_material.disabled").withStyle(ChatFormatting.RED)));
-            }
-        }
-    }
+	@Inject(
+			method = "addToTooltip",
+			at = @At("RETURN")
+	)
+	private void addAdditionLines(Item.TooltipContext tooltipContext, Consumer<Component> consumer, TooltipFlag tooltipFlag, DataComponentGetter componentGetter, CallbackInfo ci) {
+		if (!TrimMaterialRuntimeRegistry.enableTrimEverything) {
+			TrimPalette palette = TrimicaClient.getPalettes().getPalette(material().value(), null, componentGetter);
+			if (palette == TrimPalette.DISABLED) {
+				consumer.accept(CommonComponents.space().append(Component.translatable("trimica.trim_material.disabled").withStyle(ChatFormatting.RED)));
+			}
+		}
+	}
 }

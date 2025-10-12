@@ -1,6 +1,8 @@
 @file:Suppress("UnstableApiUsage")
 
 import dev.kikugie.fletching_table.annotation.MixinEnvironment
+import org.gradle.kotlin.dsl.main
+import org.gradle.kotlin.dsl.remapJar
 import trimica.utils.*
 
 plugins {
@@ -10,7 +12,7 @@ plugins {
     id("fabric-loom")
     id("me.modmuss50.mod-publish-plugin")
     id("com.google.devtools.ksp") version "2.2.0-2.0.2"
-    id("dev.kikugie.fletching-table.fabric") version "0.1.0-alpha.13"
+    id("dev.kikugie.fletching-table.fabric") version "0.1.0-alpha.22"
 }
 
 repositories {
@@ -42,7 +44,7 @@ dependencies {
         }
     })
 
-    modImplementation("net.fabricmc:fabric-loader:0.16.14")
+    modImplementation("net.fabricmc:fabric-loader:0.17.3")
     modImplementation("net.fabricmc.fabric-api:fabric-api:${deps("fabric_api")}")
 
     remoteDepBuilder(project, fletchingTable::modrinth)
@@ -74,6 +76,9 @@ dependencies {
     deps("configurable") {
         modImplementation(annotationProcessor("com.bawnorton.configurable:configurable-$loader:$it")!!)
     }
+    deps("bettertrims") {
+        modImplementation("com.bawnorton.bettertrims:bettertrims-$loader:$it")
+    }
 }
 
 java {
@@ -90,7 +95,6 @@ loom {
             createRunConfiguration = true
             client = true
             modId = "trimica"
-            outputDirectory = rootProject.file("src/main/generated")
         }
 
         configureTests {
@@ -154,6 +158,14 @@ tasks {
         dependsOn("build")
     }
 
+    remapJar {
+        dependsOn("runDatagen")
+    }
+
+    named<Jar>("sourcesJar") {
+        dependsOn("runDatagen")
+    }
+
     processResources {
         exclude("META-INF/neoforge.mods.toml")
         exclude { it.name.endsWith("-accesstransformer.cfg") }
@@ -195,17 +207,20 @@ publishMods {
     changelog = provider { rootProject.file("CHANGELOG.md").readText() }
     modLoaders.add(loader)
 
+    val compatibleVersionString = mod("compatible_versions")!!
+    val compatibleVersions = compatibleVersionString.split(",").map { it.trim() }
+
     modrinth {
         projectId = property("publishing.modrinth") as String
         accessToken = mrToken
-        minecraftVersions.add(minecraft)
+        minecraftVersions.addAll(compatibleVersions)
         requires("fabric-api", "configurable")
     }
 
     curseforge {
         projectId = property("publishing.curseforge") as String
         accessToken = cfToken
-        minecraftVersions.add(minecraft)
+        minecraftVersions.addAll(compatibleVersions)
         requires("fabric-api", "configurable")
     }
 }

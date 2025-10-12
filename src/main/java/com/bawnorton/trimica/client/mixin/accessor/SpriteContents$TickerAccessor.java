@@ -7,6 +7,6 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 @MixinEnvironment(value = "client")
 @Mixin(targets = "net/minecraft/client/renderer/texture/SpriteContents$Ticker")
 public interface SpriteContents$TickerAccessor {
-    @Accessor("frame")
-    void trimica$frame(int frame);
+	@Accessor("frame")
+	void trimica$frame(int frame);
 }

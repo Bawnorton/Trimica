@@ -1,8 +1,0 @@
-accessWidener   v2  named
-accessible  class   net/minecraft/client/renderer/entity/layers/EquipmentLayerRenderer$TrimSpriteKey
-accessible  class   net/minecraft/core/registries/BuiltInRegistries$RegistryBootstrap
-accessible  class   net/minecraft/client/resources/model/ModelBakery$ModelBakerImpl
-accessible  class   net/minecraft/client/resources/model/ModelDiscovery$ModelWrapper
-accessible  class   net/minecraft/client/resources/model/ModelManager$ResolvedModels
-accessible  class   net/minecraft/client/renderer/block/model/TextureSlots$Reference
-accessible  class   net/minecraft/client/renderer/block/model/TextureSlots$Value

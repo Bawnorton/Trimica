@@ -29,8 +29,7 @@ tasks {
             "mod_version" to mod("version"),
             "mod_description" to mod("description"),
             "mod_license" to mod("license"),
-            "minecraft_version" to minecraft,
-            "pack_format" to 71
+            "minecraft_version" to minecraft
         )
 
         inputs.properties(props)

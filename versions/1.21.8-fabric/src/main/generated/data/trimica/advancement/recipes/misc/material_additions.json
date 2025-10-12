@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_ingredients": {
+      "conditions": {
+        "items": [
+          {
+            "items": "#trimica:material_additions"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "trimica:material_additions"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_ingredients"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "trimica:material_additions"
+    ]
+  }
+}

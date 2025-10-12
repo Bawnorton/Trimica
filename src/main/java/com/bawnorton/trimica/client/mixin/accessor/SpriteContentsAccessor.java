@@ -9,6 +9,6 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 @MixinEnvironment(value = "client")
 @Mixin(SpriteContents.class)
 public interface SpriteContentsAccessor {
-    @Accessor("originalImage")
-    NativeImage trimica$originalImage();
+	@Accessor("originalImage")
+	NativeImage trimica$originalImage();
 }

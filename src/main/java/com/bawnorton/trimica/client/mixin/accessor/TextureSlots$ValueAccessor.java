@@ -9,8 +9,8 @@ import org.spongepowered.asm.mixin.gen.Invoker;
 @MixinEnvironment(value = "client")
 @Mixin(TextureSlots.Value.class)
 public interface TextureSlots$ValueAccessor {
-    @Invoker("<init>")
-    static TextureSlots.Value trimica$init(Material material) {
-        throw new AssertionError();
-    }
+	@Invoker("<init>")
+	static TextureSlots.Value trimica$init(Material material) {
+		throw new AssertionError();
+	}
 }

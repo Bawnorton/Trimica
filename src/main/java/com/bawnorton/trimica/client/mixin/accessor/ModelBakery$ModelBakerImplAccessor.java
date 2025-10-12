@@ -9,8 +9,8 @@ import org.spongepowered.asm.mixin.gen.Invoker;
 @MixinEnvironment(value = "client")
 @Mixin(ModelBakery.ModelBakerImpl.class)
 public interface ModelBakery$ModelBakerImplAccessor {
-    @Invoker("<init>")
-    static ModelBakery.ModelBakerImpl trimic$init(ModelBakery modelBakery, SpriteGetter spriteGetter) {
-        throw new AssertionError();
-    }
+	@Invoker("<init>")
+	static ModelBakery.ModelBakerImpl trimic$init(ModelBakery modelBakery, SpriteGetter spriteGetter) {
+		throw new AssertionError();
+	}
 }

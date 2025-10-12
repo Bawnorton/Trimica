@@ -1,4 +1,3 @@
-//? if >1.21.5 {
 package com.bawnorton.trimica.client.mixin.accessor;
 
 import dev.kikugie.fletching_table.annotation.MixinEnvironment;
@@ -10,7 +9,6 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 @MixinEnvironment(value = "client")
 @Mixin(GameRenderer.class)
 public interface GameRendererAccessor {
-    @Accessor("guiRenderer")
-    GuiRenderer trimica$guiRenderer();
+	@Accessor("guiRenderer")
+	GuiRenderer trimica$guiRenderer();
 }
-//?}

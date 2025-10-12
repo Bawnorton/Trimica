@@ -1,3 +1,11 @@
+# 1.3.0
+
+- Update to 1.21.10
+- Switch runtime atlases to be per-material instead of per-pattern to improve performance most of the time
+  - Players are more likely to use the same material across multiple patterns than the same pattern across multiple materials
+- Add runtime tag generation for generated trim materials for compat with mods or datapacks that wish to reference trims by id
+- Drop 1.21.5/6 support
+
 # 1.2.2
 
 - Update configurable dep

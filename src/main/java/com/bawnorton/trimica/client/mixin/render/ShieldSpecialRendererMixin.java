@@ -7,6 +7,7 @@ import com.bawnorton.trimica.compat.Compat;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import dev.kikugie.fletching_table.annotation.MixinEnvironment;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.ShieldModel;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -22,34 +23,77 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
 import java.util.List;
+
+//? if >=1.21.10
+import net.minecraft.client.renderer.SubmitNodeCollector;
 
 @MixinEnvironment(value = "client")
 @Mixin(ShieldSpecialRenderer.class)
 public abstract class ShieldSpecialRendererMixin {
-    @Shadow @Final private ShieldModel model;
+	@Shadow
+	@Final
+	private ShieldModel model;
 
-    @Inject(
-            method = "render(Lnet/minecraft/core/component/DataComponentMap;Lnet/minecraft/world/item/ItemDisplayContext;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;IIZ)V",
-            at = @At(
-                    value = "INVOKE",
-                    target = "Lcom/mojang/blaze3d/vertex/PoseStack;popPose()V"
-            )
-    )
-    private void renderTrim(DataComponentMap dataComponentMap, ItemDisplayContext itemDisplayContext, PoseStack poseStack, MultiBufferSource multiBufferSource, int i, int j, boolean bl, CallbackInfo ci) {
-        ProfilerFiller profiler = Profiler.get();
-        profiler.push("trimica:shield");
-        List<DynamicTrimTextureAtlasSprite> dynamicSprites = TrimicaClient.getRuntimeAtlases().getShieldSprites(dataComponentMap);
-        for (DynamicTrimTextureAtlasSprite dynamicSprite : dynamicSprites) {
-            TrimPalette palette = dynamicSprite.getPalette();
-            int light = palette == null ? i : (palette.isEmissive() ? LightTexture.FULL_BRIGHT : i);
-            if(palette != null && palette.isAnimated()) {
-                Compat.ifSodiumPresent(compat -> compat.markSpriteAsActive(dynamicSprite));
-            }
-            VertexConsumer vertexConsumer = dynamicSprite.wrap(ItemRenderer.getFoilBuffer(multiBufferSource, dynamicSprite.getRenderType(), itemDisplayContext == ItemDisplayContext.GUI, bl));
-            this.model.plate().render(poseStack, vertexConsumer, light, j);
-        }
+	//? if >=1.21.10 {
+	@Inject(
+			method = "submit(Lnet/minecraft/core/component/DataComponentMap;Lnet/minecraft/world/item/ItemDisplayContext;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;IIZI)V",
+			at = @At(
+					value = "INVOKE",
+					target = "Lcom/mojang/blaze3d/vertex/PoseStack;popPose()V"
+			)
+	)
+	private void submitTrim(DataComponentMap argument, ItemDisplayContext displayContext, PoseStack poseStack, SubmitNodeCollector nodeCollector, int packedLight, int packedOverlay, boolean hasFoil, int outlineColor, CallbackInfo ci) {
+		ProfilerFiller profiler = Profiler.get();
+		profiler.push("trimica:shield");
+		List<DynamicTrimTextureAtlasSprite> dynamicSprites = TrimicaClient.getRuntimeAtlases().getShieldSprites(Minecraft.getInstance().level, argument);
+		for (DynamicTrimTextureAtlasSprite dynamicSprite : dynamicSprites) {
+			TrimPalette palette = dynamicSprite.getPalette();
+			int light = palette == null ? packedLight : (palette.isEmissive() ? LightTexture.FULL_BRIGHT : packedLight);
+			if (palette != null && palette.isAnimated()) {
+				Compat.ifSodiumPresent(compat -> compat.markSpriteAsActive(dynamicSprite));
+			}
+			nodeCollector.submitModelPart(
+					this.model.plate(),
+					poseStack,
+					dynamicSprite.getRenderType(),
+					light,
+					packedOverlay,
+					dynamicSprite,
+					false,
+					hasFoil,
+					-1,
+					null,
+					outlineColor
+			);
+		}
 
-        profiler.pop();
-    }
+		profiler.pop();
+	}
+	//?} else {
+	/*@Inject(
+			method = "render(Lnet/minecraft/core/component/DataComponentMap;Lnet/minecraft/world/item/ItemDisplayContext;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;IIZ)V",
+			at = @At(
+					value = "INVOKE",
+					target = "Lcom/mojang/blaze3d/vertex/PoseStack;popPose()V"
+			)
+	)
+	private void renderTrim(DataComponentMap dataComponentMap, ItemDisplayContext itemDisplayContext, PoseStack poseStack, MultiBufferSource multiBufferSource, int i, int j, boolean bl, CallbackInfo ci) {
+		ProfilerFiller profiler = Profiler.get();
+		profiler.push("trimica:shield");
+		List<DynamicTrimTextureAtlasSprite> dynamicSprites = TrimicaClient.getRuntimeAtlases().getShieldSprites(Minecraft.getInstance().level, dataComponentMap);
+		for (DynamicTrimTextureAtlasSprite dynamicSprite : dynamicSprites) {
+			TrimPalette palette = dynamicSprite.getPalette();
+			int light = palette == null ? i : (palette.isEmissive() ? LightTexture.FULL_BRIGHT : i);
+			if (palette != null && palette.isAnimated()) {
+				Compat.ifSodiumPresent(compat -> compat.markSpriteAsActive(dynamicSprite));
+			}
+			VertexConsumer vertexConsumer = dynamicSprite.wrap(ItemRenderer.getFoilBuffer(multiBufferSource, dynamicSprite.getRenderType(), itemDisplayContext == ItemDisplayContext.GUI, bl));
+			this.model.plate().render(poseStack, vertexConsumer, light, j);
+		}
+
+		profiler.pop();
+	}
+	*///?}
 }

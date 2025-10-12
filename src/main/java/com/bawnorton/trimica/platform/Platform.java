@@ -22,27 +22,28 @@ public final class Platform {
 /*import net.neoforged.fml.ModList;
 import net.neoforged.fml.loading.LoadingModList;
 import net.neoforged.fml.loading.FMLLoader;
+
 import java.nio.file.Path;
 
 public final class Platform {
-    public static boolean isModLoaded(String modId) {
-        ModList modList = ModList.get();
-        if (modList != null) {
-            return modList.isLoaded(modId);
-        }
-        LoadingModList loadingModList = LoadingModList.get();
-        if (loadingModList != null) {
-            return loadingModList.getModFileById(modId) != null;
-        }
-        return false;
-    }
+	public static boolean isModLoaded(String modId) {
+		ModList modList = ModList.get();
+		if (modList != null) {
+			return modList.isLoaded(modId);
+		}
+		LoadingModList loadingModList = LoadingModList.get();
+		if (loadingModList != null) {
+			return loadingModList.getModFileById(modId) != null;
+		}
+		return false;
+	}
 
-    public static boolean isDev() {
-        return !FMLLoader.isProduction();
-    }
+	public static boolean isDev() {
+		return !FMLLoader.isProduction();
+	}
 
-    public static Path getDebugDirectory() {
-        return FMLLoader.getGamePath().resolve(".trimica_debug");
-    }
+	public static Path getDebugDirectory() {
+		return FMLLoader.getGamePath().resolve(".trimica_debug");
+	}
 }
 *///?}

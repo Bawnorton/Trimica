@@ -42,33 +42,33 @@ import org.jetbrains.annotations.Nullable;
  */
 @SuppressWarnings("unused")
 public interface BaseTextureInterceptor {
-    /**
-     * @param expectedBaseTexture The expected path for the base greyscale trim texture, may be null if one could not be determined.
-     * @param itemWithTrim        The item stack with trim applied.
-     * @param armourTrim          The trim applied to the item stack.
-     * @return The path to the base texture to use, if no changes are needed, return the provided expectedBaseTexture.
-     */
-    default ResourceLocation interceptItemTexture(@Nullable ResourceLocation expectedBaseTexture, ItemStack itemWithTrim, ArmorTrim armourTrim) {
-        return expectedBaseTexture;
-    }
+	/**
+	 * @param expectedBaseTexture The expected path for the base greyscale trim texture, may be null if one could not be determined.
+	 * @param itemWithTrim        The item stack with trim applied.
+	 * @param armourTrim          The trim applied to the item stack.
+	 * @return The path to the base texture to use, if no changes are needed, return the provided expectedBaseTexture.
+	 */
+	default ResourceLocation interceptItemTexture(@Nullable ResourceLocation expectedBaseTexture, ItemStack itemWithTrim, ArmorTrim armourTrim) {
+		return expectedBaseTexture;
+	}
 
-    /**
-     * @param expectedBaseTexture The expected path for the base greyscale trim texture, may be null if one could not be determined.
-     * @param itemWithTrim        The item stack with trim applied.
-     * @param armourTrim          The trim applied to the item stack.
-     * @return The path to the base texture to use, if no changes are needed, return the provided expectedBaseTexture.
-     */
-    default ResourceLocation interceptArmourTexture(@Nullable ResourceLocation expectedBaseTexture, ItemStack itemWithTrim, ArmorTrim armourTrim) {
-        return expectedBaseTexture;
-    }
+	/**
+	 * @param expectedBaseTexture The expected path for the base greyscale trim texture, may be null if one could not be determined.
+	 * @param itemWithTrim        The item stack with trim applied.
+	 * @param armourTrim          The trim applied to the item stack.
+	 * @return The path to the base texture to use, if no changes are needed, return the provided expectedBaseTexture.
+	 */
+	default ResourceLocation interceptArmourTexture(@Nullable ResourceLocation expectedBaseTexture, ItemStack itemWithTrim, ArmorTrim armourTrim) {
+		return expectedBaseTexture;
+	}
 
-    /**
-     * @param expectedBaseTexture   The expected path for the base greyscale trim texture, may be null if one could not be determined.
-     * @param shieldComponentGetter The components present on the shield that is about to be rendered.
-     * @param armourTrim            The trim applied to the item stack.
-     * @return The path to the base texture to use, if no changes are needed, return the provided expectedBaseTexture.
-     */
-    default ResourceLocation interceptShieldTexture(@Nullable ResourceLocation expectedBaseTexture, DataComponentGetter shieldComponentGetter, ArmorTrim armourTrim) {
-        return expectedBaseTexture;
-    }
+	/**
+	 * @param expectedBaseTexture   The expected path for the base greyscale trim texture, may be null if one could not be determined.
+	 * @param shieldComponentGetter The components present on the shield that is about to be rendered.
+	 * @param armourTrim            The trim applied to the item stack.
+	 * @return The path to the base texture to use, if no changes are needed, return the provided expectedBaseTexture.
+	 */
+	default ResourceLocation interceptShieldTexture(@Nullable ResourceLocation expectedBaseTexture, DataComponentGetter shieldComponentGetter, ArmorTrim armourTrim) {
+		return expectedBaseTexture;
+	}
 }

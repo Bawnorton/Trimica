@@ -9,6 +9,6 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 @MixinEnvironment(value = "client")
 @Mixin(SpecialModelWrapper.class)
 public interface SpecialModelWrapperAccessor {
-    @Accessor("properties")
-    ModelRenderProperties trimica$properties();
+	@Accessor("properties")
+	ModelRenderProperties trimica$properties();
 }

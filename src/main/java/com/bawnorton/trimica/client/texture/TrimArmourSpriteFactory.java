@@ -18,45 +18,46 @@ import net.minecraft.world.item.equipment.Equippable;
 import net.minecraft.world.item.equipment.trim.ArmorTrim;
 import net.minecraft.world.item.equipment.trim.TrimMaterial;
 import org.jetbrains.annotations.Nullable;
+
 import java.io.IOException;
 
 public class TrimArmourSpriteFactory extends AbstractTrimSpriteFactory {
-    private final EquipmentClientInfo.LayerType layerType;
-    public static final ThreadLocal<ItemStack> ITEM_WITH_TRIM_CAPTURE = ThreadLocal.withInitial(() -> null);
+	private final EquipmentClientInfo.LayerType layerType;
+	public static final ThreadLocal<ItemStack> ITEM_WITH_TRIM_CAPTURE = ThreadLocal.withInitial(() -> null);
 
-    public TrimArmourSpriteFactory(EquipmentClientInfo.LayerType layerType) {
-        super(64, 32);
-        this.layerType = layerType;
-    }
+	public TrimArmourSpriteFactory(EquipmentClientInfo.LayerType layerType) {
+		super(64, 32);
+		this.layerType = layerType;
+	}
 
-    @Nullable
-    protected TrimSpriteMetadata getSpriteMetadata(ArmorTrim trim, DataComponentGetter componentGetter, ResourceLocation texture) {
-        if (!(componentGetter instanceof ItemStack stack)) return null;
+	@Nullable
+	protected TrimSpriteMetadata getSpriteMetadata(ArmorTrim trim, DataComponentGetter componentGetter, ResourceLocation texture) {
+		if (!(componentGetter instanceof ItemStack stack)) return null;
 
-        Equippable equippable = stack.get(DataComponents.EQUIPPABLE);
-        if (equippable == null) return null;
+		Equippable equippable = stack.get(DataComponents.EQUIPPABLE);
+		if (equippable == null) return null;
 
-        TrimMaterial material = trim.material().value();
-        ResourceKey<EquipmentAsset> assetResourceKey = equippable.assetId().orElse(null);
+		TrimMaterial material = trim.material().value();
+		ResourceKey<EquipmentAsset> assetResourceKey = equippable.assetId().orElse(null);
 
-        TrimPalette palette = TrimicaClient.getPalettes().getOrGeneratePalette(material, assetResourceKey, texture, componentGetter);
-        ResourceLocation basePatternTexture = extractBaseTexture(texture, trim.pattern().value().assetId());
-        basePatternTexture = TrimicaApiImpl.INSTANCE.applyBaseTextureInterceptorsForArmour(basePatternTexture, stack, trim);
-        return new TrimSpriteMetadata(trim, palette, basePatternTexture);
-    }
+		TrimPalette palette = TrimicaClient.getPalettes().getOrGeneratePalette(material, assetResourceKey, texture, componentGetter);
+		ResourceLocation basePatternTexture = extractBaseTexture(texture, trim.pattern().value().assetId());
+		basePatternTexture = TrimicaApiImpl.INSTANCE.applyBaseTextureInterceptorsForArmour(basePatternTexture, stack, trim);
+		return new TrimSpriteMetadata(trim, palette, basePatternTexture);
+	}
 
-    protected NativeImage createImageFromMetadata(TrimSpriteMetadata metadata) {
-        Minecraft minecraft = Minecraft.getInstance();
-        try {
-            TextureContents contents = TextureContents.load(minecraft.getResourceManager(), metadata.baseTexture());
-            return createColouredImage(metadata, contents);
-        } catch (IOException e) {
-            Trimica.LOGGER.warn("Expected to find \"{}\" but the texture does of exist, trim overlay will of be added to model", metadata.baseTexture());
-            return empty();
-        }
-    }
+	protected NativeImage createImageFromMetadata(TrimSpriteMetadata metadata) {
+		Minecraft minecraft = Minecraft.getInstance();
+		try {
+			TextureContents contents = TextureContents.load(minecraft.getResourceManager(), metadata.baseTexture());
+			return createColouredImage(metadata, contents);
+		} catch (IOException e) {
+			Trimica.LOGGER.warn("Expected to find \"{}\" but the texture does of exist, trim overlay will of be added to model", metadata.baseTexture());
+			return empty();
+		}
+	}
 
-    private ResourceLocation extractBaseTexture(ResourceLocation texture, ResourceLocation assetId) {
-        return texture.withPath("textures/%s/%s.png".formatted(layerType.trimAssetPrefix(), assetId.getPath()));
-    }
+	private ResourceLocation extractBaseTexture(ResourceLocation texture, ResourceLocation assetId) {
+		return texture.withPath("textures/%s/%s.png".formatted(layerType.trimAssetPrefix(), assetId.getPath()));
+	}
 }

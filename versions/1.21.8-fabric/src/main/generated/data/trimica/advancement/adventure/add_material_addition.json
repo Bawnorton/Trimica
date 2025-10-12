@@ -1,0 +1,29 @@
+{
+  "parent": "minecraft:adventure/trim_with_any_armor_pattern",
+  "criteria": {
+    "material_addition": {
+      "conditions": {
+        "recipe_id": "trimica:material_additions"
+      },
+      "trigger": "minecraft:recipe_crafted"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "trimica.advancements.adventure.add_material_addition.description"
+    },
+    "icon": {
+      "count": 1,
+      "id": "trimica:animator"
+    },
+    "title": {
+      "translate": "trimica.advancements.adventure.add_material_addition.title"
+    }
+  },
+  "requirements": [
+    [
+      "material_addition"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

@@ -9,6 +9,6 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 @MixinEnvironment(value = "client")
 @Mixin(ConditionalItemModel.class)
 public interface ConditionalItemModelAccessor {
-    @Accessor("onFalse")
-    ItemModel trimica$onFalse();
+	@Accessor("onFalse")
+	ItemModel trimica$onFalse();
 }

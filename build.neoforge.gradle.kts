@@ -8,7 +8,7 @@ plugins {
     id("trimica.common")
     id("me.modmuss50.mod-publish-plugin")
     id("com.google.devtools.ksp") version "2.2.0-2.0.2"
-    id("dev.kikugie.fletching-table.neoforge") version "0.1.0-alpha.13"
+    id("dev.kikugie.fletching-table.fabric") version "0.1.0-alpha.22"
 }
 
 repositories {
@@ -33,7 +33,7 @@ val loader: String by project
 base.archivesName = "${mod("id")}-${mod("version")}+$minecraft-$loader"
 
 dependencies {
-    remoteDepBuilder(project, fletchingTable::modrinth)
+    /*remoteDepBuilder(project, fletchingTable::modrinth)
         .dep("advanced-netherite") { runtimeOnly(it) }
         .dep("sodium") { implementation(it) }
         .dep("elytra-trims") { it ->
@@ -41,7 +41,10 @@ dependencies {
             deps("kotlinforforge-neoforge") {
                 runtimeOnly("thedarkcolour:kotlinforforge-neoforge:$it")
             }
-        }
+        }*/
+
+    compileOnly("maven.modrinth:elytra-trims:XtD0e6l5")
+    compileOnly("maven.modrinth:sodium:mc1.21.8-0.7.2-$loader")
 
     deps("jei") {
         val (mc, version) = it.split(':')
@@ -55,6 +58,9 @@ dependencies {
     }
     deps("configurable") {
         implementation(annotationProcessor("com.bawnorton.configurable:configurable-$loader:$it")!!)
+    }
+    deps("bettertrims") {
+        implementation("com.bawnorton.bettertrims:bettertrims-$loader:$it")
     }
 }
 
@@ -91,6 +97,24 @@ neoForge {
             programArgument("--uuid=17c06cab-bf05-4ade-a8d6-ed14aaf70545")
         }
 
+        register("serverData") {
+            ideName = "NeoForge Server Datagen $minecraft"
+            serverData()
+            programArguments.addAll(
+                "--mod", "${mod("id")}",
+                "--output", project.file("src/main/generated").toString()
+            )
+        }
+
+        register("clientData") {
+            ideName = "NeoForge Client Datagen $minecraft"
+            clientData()
+            programArguments.addAll(
+                "--mod", "${mod("id")}",
+                "--output", project.file("src/main/generated").toString()
+            )
+        }
+
         register("server") {
             ideName = "NeoForge Server $minecraft"
             server()
@@ -115,7 +139,7 @@ fletchingTable {
 }
 
 sourceSets.main {
-    resources.srcDir(rootProject.file("src/main/generated"))
+    resources.srcDir(project.file("src/main/generated"))
     resources.exclude(".cache")
 }
 
@@ -129,6 +153,10 @@ tasks {
         from(jar.map { it.archiveFile })
         into(rootProject.layout.buildDirectory.file("libs/${project.property("mod.version")}"))
         dependsOn("build")
+    }
+
+    build {
+        dependsOn("runServerData", "runClientData")
     }
 
     processResources {
@@ -173,17 +201,20 @@ publishMods {
     changelog = provider { rootProject.file("CHANGELOG.md").readText() }
     modLoaders.add(loader)
 
+    val compatibleVersionString = mod("compatible_versions")!!
+    val compatibleVersions = compatibleVersionString.split(",").map { it.trim() }
+
     modrinth {
         projectId = property("publishing.modrinth") as String
         accessToken = mrToken
-        minecraftVersions.add(minecraft)
+        minecraftVersions.addAll(compatibleVersions)
         requires("configurable")
     }
 
     curseforge {
         projectId = property("publishing.curseforge") as String
         accessToken = cfToken
-        minecraftVersions.add(minecraft)
+        minecraftVersions.addAll(compatibleVersions)
         requires("configurable")
     }
 }
