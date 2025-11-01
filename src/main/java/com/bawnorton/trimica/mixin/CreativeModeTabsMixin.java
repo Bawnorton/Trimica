@@ -30,6 +30,12 @@ public abstract class CreativeModeTabsMixin {
 			if (TrimicaToggles.enableAnimator) {
 				output.accept(TrimicaItems.ANIMATOR);
 			}
+			if (TrimicaToggles.enableToolTrims) {
+				output.accept(TrimicaItems.CRYSTALLINE_TRIM_TEMPLATE);
+				output.accept(TrimicaItems.SOAR_TRIM_TEMPLATE);
+				output.accept(TrimicaItems.HOLLOW_TRIM_TEMPLATE);
+				output.accept(TrimicaItems.SOVEREIGN_TRIM_TEMPLATE);
+			}
 		}
 	}
 }

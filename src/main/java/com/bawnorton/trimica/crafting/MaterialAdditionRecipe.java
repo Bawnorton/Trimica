@@ -1,6 +1,7 @@
 package com.bawnorton.trimica.crafting;
 
 import com.bawnorton.trimica.api.impl.TrimicaApiImpl;
+import com.bawnorton.trimica.data.TrimicaDataGen;
 import com.bawnorton.trimica.item.component.MaterialAdditions;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -15,11 +16,7 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.util.context.ContextMap;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.item.crafting.PlacementInfo;
-import net.minecraft.world.item.crafting.RecipeSerializer;
-import net.minecraft.world.item.crafting.SmithingRecipe;
-import net.minecraft.world.item.crafting.SmithingRecipeInput;
+import net.minecraft.world.item.crafting.*;
 import net.minecraft.world.item.crafting.display.DisplayContentsFactory;
 import net.minecraft.world.item.crafting.display.RecipeDisplay;
 import net.minecraft.world.item.crafting.display.SlotDisplay;
@@ -28,9 +25,7 @@ import net.minecraft.world.item.equipment.trim.ArmorTrim;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Stream;
 
 public class MaterialAdditionRecipe implements SmithingRecipe {
@@ -40,8 +35,12 @@ public class MaterialAdditionRecipe implements SmithingRecipe {
 	private final Ingredient addition;
 	private PlacementInfo placementInfo;
 
-	public MaterialAdditionRecipe(Ingredient addition) {
-		this.base = TrimicaApiImpl.INSTANCE.applyCraftingRecipeInterceptorsForBase(null);
+	public MaterialAdditionRecipe(Ingredient base, Ingredient addition) {
+		if(TrimicaDataGen.duringDataGen) {
+			this.base = base;
+		} else {
+			this.base = TrimicaApiImpl.INSTANCE.applyCraftingRecipeInterceptorsForBase(base);
+		}
 		this.addition = addition;
 	}
 
@@ -56,10 +55,10 @@ public class MaterialAdditionRecipe implements SmithingRecipe {
 		ArmorTrim existing = base.get(DataComponents.TRIM);
 		if (existing == null) return ItemStack.EMPTY;
 
-		MaterialAdditions materialAdditions = base.getOrDefault(MaterialAdditions.TYPE, MaterialAdditions.empty());
+		MaterialAdditions materialAdditions = base.getOrDefault(MaterialAdditions.TYPE, MaterialAdditions.NONE);
 		ResourceLocation additionKey = BuiltInRegistries.ITEM.getKey(addition.getItem());
 		MaterialAdditions newMaterialAdditon = materialAdditions.and(additionKey);
-		if (Objects.equals(materialAdditions, newMaterialAdditon)) return ItemStack.EMPTY;
+		if (materialAdditions.equals(newMaterialAdditon)) return ItemStack.EMPTY;
 
 		ItemStack result = base.copyWithCount(1);
 		result.set(MaterialAdditions.TYPE, newMaterialAdditon);
@@ -108,16 +107,23 @@ public class MaterialAdditionRecipe implements SmithingRecipe {
 		);
 	}
 
+	private Ingredient getBase() {
+		return base;
+	}
+
 	private Ingredient getAddition() {
 		return addition;
 	}
 
 	public static class Serializer implements RecipeSerializer<MaterialAdditionRecipe> {
 		private static final MapCodec<MaterialAdditionRecipe> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+				Ingredient.CODEC.fieldOf("base").forGetter(MaterialAdditionRecipe::getBase),
 				Ingredient.CODEC.fieldOf("addition").forGetter(MaterialAdditionRecipe::getAddition)
 		).apply(instance, MaterialAdditionRecipe::new));
 
 		public static final StreamCodec<RegistryFriendlyByteBuf, MaterialAdditionRecipe> STREAM_CODEC = StreamCodec.composite(
+				Ingredient.CONTENTS_STREAM_CODEC,
+				MaterialAdditionRecipe::getBase,
 				Ingredient.CONTENTS_STREAM_CODEC,
 				MaterialAdditionRecipe::getAddition,
 				MaterialAdditionRecipe::new

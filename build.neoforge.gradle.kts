@@ -33,15 +33,23 @@ val loader: String by project
 base.archivesName = "${mod("id")}-${mod("version")}+$minecraft-$loader"
 
 dependencies {
-    /*remoteDepBuilder(project, fletchingTable::modrinth)
+    remoteDepBuilder(project, fletchingTable::modrinth)
         .dep("advanced-netherite") { runtimeOnly(it) }
-        .dep("sodium") { implementation(it) }
-        .dep("elytra-trims") { it ->
-            implementation(it)
+        .dep(
+          "sodium",
+           if (sc.current.version == "1.21.10") "1.21.9" else minecraft
+        ) {
+          compileOnly(it)
+        }
+        .dep(
+          "elytra-trims",
+          if (sc.current.version == "1.21.10") "1.21.9" else minecraft
+        ) { it ->
+            compileOnly(it)
             deps("kotlinforforge-neoforge") {
                 runtimeOnly("thedarkcolour:kotlinforforge-neoforge:$it")
             }
-        }*/
+        }
 
     compileOnly("maven.modrinth:elytra-trims:XtD0e6l5")
     compileOnly("maven.modrinth:sodium:mc1.21.8-0.7.2-$loader")

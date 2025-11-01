@@ -17,9 +17,9 @@ import net.minecraft.client.resources.model.EquipmentClientInfo;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.equipment.trim.ArmorTrim;
-import net.minecraft.world.item.equipment.trim.TrimMaterial;
-import net.minecraft.world.item.equipment.trim.TrimPattern;
+import net.minecraft.world.item.type.trim.ArmorTrim;
+import net.minecraft.world.item.type.trim.TrimMaterial;
+import net.minecraft.world.item.type.trim.TrimPattern;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -46,8 +46,8 @@ public abstract class ETTrimsRendererMixin {
         ItemStack stack = TrimArmourSpriteFactory.ITEM_WITH_TRIM_CAPTURE.get();
         if(stack == null) return sprite;
 
-        MaterialAdditions addition = stack.get(MaterialAdditions.TYPE);
-        if (sprite != null && addition == null) return sprite;
+        MaterialAdditions addition = stack.getOrDefault(MaterialAdditions.TYPE, MaterialAdditions.NONE);
+        if (sprite != null && addition.isEmpty()) return sprite;
 
         RuntimeTrimAtlases atlases = TrimicaClient.getRuntimeAtlases();
         TrimPattern pattern = trim.pattern().value();

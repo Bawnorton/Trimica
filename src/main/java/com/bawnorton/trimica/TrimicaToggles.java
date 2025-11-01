@@ -19,9 +19,22 @@ public class TrimicaToggles {
 	public static boolean enableAnimator = true;
 
 	/**
+	 * Whether tool trims should be enabled.
+	 * Disabling this will prevent the registration of tool trims and their templates as well as any related functionality.
+	 */
+	@Configurable
+	public static boolean enableToolTrims = true;
+
+	/**
 	 * Whether the items Trimica adds should be enabled.
 	 * Disabling this will allow you to join servers that don't have Trimica installed
 	 */
 	@Configurable
 	public static boolean enableItems = true;
+
+	/**
+	 * Enable Trimica's logging and other debug features.
+	 */
+	@Configurable
+	public static boolean debug = false;
 }

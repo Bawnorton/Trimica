@@ -2,7 +2,6 @@ package com.bawnorton.trimica.command;
 
 import com.bawnorton.configurable.api.ConfigurableApi;
 import com.bawnorton.trimica.Trimica;
-import com.bawnorton.trimica.client.texture.TrimItemSpriteFactory;
 import com.bawnorton.trimica.item.component.AdditionalTrims;
 import com.bawnorton.trimica.item.component.ComponentUtil;
 import com.bawnorton.trimica.item.component.MaterialAdditions;
@@ -10,18 +9,11 @@ import com.bawnorton.trimica.trim.TrimMaterialRuntimeRegistry;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
-import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;
-import net.minecraft.commands.synchronization.SuggestionProviders;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
-import net.minecraft.core.Holder;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.core.RegistryAccess;
-import net.minecraft.core.Rotations;
+import net.minecraft.core.*;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
@@ -53,6 +45,18 @@ public class TrimicaCommandManager {
 										}))
 								.executes(context -> summonArmourStands(context, false))
 						)
+						/*.then(Commands.literal("generateTextures")
+								.executes(context -> {
+									CommandSourceStack source = context.getSource();
+									ServerPlayer player = source.getPlayer();
+									if (player != null) {
+										source.sendSystemMessage(Component.literal("Generating all runtime trim textures... Your game will freeze for a few minutes"));
+										source.getLevel().getServer().execute(() -> Networking.send(player, GenerateAllRuntimeTexturesPayload.INSTANCE));
+										return 1;
+									}
+									return 0;
+								})
+						)*/
 				)
 				.then(Commands.literal("toggle")
 						.requires(source -> source.hasPermission(2))

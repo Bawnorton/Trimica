@@ -21,11 +21,11 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 public abstract class AbstractTrimSpriteFactory implements RuntimeTrimSpriteFactory {
+	static final Map<ResourceLocation, TextureContents> textureCache = new HashMap<>();
+
 	protected final int width;
 	protected final int height;
 
@@ -46,12 +46,16 @@ public abstract class AbstractTrimSpriteFactory implements RuntimeTrimSpriteFact
 		}
 		NativeImage image = createImageFromMetadata(metadata);
 		ResourceMetadata resourceMetadata = getResourceMetadataFromSpriteMetadata(metadata);
-		return new TrimSpriteContents(new SpriteContents(texture,
-				new FrameSize(width, height),
-				image,
-				resourceMetadata.getSection(AnimationMetadataSection.TYPE),
-				resourceMetadata.getTypedSections(List.of(AnimationMetadataSection.TYPE))
-		), metadata.palette());
+		return new TrimSpriteContents(
+				new SpriteContents(
+						texture,
+						new FrameSize(width, height),
+						image,
+						resourceMetadata.getSection(AnimationMetadataSection.TYPE),
+						resourceMetadata.getTypedSections(List.of(AnimationMetadataSection.TYPE))
+				),
+				metadata.palette()
+		);
 	}
 	//?} else {
 	/*@Override
@@ -122,7 +126,6 @@ public abstract class AbstractTrimSpriteFactory implements RuntimeTrimSpriteFact
 				throw new RuntimeException("Failed to write coloured pattern image", e);
 			}
 		}
-		contents.close();
 		return coloured;
 	}
 
@@ -187,7 +190,7 @@ public abstract class AbstractTrimSpriteFactory implements RuntimeTrimSpriteFact
 		return coloured;
 	}
 
-	protected NativeImage createColouredPatternAnimation(NativeImage image, AnimatedTrimPalette palette) {
+	protected NativeImage createColouredPatternAnimation(NativeImage image, TrimPalette palette) {
 		List<List<Integer>> frames = getFrames(palette);
 		int frameHeight = frames.size();
 		int frameWidth = image.getWidth();
@@ -207,8 +210,8 @@ public abstract class AbstractTrimSpriteFactory implements RuntimeTrimSpriteFact
 		return stitchedImage;
 	}
 
-	private @NotNull List<List<Integer>> getFrames(AnimatedTrimPalette palette) {
-		List<Integer> interpolatedColours = palette.getAnimationColours();
+	private @NotNull List<List<Integer>> getFrames(TrimPalette palette) {
+		List<Integer> interpolatedColours = palette instanceof AnimatedTrimPalette animated ? animated.getAnimationColours() : palette.getColours();
 		List<List<Integer>> frames = new ArrayList<>();
 		for (int i = 0; i < AnimatedTrimPalette.ANIMATED_PALETTE_SIZE; i++) {
 			List<Integer> frame = new ArrayList<>();
@@ -237,6 +240,12 @@ public abstract class AbstractTrimSpriteFactory implements RuntimeTrimSpriteFact
 		}
 
 		return (alpha << 24) | (blue << 16) | (green << 8) | red;
+	}
+
+	@Override
+	public void clear() {
+		textureCache.forEach((k, v) -> v.close());
+		textureCache.clear();
 	}
 
 	protected NativeImage empty() {

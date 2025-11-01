@@ -17,7 +17,6 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
 
-import java.util.Optional;
 import java.util.function.Function;
 
 @Mixin(TrimMaterial.class)
@@ -42,10 +41,12 @@ public abstract class TrimMaterialMixin {
 	private static Function<RecordCodecBuilder.Instance<TrimMaterial>, ? extends App<RecordCodecBuilder.Mu<TrimMaterial>, TrimMaterial>> wrapCodec(Function<RecordCodecBuilder.Instance<TrimMaterial>, ? extends App<RecordCodecBuilder.Mu<TrimMaterial>, TrimMaterial>> builder) {
 		return instance -> instance.group(
 				RecordCodecBuilder.mapCodec(builder).forGetter(Function.identity()),
-				MaterialAdditions.CODEC.lenientOptionalFieldOf("trimica$additions").forGetter(material -> Optional.ofNullable(Trimica.getMaterialRegistry().getIntrinsicAdditions(material)))
+				MaterialAdditions.CODEC.lenientOptionalFieldOf("trimica$additions", MaterialAdditions.NONE).forGetter(material -> Trimica.getMaterialRegistry().getIntrinsicAdditions(material))
 		).apply(
 				instance, (trimMaterial, additions) -> {
-					Trimica.getMaterialRegistry().setIntrinsicAdditions(trimMaterial, additions.orElse(null));
+					if(!additions.isEmpty()) {
+						Trimica.getMaterialRegistry().setIntrinsicAdditions(trimMaterial, additions);
+					}
 					return trimMaterial;
 				}
 		);
@@ -63,7 +64,9 @@ public abstract class TrimMaterialMixin {
 				original, Function.identity(),
 				MaterialAdditions.STREAM_CODEC, (trimMaterial) -> Trimica.getMaterialRegistry().getIntrinsicAdditions(trimMaterial),
 				(trimMaterial, additions) -> {
-					Trimica.getMaterialRegistry().setIntrinsicAdditions(trimMaterial, additions);
+					if(!additions.isEmpty()) {
+						Trimica.getMaterialRegistry().setIntrinsicAdditions(trimMaterial, additions);
+					}
 					return trimMaterial;
 				}
 		);

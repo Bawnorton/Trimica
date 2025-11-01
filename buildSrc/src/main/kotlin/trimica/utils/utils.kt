@@ -24,21 +24,25 @@ fun Project.applyMixinDebugSettings(vmArgConsumer: Consumer<String>, propertyCon
     propertyConsumer.accept("mixin.debug.export", "true")
 }
 
-fun Project.remoteDepBuilder(project: Project, depResolver: (String, String) -> Dependency) : RemoteDepBuilder {
+fun Project.remoteDepBuilder(project: Project, depResolver: (String, String, String) -> Dependency) : RemoteDepBuilder {
     return RemoteDepBuilder(project, depResolver)
 }
 
-class RemoteDepBuilder(private val project: Project, private val depResolver: (String, String) -> Dependency) {
+class RemoteDepBuilder(private val project: Project, private val depResolver: (String, String, String) -> Dependency) {
     private val minecraft: String by lazy {
         project.extensions.extraProperties.get("minecraft") as String
     }
 
-    fun dep(id: String, handler: (dep: Dependency) -> Unit) : RemoteDepBuilder {
+    private val loader: String by lazy {
+        project.extensions.extraProperties.get("loader") as String
+    }
+
+    fun dep(id: String, version: String = minecraft, loader: String = this.loader, handler: (dep: Dependency) -> Unit) : RemoteDepBuilder {
         var dep: Dependency? = null
         try {
-            dep = depResolver(id, minecraft)
+            dep = depResolver(id, version, loader)
         } catch (e: Exception) {
-            project.logger.warn("Could not find remote dependency '$id' for Minecraft $minecraft. ", e)
+            project.logger.warn("Could not find remote dependency '$id' for Minecraft $version. ", e)
         }
         dep?.let { handler(it) }
         return this

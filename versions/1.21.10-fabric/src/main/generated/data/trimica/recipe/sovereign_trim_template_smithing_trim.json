@@ -1,0 +1,7 @@
+{
+  "type": "minecraft:smithing_trim",
+  "addition": "#minecraft:trim_materials",
+  "base": "#trimica:trimmable_tools",
+  "pattern": "trimica:sovereign",
+  "template": "trimica:sovereign_trim_template"
+}

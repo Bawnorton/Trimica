@@ -1,14 +1,10 @@
-package com.bawnorton.trimica.mixin.registry;
+package com.bawnorton.trimica.mixin.registry.tag;
 
 import com.bawnorton.trimica.Trimica;
-import com.bawnorton.trimica.tags.TrimicaRuntimeTags;
-import com.mojang.serialization.Lifecycle;
-import it.unimi.dsi.fastutil.objects.ObjectList;
-import it.unimi.dsi.fastutil.objects.Reference2IntMap;
+import com.bawnorton.trimica.data.tags.TrimicaRuntimeTags;
 import net.minecraft.core.*;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.equipment.trim.TrimMaterial;
 import org.objectweb.asm.Opcodes;
@@ -32,33 +28,6 @@ abstract class MappedRegistryMixin<T> implements WritableRegistry<T> {
 	@Final
 	private Map<TagKey<T>, HolderSet.Named<T>> frozenTags;
 
-	@Shadow
-	@Final
-	private Map<ResourceKey<T>, Holder.Reference<T>> byKey;
-
-	@Shadow
-	@Final
-	private Map<T, Holder.Reference<T>> byValue;
-
-	@Shadow
-	@Final
-	private Map<ResourceLocation, Holder.Reference<T>> byLocation;
-
-	@Shadow
-	@Final
-	private ObjectList<Holder.Reference<T>> byId;
-
-	@Shadow
-	@Final
-	private Reference2IntMap<T> toId;
-
-	@Shadow
-	@Final
-	private Map<ResourceKey<T>, RegistrationInfo> registrationInfos;
-
-	@Shadow
-	private Lifecycle registryLifecycle;
-
 	@SuppressWarnings("unchecked")
 	@Inject(
 			method = "freeze",
@@ -71,11 +40,9 @@ abstract class MappedRegistryMixin<T> implements WritableRegistry<T> {
 	private void addRuntimeTags(CallbackInfoReturnable<Registry<T>> cir) {
 		if(key.equals(Registries.TRIM_MATERIAL)) {
 			TrimicaRuntimeTags runtimeTags = Trimica.getRuntimeTags();
-			Registry<TrimMaterial> self = (Registry<TrimMaterial>) this;
-			runtimeTags.bindTags(self);
-			Set<HolderSet.Named<TrimMaterial>> tags = runtimeTags.getTags();
+			Set<HolderSet.Named<TrimMaterial>> tags = runtimeTags.bindTags((Registry<TrimMaterial>) this);
 			tags.forEach(tag -> frozenTags.put((TagKey<T>) tag.key(), (HolderSet.Named<T>) tag));
-			runtimeTags.clear();
+			runtimeTags.clearUnbound();
 		}
 	}
 }

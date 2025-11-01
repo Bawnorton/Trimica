@@ -1,7 +1,7 @@
 package com.bawnorton.trimica.api;
 
 import com.bawnorton.trimica.crafting.DefaultCraftingRecipeInterceptor;
-import com.bawnorton.trimica.tags.PostponedTagHolder;
+import com.bawnorton.trimica.data.tags.UnloadedTagHolder;
 import net.minecraft.core.HolderSet;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
@@ -14,7 +14,7 @@ import org.jetbrains.annotations.Nullable;
 @SuppressWarnings("unused")
 public interface CraftingRecipeInterceptor {
 	default HolderSet<Item> getTag(TagKey<Item> tagKey) {
-		return PostponedTagHolder.getUnloadedTag(tagKey);
+		return UnloadedTagHolder.getUnloadedTag(tagKey);
 	}
 
 	/**

@@ -1,6 +1,7 @@
 package com.bawnorton.trimica.mixin.crafting;
 
 import com.bawnorton.trimica.api.impl.TrimicaApiImpl;
+import com.bawnorton.trimica.data.TrimicaDataGen;
 import com.bawnorton.trimica.item.component.AdditionalTrims;
 import com.bawnorton.trimica.trim.TrimMaterialRuntimeRegistry;
 import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
@@ -42,7 +43,7 @@ public abstract class SmithingTrimRecipeMixin {
 			at = @At("TAIL")
 	)
 	private void useTrimicaIngredients(CallbackInfo ci) {
-		if (TrimMaterialRuntimeRegistry.enableTrimEverything) {
+		if (TrimMaterialRuntimeRegistry.enableTrimEverything && !TrimicaDataGen.duringDataGen) {
 			addition = TrimicaApiImpl.INSTANCE.applyCraftingRecipeInterceptorsForAddition(addition);
 			base = TrimicaApiImpl.INSTANCE.applyCraftingRecipeInterceptorsForBase(base);
 		}

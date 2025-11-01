@@ -1,7 +1,8 @@
-package com.bawnorton.trimica.mixin;
+package com.bawnorton.trimica.mixin.registry.tag;
 
 import com.bawnorton.trimica.Trimica;
 import com.bawnorton.trimica.TrimicaToggles;
+import com.bawnorton.trimica.trim.TrimMaterialRuntimeRegistry;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
@@ -25,7 +26,7 @@ import java.util.SequencedSet;
 import java.util.function.Consumer;
 
 @Mixin(TagLoader.class)
-public abstract class TagLoaderMixin {
+abstract class TagLoaderMixin {
 	@Unique
 	private static final ThreadLocal<WritableRegistry<TrimMaterial>> trimica$trimRegistry = new ThreadLocal<>();
 
@@ -103,7 +104,7 @@ public abstract class TagLoaderMixin {
 			return false;
 		}
 
-		Holder.Reference<TrimMaterial> material = Trimica.getRuntimeTags().ceateRuntimeTagForMaterial(item.orElseThrow(), registry);
+		Holder.Reference<TrimMaterial> material = Trimica.getRuntimeTags().createMaterialTagForItem(item.orElseThrow(), registry);
 		if (material == null) return false;
 
 		consumer.accept(material);
@@ -121,6 +122,9 @@ public abstract class TagLoaderMixin {
 		}
 		if (!TrimicaToggles.enableItems) {
 			return !entryId.equals("trimica:fake_addition");
+		}
+		if (!TrimMaterialRuntimeRegistry.enableTrimEverything) {
+			return !entryId.startsWith("#trimica:generated/");
 		}
 		return true;
 	}

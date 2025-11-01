@@ -10,17 +10,28 @@ import java.util.List;
 import java.util.Objects;
 
 public class TrimPalette {
-	public static final TrimPalette DEFAULT = new TrimPalette(ARGB.color(255, 255, 255, 255));
-	public static final TrimPalette DISABLED = new TrimPalette(List.of(
-			ARGB.color(255, 255, 0, 255),
+	public static final TrimPalette DEFAULT = new TrimPalette(ARGB.color(0xFF, 0xFF, 0xFF, 0xFF));
+	public static final TrimPalette MISSING = new TrimPalette(List.of(
+			ARGB.color(255, 0xFF, 0, 0xFF),
 			ARGB.color(255, 0, 0, 0),
-			ARGB.color(255, 255, 0, 255),
+			ARGB.color(255, 0xFF, 0, 0xFF),
 			ARGB.color(255, 0, 0, 0),
-			ARGB.color(255, 255, 0, 255),
+			ARGB.color(255, 0xFF, 0, 0xFF),
 			ARGB.color(255, 0, 0, 0),
-			ARGB.color(255, 255, 0, 255),
+			ARGB.color(255, 0xFF, 0, 0xFF),
 			ARGB.color(255, 0, 0, 0)
 	));
+	public static final TrimPalette DISABLED = new TrimPalette(List.of(
+			ARGB.color(255, 0, 0, 0xFF),
+			ARGB.color(255, 0, 0, 0),
+			ARGB.color(255, 0, 0, 0xFF),
+			ARGB.color(255, 0, 0, 0),
+			ARGB.color(255, 0, 0, 0xFF),
+			ARGB.color(255, 0, 0, 0),
+			ARGB.color(255, 0, 0, 0xFF),
+			ARGB.color(255, 0, 0, 0)
+	));
+
 	public static final int PALETTE_SIZE = 8;
 	private final List<Integer> colours;
 	private final boolean builtin;
@@ -46,7 +57,8 @@ public class TrimPalette {
 		}));
 	}
 
-	public AnimatedTrimPalette asAnimated() {
+	public TrimPalette asAnimated() {
+		if(this == DEFAULT || this == MISSING || this == DISABLED) return this;
 		AnimatedTrimPalette animatedTrimPalette = new AnimatedTrimPalette(colours);
 		animatedTrimPalette.setEmissive(emissive);
 		return animatedTrimPalette;

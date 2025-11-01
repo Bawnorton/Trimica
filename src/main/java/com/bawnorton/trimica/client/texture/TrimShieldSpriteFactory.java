@@ -4,6 +4,7 @@ import com.bawnorton.trimica.Trimica;
 import com.bawnorton.trimica.api.impl.TrimicaApiImpl;
 import com.bawnorton.trimica.client.TrimicaClient;
 import com.bawnorton.trimica.client.palette.TrimPalette;
+import com.bawnorton.trimica.trim.TrimmedType;
 import com.mojang.blaze3d.platform.NativeImage;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureContents;
@@ -16,7 +17,6 @@ import net.minecraft.world.item.equipment.trim.TrimMaterial;
 import net.minecraft.world.item.equipment.trim.TrimPattern;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 
 public class TrimShieldSpriteFactory extends AbstractTrimSpriteFactory {
@@ -27,27 +27,29 @@ public class TrimShieldSpriteFactory extends AbstractTrimSpriteFactory {
 	@Override
 	protected @Nullable TrimSpriteMetadata getSpriteMetadata(ArmorTrim trim, @Nullable DataComponentGetter componentGetter, ResourceLocation texture) {
 		TrimMaterial material = trim.material().value();
-		TrimPalette palette = TrimicaClient.getPalettes().getOrGeneratePalette(material, null, texture, componentGetter);
+		TrimPalette palette = TrimicaClient.getPalettes().getOrGeneratePalette(material, null, componentGetter);
 		ResourceLocation basePatternTexture = getPatternBasedTrimOverlay(trim);
 		basePatternTexture = TrimicaApiImpl.INSTANCE.applyBaseTextureInterceptorsForShield(basePatternTexture, componentGetter, trim);
-		return new TrimSpriteMetadata(trim, palette, basePatternTexture);
+		return new TrimSpriteMetadata(trim, palette, basePatternTexture, TrimmedType.SHIELD);
 	}
 
 	@Override
 	protected NativeImage createImageFromMetadata(TrimSpriteMetadata metadata) {
-		try {
-			TextureContents contents;
-			ResourceManager resourceManager = Minecraft.getInstance().getResourceManager();
-			try {
-				contents = TextureContents.load(resourceManager, metadata.baseTexture());
-			} catch (FileNotFoundException e) {
-				contents = TextureContents.load(resourceManager, getDefaultTrimOverlay());
-			}
-			return createColouredImage(metadata, contents);
-		} catch (IOException e) {
-			Trimica.LOGGER.warn("Expected to find \"{}\" but the texture does of exist, trim overlay will of be added to model", metadata.baseTexture());
-			return empty();
-		}
+		TextureContents contents = textureCache.computeIfAbsent(metadata.baseTexture(), k -> {
+				ResourceManager resourceManager = Minecraft.getInstance().getResourceManager();
+				try {
+					return TextureContents.load(resourceManager, metadata.baseTexture());
+				} catch (IOException e) {
+					try {
+						return TextureContents.load(resourceManager, getDefaultTrimOverlay());
+					} catch (IOException ex) {
+						ex.addSuppressed(e);
+						Trimica.LOGGER.warn("Expected to find \"{}\" but the texture does of exist, trim overlay will not be added to model", metadata.baseTexture());
+						return new TextureContents(empty(), null);
+					}
+				}
+		});
+		return createColouredImage(metadata, contents);
 	}
 
 	private ResourceLocation getPatternBasedTrimOverlay(ArmorTrim trim) {

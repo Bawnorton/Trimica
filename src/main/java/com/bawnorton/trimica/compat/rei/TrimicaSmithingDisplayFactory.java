@@ -10,7 +10,7 @@ import me.shedaniel.rei.plugin.common.displays.DefaultSmithingDisplay;
 import net.minecraft.core.Holder;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.SmithingTrimRecipe;
-import net.minecraft.world.item.equipment.trim.TrimPattern;
+import net.minecraft.world.item.type.trim.TrimPattern;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;

@@ -40,6 +40,10 @@ public class TrimicaModelProvider extends FabricModelProvider {
 		itemModel(itemModels, TrimicaItems.RAINBOWIFIER);
 		itemModel(itemModels, TrimicaItems.ANIMATOR);
 		itemModel(itemModels, TrimicaItems.FAKE_ADDITION);
+		itemModel(itemModels, TrimicaItems.SOVEREIGN_TRIM_TEMPLATE);
+		itemModel(itemModels, TrimicaItems.SOAR_TRIM_TEMPLATE);
+		itemModel(itemModels, TrimicaItems.HOLLOW_TRIM_TEMPLATE);
+		itemModel(itemModels, TrimicaItems.CRYSTALLINE_TRIM_TEMPLATE);
 	}
 
 	private void itemModel(ItemModelGenerators generators, Item item) {

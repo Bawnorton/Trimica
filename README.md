@@ -25,6 +25,9 @@ All in one mod for your item trimming needs.
 ## Resource API
 Trimica provides a resource API for modders / modpack makers to provide additional textures or modify existing ones.
 
+#### Not working as expected? 
+Enable `debug` in the config to see log messages about issues with loading resources.
+
 ### Providing Overlay Texutres
 For overlay textures the lightness of a pixel will be used to determine the colour index on the palette. 
 For example if there are 8 distinct colours in the overlay texture, the lightest pixel will be the

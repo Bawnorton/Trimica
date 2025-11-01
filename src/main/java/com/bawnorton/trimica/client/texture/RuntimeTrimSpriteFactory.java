@@ -7,4 +7,6 @@ import org.jetbrains.annotations.Nullable;
 
 public interface RuntimeTrimSpriteFactory {
 	TrimSpriteContents create(ResourceLocation texture, @Nullable ArmorTrim trim, @Nullable DataComponentGetter componentGetter);
+
+	void clear();
 }

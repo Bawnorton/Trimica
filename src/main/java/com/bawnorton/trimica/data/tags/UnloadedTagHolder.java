@@ -1,4 +1,4 @@
-package com.bawnorton.trimica.tags;
+package com.bawnorton.trimica.data.tags;
 
 import com.bawnorton.trimica.Trimica;
 import com.bawnorton.trimica.mixin.accessor.MappedRegistry$PendingTagsAnonymousAccessor;
@@ -13,27 +13,27 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public final class PostponedTagHolder {
+public final class UnloadedTagHolder {
 	private static final Map<Registry.PendingTags<?>, Map<TagKey<?>, HolderSet<?>>> postponedContentsCache = new HashMap<>();
 	private static final Map<TagKey<?>, HolderSet<?>> postponedTagsContentCache = new HashMap<>();
-	private static Map<ResourceKey<? extends Registry<?>>, Registry.PendingTags<?>> postponedTagsMap;
+	private static Map<ResourceKey<? extends Registry<?>>, Registry.PendingTags<?>> unloadedTagsMap;
 
-	public static void setPostponedTags(List<Registry.PendingTags<?>> tags) {
-		postponedTagsMap = new HashMap<>();
+	public static void setUnloadedTags(List<Registry.PendingTags<?>> tags) {
+		unloadedTagsMap = new HashMap<>();
 		for (Registry.PendingTags<?> tag : tags) {
-			postponedTagsMap.put(tag.key(), tag);
+			unloadedTagsMap.put(tag.key(), tag);
 		}
 	}
 
 	@SuppressWarnings("unchecked")
 	public static <T> HolderSet<T> getUnloadedTag(TagKey<T> tagKey) {
-		if (postponedTagsMap == null) return HolderSet.empty();
+		if (unloadedTagsMap == null) return HolderSet.empty();
 
 		HolderSet<?> content = postponedTagsContentCache.get(tagKey);
 		if (content != null) return (HolderSet<T>) content;
 
 		ResourceKey<? extends Registry<T>> registry = tagKey.registry();
-		Registry.PendingTags<T> pendingTags = (Registry.PendingTags<T>) postponedTagsMap.get(registry);
+		Registry.PendingTags<T> pendingTags = (Registry.PendingTags<T>) unloadedTagsMap.get(registry);
 		if (pendingTags == null) return HolderSet.empty();
 
 		content = getContent(tagKey, pendingTags);

@@ -12,7 +12,6 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponentGetter;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.TextColor;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.TooltipFlag;
@@ -75,6 +74,9 @@ public abstract class ArmorTrimMixin {
 			TrimPalette palette = TrimicaClient.getPalettes().getPalette(material().value(), null, componentGetter);
 			if (palette == TrimPalette.DISABLED) {
 				consumer.accept(CommonComponents.space().append(Component.translatable("trimica.trim_material.disabled").withStyle(ChatFormatting.RED)));
+			}
+			if (palette == TrimPalette.MISSING) {
+				consumer.accept(CommonComponents.space().append(Component.translatable("trimica.trim_material.missing").withStyle(ChatFormatting.RED)));
 			}
 		}
 	}

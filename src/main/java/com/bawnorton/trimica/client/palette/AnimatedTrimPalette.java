@@ -25,7 +25,7 @@ public final class AnimatedTrimPalette extends TrimPalette {
 	}
 
 	@Override
-	public AnimatedTrimPalette asAnimated() {
+	public TrimPalette asAnimated() {
 		return this;
 	}
 

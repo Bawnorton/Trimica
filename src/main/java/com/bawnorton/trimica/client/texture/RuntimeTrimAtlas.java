@@ -146,6 +146,7 @@ public final class RuntimeTrimAtlas extends TextureAtlas {
 	}
 
 	public void clear() {
+		spriteFactory.clear();
 		dynamicSprites.clear();
 		dynamicSprites.add(createMissing());
 		clearTextureData();

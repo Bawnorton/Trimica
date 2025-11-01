@@ -1,7 +1,6 @@
 @file:Suppress("UnstableApiUsage")
 
 import dev.kikugie.fletching_table.annotation.MixinEnvironment
-import org.gradle.kotlin.dsl.main
 import org.gradle.kotlin.dsl.remapJar
 import trimica.utils.*
 
@@ -56,7 +55,10 @@ dependencies {
             runtimeOnly("io.github.douira:glsl-transformer:2.0.1")
             runtimeOnly("org.anarres:jcpp:1.4.14")
         }
-        .dep("elytra-trims") { it ->
+        .dep(
+          "elytra-trims",
+          if (sc.current.version == "1.21.10") "1.21.9" else minecraft
+        ) { it ->
             modImplementation(it)
             deps("fabric-language-kotlin") {
                 modRuntimeOnly("net.fabricmc:fabric-language-kotlin:$it")

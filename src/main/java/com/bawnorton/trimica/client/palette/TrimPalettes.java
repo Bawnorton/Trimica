@@ -17,40 +17,29 @@ public final class TrimPalettes {
 	private final ConcurrentMap<ResourceLocation, TrimPalette> cache = new ConcurrentHashMap<>();
 	private final TrimPaletteGenerator generator = new TrimPaletteGenerator();
 
-	public TrimPalette getOrGeneratePalette(TrimMaterial material, ResourceKey<EquipmentAsset> equipmentAssetKey, ResourceLocation location, @Nullable DataComponentGetter componentGetter) {
-		String suffix = equipmentAssetKey == null ? material.assets().base().suffix() : material.assets().assetId(equipmentAssetKey).suffix();
-		ResourceLocation key = Trimica.rl(suffix);
+	public TrimPalette getOrGeneratePalette(TrimMaterial material, @Nullable ResourceKey<EquipmentAsset> assetKey, @Nullable DataComponentGetter componentGetter) {
+		ResourceLocation key = Trimica.rl(Trimica.getMaterialRegistry().getSuffix(material, assetKey));
 		MaterialAdditions additions;
 		if (componentGetter == null || !MaterialAdditions.enableMaterialAdditions) {
-			additions = null;
+			additions = MaterialAdditions.NONE;
 		} else {
-			additions = componentGetter.get(MaterialAdditions.TYPE);
-			if (additions != null) {
-				key = additions.apply(key);
-			}
+			additions = Trimica.getMaterialRegistry().getIntrinsicAdditions(material)
+					.and(componentGetter.get(MaterialAdditions.TYPE));
+			key = additions.apply(key);
 		}
-		TrimPalette trimPalette = cache.computeIfAbsent(key, k -> {
-			TrimPalette palette = generator.generatePalette(material, suffix, location);
-			if (palette == null) return null;
-
-			if (additions != null) {
-				palette = TrimicaApiImpl.INSTANCE.applyPaletteInterceptorsForMaterialAdditions(palette, additions);
-			}
+		return cache.computeIfAbsent(key, k -> {
+			TrimPalette palette = generator.generatePalette(material, assetKey);
+			palette = TrimicaApiImpl.INSTANCE.applyPaletteInterceptorsForMaterialAdditions(palette, additions);
 			return TrimicaApiImpl.INSTANCE.applyPaletteInterceptorsForGeneration(palette, material);
 		});
-		if (trimPalette == null) return TrimPalette.DEFAULT;
-
-		return trimPalette;
 	}
 
-	public @Nullable TrimPalette getPalette(TrimMaterial material, ResourceKey<EquipmentAsset> equipmentAssetKey, @Nullable DataComponentGetter componentGetter) {
-		String suffix = equipmentAssetKey == null ? material.assets().base().suffix() : material.assets().assetId(equipmentAssetKey).suffix();
+	public @Nullable TrimPalette getPalette(TrimMaterial material, ResourceKey<EquipmentAsset> assetKey, @Nullable DataComponentGetter componentGetter) {
+		String suffix = Trimica.getMaterialRegistry().getSuffix(material, assetKey);
 		ResourceLocation key = Trimica.rl(suffix);
 		if (componentGetter != null && MaterialAdditions.enableMaterialAdditions) {
-			MaterialAdditions addition = componentGetter.get(MaterialAdditions.TYPE);
-			if (addition != null) {
-				key = addition.apply(key);
-			}
+			MaterialAdditions addition = componentGetter.getOrDefault(MaterialAdditions.TYPE, MaterialAdditions.NONE);
+			key = addition.apply(key);
 		}
 		return cache.get(key);
 	}

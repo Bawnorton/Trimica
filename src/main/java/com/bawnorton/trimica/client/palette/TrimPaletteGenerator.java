@@ -19,33 +19,26 @@ import net.minecraft.client.renderer.texture.TextureContents;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.util.ARGB;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.equipment.EquipmentAsset;
 import net.minecraft.world.item.equipment.trim.TrimMaterial;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-//? if fabric && <1.21.5 {
-/*import com.bawnorton.trimica.platform.fabric.mixin.accessor.WrapperBakedItemModelAccessor;
- *///?}
+import java.util.*;
 
 public final class TrimPaletteGenerator {
-	private static final Map<ResourceLocation, TrimPalette> TRIM_PALETTES = new HashMap<>();
-	private static final Map<String, TrimPalette> BUILT_IN_PALETTES = new HashMap<>();
+	private static final Map<TrimMaterial, TrimPalette> TRIM_PALETTES = new HashMap<>();
+	private static final Map<TrimMaterial, TrimPalette> BUILT_IN_PALETTES = new HashMap<>();
 
-	public TrimPalette generatePalette(TrimMaterial material, String suffix, ResourceLocation location) {
-		Item materialProvider = Trimica.getMaterialRegistry().getMaterialProvider(suffix);
+	public @NotNull TrimPalette generatePalette(TrimMaterial material, ResourceKey<EquipmentAsset> assetKey) {
+		Item materialProvider = Trimica.getMaterialRegistry().guessMaterialProvider(material);
 		if (materialProvider == null) {
-			return generatePaletteFromBuiltIn(material, suffix);
+			return generatePaletteFromBuiltIn(material, assetKey);
 		}
 		if (!TrimMaterialRuntimeRegistry.enableTrimEverything) {
 			Trimica.LOGGER.warn("Trim palette generation is disabled, cannot generate palette for material: {}", BuiltInRegistries.ITEM.getKey(materialProvider));
@@ -53,20 +46,19 @@ public final class TrimPaletteGenerator {
 		}
 		ItemModelResolver modelResolver = Minecraft.getInstance().getItemModelResolver();
 		ItemModel model = ((ItemModelResolverAccessor) modelResolver).trimica$modelGetter().apply(BuiltInRegistries.ITEM.getKey(materialProvider));
-		return generatePaletteFromModel(location, model);
+		return generatePaletteFromModel(material, assetKey, model);
 	}
 
-	private TrimPalette generatePaletteFromBuiltIn(TrimMaterial material, String suffix) {
-		return BUILT_IN_PALETTES.computeIfAbsent(suffix, k -> {
-			List<Integer> colours = getColoursFromBuiltIn(material, suffix);
-			if (colours.isEmpty()) {
-				return null;
-			}
+	private @NotNull TrimPalette generatePaletteFromBuiltIn(TrimMaterial material, ResourceKey<EquipmentAsset> assetKey) {
+		return BUILT_IN_PALETTES.computeIfAbsent(material, k -> {
+			List<Integer> colours = getColoursFromBuiltIn(material, assetKey);
+			if (colours.isEmpty()) return TrimPalette.MISSING;
+
 			return new TrimPalette(colours, true);
 		});
 	}
 
-	private List<Integer> getColoursFromBuiltIn(TrimMaterial material, String suffix) {
+	private List<Integer> getColoursFromBuiltIn(TrimMaterial material, ResourceKey<EquipmentAsset> assetKey) {
 		Minecraft minecraft = Minecraft.getInstance();
 		ResourceManager resourceManager = minecraft.getResourceManager();
 		ClientLevel level = minecraft.level;
@@ -76,8 +68,22 @@ public final class TrimPaletteGenerator {
 		if (lookup == null) return List.of();
 
 		ResourceLocation materialId = lookup.getKey(material);
-		if (materialId == null) return List.of();
+		if (materialId == null) {
+			// Sometimes for some reason the instance of the material object is changed between client load and render
+			// I have no idea why and I can't fix it so have a workaround
+			materialId = lookup.entrySet()
+					.stream()
+					.filter(e -> e.getValue().equals(material))
+					.findFirst()
+					.map(Map.Entry::getKey)
+					.map(ResourceKey::location)
+					.orElse(null);
+			if (materialId == null) {
+				return List.of();
+			}
+		}
 
+		String suffix = Trimica.getMaterialRegistry().getSuffix(material, assetKey);
 		try (TextureContents contents = TextureContents.load(resourceManager, materialId.withPath("textures/trims/color_palettes/%s.png".formatted(suffix)))) {
 			NativeImage image = contents.image();
 			return extractColoursFromBuiltIn(image);
@@ -101,11 +107,11 @@ public final class TrimPaletteGenerator {
 		return colours;
 	}
 
-	private TrimPalette generatePaletteFromModel(ResourceLocation location, ItemModel model) {
-		return TRIM_PALETTES.computeIfAbsent(location, key -> {
+	private TrimPalette generatePaletteFromModel(TrimMaterial material, ResourceKey<EquipmentAsset> assetKey, ItemModel model) {
+		return TRIM_PALETTES.computeIfAbsent(material, key -> {
 			List<Integer> colours = getColoursFromModel(model);
 			if (colours.isEmpty()) {
-				Trimica.LOGGER.warn("Trim palette colour could of determined for {}", location);
+				Trimica.LOGGER.warn("Trim palette colour could of determined for {}", Trimica.getMaterialRegistry().getSuffix(material, assetKey));
 				return TrimPalette.DEFAULT;
 			}
 			colours = getDominantColours(colours);
@@ -140,12 +146,9 @@ public final class TrimPaletteGenerator {
 				}
 				yield Collections.emptyList();
 			}
-			//? if fabric && <1.21.5 {
-			/*case WrapperBakedItemModelAccessor wrapperBakedItemModelAccessor -> getColoursFromModel(wrapperBakedItemModelAccessor.trimica$wrapped());
-			 *///?}
 			case null -> Collections.emptyList();
 			default -> {
-				Trimica.LOGGER.warn("Unknown ItemModel type: {}", model.getClass().getName());
+				Trimica.LOGGER.warn("Cannot extract colours from unknown item model type: {}", model.getClass().getName());
 				yield Collections.emptyList();
 			}
 		};

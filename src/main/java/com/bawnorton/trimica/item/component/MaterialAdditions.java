@@ -13,6 +13,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public record MaterialAdditions(List<ResourceLocation> additionKeys) {
+	public static final MaterialAdditions NONE = new MaterialAdditions(List.of());
+
 	/**
 	 * Whether material additions are enabled.
 	 * Disabling this will prevent any material additions from being applied
@@ -35,10 +37,6 @@ public record MaterialAdditions(List<ResourceLocation> additionKeys) {
 
 	public MaterialAdditions(ResourceLocation addition) {
 		this(List.of(addition));
-	}
-
-	public static MaterialAdditions empty() {
-		return new MaterialAdditions(new ArrayList<>());
 	}
 
 	public MaterialAdditions and(ResourceLocation addition) {
@@ -96,8 +94,8 @@ public record MaterialAdditions(List<ResourceLocation> additionKeys) {
 	public static int removeMaterials(ItemStack stack, int count) {
 		if (!enableMaterialAdditions) return count;
 
-		MaterialAdditions additions = stack.get(MaterialAdditions.TYPE);
-		if (additions == null || additions.additionKeys.isEmpty()) return count;
+		MaterialAdditions additions = stack.getOrDefault(MaterialAdditions.TYPE, MaterialAdditions.NONE);
+		if (additions.isEmpty()) return count;
 
 		List<ResourceLocation> newAdditions = new ArrayList<>(additions.additionKeys);
 		for (; count > 0 && !newAdditions.isEmpty(); count--) {

@@ -2,10 +2,7 @@ package com.bawnorton.trimica.data;
 
 //? if fabric {
 
-import com.bawnorton.trimica.data.provider.TrimicaAdvancementsProvider;
-import com.bawnorton.trimica.data.provider.TrimicaModelProvider;
-import com.bawnorton.trimica.data.provider.TrimicaRecipeProvider;
-import com.bawnorton.trimica.data.provider.TrimicaTagProvider;
+import com.bawnorton.trimica.data.provider.*;
 import dev.kikugie.fletching_table.annotation.fabric.Entrypoint;
 import net.fabricmc.fabric.api.datagen.v1.DataGeneratorEntrypoint;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataGenerator;
@@ -16,12 +13,13 @@ import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.metadata.pack.PackMetadataSection;
 import net.minecraft.util.InclusiveRange;
 
-import java.util.Optional;
-
 @Entrypoint("fabric-datagen")
 public final class TrimicaDataGen implements DataGeneratorEntrypoint {
+	public static boolean duringDataGen = false;
+
 	@Override
 	public void onInitializeDataGenerator(FabricDataGenerator fabricDataGenerator) {
+		duringDataGen = true;
 		FabricDataGenerator.Pack mainPack = fabricDataGenerator.createPack();
 		mainPack.addProvider((FabricDataGenerator.Pack.Factory<PackMetadataGenerator>) output -> new PackMetadataGenerator(output)
 				.add(
@@ -44,15 +42,17 @@ public final class TrimicaDataGen implements DataGeneratorEntrypoint {
 						*///?}
 				)
 		);
-		mainPack.addProvider(TrimicaTagProvider::new);
+		mainPack.addProvider(TrimicaRegistriesDataProvider::new);
+		mainPack.addProvider(TrimicaItemTagProvider::new);
+		mainPack.addProvider(TrimicaTrimMaterialTagProvider::new);
 		mainPack.addProvider(TrimicaRecipeProvider::new);
 		mainPack.addProvider(TrimicaAdvancementsProvider::new);
 		mainPack.addProvider(TrimicaModelProvider::new);
 	}
 }
 //?} else {
-
-/*import com.bawnorton.trimica.Trimica;
+/*
+import com.bawnorton.trimica.Trimica;
 import com.bawnorton.trimica.data.provider.TrimicaAdvancementsProvider;
 import com.bawnorton.trimica.data.provider.TrimicaModelProvider;
 import com.bawnorton.trimica.data.provider.TrimicaRecipeProvider;

@@ -2,15 +2,12 @@ package com.bawnorton.trimica.client.model;
 
 import com.bawnorton.trimica.Trimica;
 import com.bawnorton.trimica.client.TrimicaClient;
-import com.bawnorton.trimica.client.mixin.accessor.BlockModelWrapperAccessor;
-import com.bawnorton.trimica.client.mixin.accessor.ModelBakery$ModelBakerImplAccessor;
-import com.bawnorton.trimica.client.mixin.accessor.ModelDiscover$ModelWrapperAccessor;
-import com.bawnorton.trimica.client.mixin.accessor.ModelManagerAccessor;
-import com.bawnorton.trimica.client.mixin.accessor.TextureSlots$ValueAccessor;
+import com.bawnorton.trimica.client.mixin.accessor.*;
 import com.bawnorton.trimica.client.palette.TrimPalette;
 import com.bawnorton.trimica.client.texture.DynamicTrimTextureAtlasSprite;
 import com.bawnorton.trimica.item.component.ComponentUtil;
 import com.bawnorton.trimica.item.component.MaterialAdditions;
+import com.bawnorton.trimica.trim.TrimmedType;
 import com.google.common.collect.ImmutableMap;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.geom.EntityModelSet;
@@ -19,13 +16,13 @@ import net.minecraft.client.renderer.block.model.BlockModel;
 import net.minecraft.client.renderer.block.model.TextureSlots;
 import net.minecraft.client.renderer.item.BlockModelWrapper;
 import net.minecraft.client.renderer.item.ItemModel;
-import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.*;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.ItemTags;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.equipment.ArmorType;
 import net.minecraft.world.item.equipment.EquipmentAsset;
@@ -38,31 +35,20 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import com.bawnorton.trimica.client.mixin.accessor.GameRendererAccessor;
-import com.bawnorton.trimica.client.mixin.accessor.GuiRendererAccessor;
-
 public final class TrimItemModelFactory {
 	private final Map<ResourceLocation, ItemModel> models = new HashMap<>();
 	private final Map<ResourceLocation, TrimPalette> palettes = new HashMap<>();
 	private ModelManager.ResolvedModels resolvedModels;
 
 	public TrimmedItemModelWrapper getOrCreateModel(ItemModel base, ClientLevel level, ItemStack stack, ArmorTrim trim) {
-		Equippable equippable = stack.get(DataComponents.EQUIPPABLE);
-		if (equippable == null) {
+		TrimModelId trimModelId = getModelId(stack, trim);
+		if (trimModelId == null) {
 			return TrimmedItemModelWrapper.noTrim(base);
 		}
-		Optional<ResourceKey<EquipmentAsset>> assetId = equippable.assetId();
-		ArmorType armourType = ComponentUtil.getArmourType(stack);
-		if (armourType == null) {
-			return TrimmedItemModelWrapper.noTrim(base);
-		}
-		TrimModelId trimModelId = TrimModelId.fromTrim(armourType.getName(), trim, assetId.orElse(null));
 		ResourceLocation overlayLocation = trimModelId.asSingle();
 		if (MaterialAdditions.enableMaterialAdditions) {
-			MaterialAdditions addition = stack.get(MaterialAdditions.TYPE);
-			if (addition != null) {
-				overlayLocation = addition.apply(overlayLocation);
-			}
+			MaterialAdditions addition = stack.getOrDefault(MaterialAdditions.TYPE, MaterialAdditions.NONE);
+			overlayLocation = addition.apply(overlayLocation);
 		}
 		ResourceLocation baseModelLocation = stack.getOrDefault(DataComponents.ITEM_MODEL, BuiltInRegistries.ITEM.getKey(stack.getItem()));
 		ResourceLocation newModelLocation = overlayLocation.withPrefix(baseModelLocation.toString().replace(":", "_") + "/");
@@ -72,6 +58,14 @@ public final class TrimItemModelFactory {
 		ItemModel model = createModel(baseModelLocation, newModelLocation, overlayLocation, base, level, stack, trim);
 		models.put(newModelLocation, model);
 		return new TrimmedItemModelWrapper(model, palettes.get(newModelLocation), newModelLocation);
+	}
+
+	public static TrimModelId getModelId(ItemStack stack, ArmorTrim trim) {
+		Optional<ResourceKey<EquipmentAsset>> assetId = Optional.ofNullable(stack.get(DataComponents.EQUIPPABLE)).flatMap(Equippable::assetId);
+		TrimmedType trimmedType = TrimmedType.of(stack);
+		if (trimmedType == TrimmedType.UNKNOWN) return null;
+
+		return TrimModelId.fromTrim(trimmedType, trim, assetId.orElse(null));
 	}
 
 	private ItemModel createModel(ResourceLocation baseModelLocation, ResourceLocation newModelLocation, ResourceLocation overlayLocation, ItemModel base, ClientLevel level, ItemStack stack, ArmorTrim trim) {

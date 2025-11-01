@@ -1,15 +1,13 @@
 package com.bawnorton.trimica.client.mixin.render;
 
 import com.bawnorton.trimica.client.extend.ItemStackRenderState$LayerRenderStateExtender;
-import com.bawnorton.trimica.client.palette.TrimPalette;
-import com.bawnorton.trimica.compat.Compat;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.mojang.blaze3d.vertex.PoseStack;
 import dev.kikugie.fletching_table.annotation.MixinEnvironment;
 import net.minecraft.client.renderer.LightTexture;
-import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.item.ItemStackRenderState;
 import net.minecraft.world.item.ItemDisplayContext;
@@ -18,7 +16,6 @@ import org.joml.Vector3f;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
-
 import java.util.List;
 
 //? if >=1.21.10
@@ -48,11 +45,13 @@ public abstract class ItemStackRenderState$LayerRenderStateMixin implements Item
 			Matrix4f pose = lastPose.pose();
 			Vector3f translation = pose.getTranslation(new Vector3f());
 			pose.setTranslation(0, 0, 0);
-			float margin = 0.001f;
+			float margin = 0.0015f;
+			float zMargin = 0.01f;
 			float scale = 1 + margin;
-			pose.scale(scale, scale, scale + 0.05f);
+			float zScale = 1 + zMargin;
+			pose.scale(scale, scale, zScale);
 			pose.setTranslation(translation);
-			pose.translate(-margin / 2, -margin / 2, -0.0245f);
+			pose.translate(-margin / 2, -margin / 2, -zMargin / 2);
 			int light = trimica$emissive ? LightTexture.FULL_BRIGHT : packedLight;
 			original.call(instance, poseStack, itemDisplayContext, light, packedOverlay, outlineColor, tintLayers, list, renderType, foilType);
 			poseStack.popPose();
