@@ -55,10 +55,7 @@ dependencies {
             runtimeOnly("io.github.douira:glsl-transformer:2.0.1")
             runtimeOnly("org.anarres:jcpp:1.4.14")
         }
-        .dep(
-          "elytra-trims",
-          if (sc.current.version == "1.21.10") "1.21.9" else minecraft
-        ) { it ->
+        .dep("elytra-trims") { it ->
             modImplementation(it)
             deps("fabric-language-kotlin") {
                 modRuntimeOnly("net.fabricmc:fabric-language-kotlin:$it")

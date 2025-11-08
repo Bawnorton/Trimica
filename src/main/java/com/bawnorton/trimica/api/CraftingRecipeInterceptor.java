@@ -13,6 +13,9 @@ import org.jetbrains.annotations.Nullable;
  */
 @SuppressWarnings("unused")
 public interface CraftingRecipeInterceptor {
+	/**
+	 * Use instead of querying tags directly, as they are not loaded yet.
+	 */
 	default HolderSet<Item> getTag(TagKey<Item> tagKey) {
 		return UnloadedTagHolder.getUnloadedTag(tagKey);
 	}

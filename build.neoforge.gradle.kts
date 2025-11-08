@@ -35,16 +35,10 @@ base.archivesName = "${mod("id")}-${mod("version")}+$minecraft-$loader"
 dependencies {
     remoteDepBuilder(project, fletchingTable::modrinth)
         .dep("advanced-netherite") { runtimeOnly(it) }
-        .dep(
-          "sodium",
-           if (sc.current.version == "1.21.10") "1.21.9" else minecraft
-        ) {
+        .dep("sodium") {
           compileOnly(it)
         }
-        .dep(
-          "elytra-trims",
-          if (sc.current.version == "1.21.10") "1.21.9" else minecraft
-        ) { it ->
+        .dep("elytra-trims") { it ->
             compileOnly(it)
             deps("kotlinforforge-neoforge") {
                 runtimeOnly("thedarkcolour:kotlinforforge-neoforge:$it")

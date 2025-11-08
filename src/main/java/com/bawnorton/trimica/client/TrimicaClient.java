@@ -8,6 +8,8 @@ import com.bawnorton.trimica.client.palette.TrimPalettes;
 import com.bawnorton.trimica.client.texture.RuntimeTrimAtlases;
 import com.bawnorton.trimica.compat.Compat;
 import com.bawnorton.trimica.compat.elytratrims.ElytraBaseTextureInterceptor;
+import net.minecraft.client.Minecraft;
+import net.minecraft.sounds.SoundEvent;
 
 public class TrimicaClient {
 	private static final TrimPalettes trimPalettes = new TrimPalettes();
