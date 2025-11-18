@@ -1,3 +1,7 @@
+# 1.3.2
+
+- Whoops I broke the material addition recipe (its fixed now)
+
 # 1.3.1
 
 - Capture models during resolution to allow item definition derived item models to work correctly with trims
