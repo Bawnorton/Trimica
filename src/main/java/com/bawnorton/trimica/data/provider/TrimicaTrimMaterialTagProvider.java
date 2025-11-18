@@ -3,7 +3,6 @@ package com.bawnorton.trimica.data.provider;
 import com.bawnorton.bettertrims.data.TrimMaterialTags;
 import com.bawnorton.trimica.data.tags.TrimicaRuntimeTags;
 import com.bawnorton.trimica.extend.TagAppenderExtension;
-import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.tags.TagAppender;
 import net.minecraft.resources.ResourceKey;
@@ -12,6 +11,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.equipment.trim.TrimMaterial;
 
+import java.util.Comparator;
 import java.util.Set;
 
 public interface TrimicaTrimMaterialTagProvider {
@@ -314,11 +314,11 @@ public interface TrimicaTrimMaterialTagProvider {
 	@SuppressWarnings("unchecked")
 	private void addItemsToTag(TagKey<TrimMaterial> tagKey, Set<Item> items) {
 		TagAppenderExtension<ResourceKey<TrimMaterial>, TrimMaterial> appender = (TagAppenderExtension<ResourceKey<TrimMaterial>, TrimMaterial>) builder(tagKey);
-		for (Item item : items) {
-			Holder.Reference<Item> itemReference = item.builtInRegistryHolder();
-			TagKey<TrimMaterial> materialTagKey = getRuntimeTags().createMaterialKeyHolderForItem(itemReference).tagKey();
-			appender.trimica$forceAddTag(materialTagKey);
-		}
+		items.stream()
+				.map(Item::builtInRegistryHolder)
+				.map(itemReference -> getRuntimeTags().createMaterialKeyHolderForItem(itemReference).tagKey())
+				.sorted(Comparator.comparing(TagKey::location))
+				.forEachOrdered(appender::trimica$forceAddTag);
 	}
 
 	TagAppender<ResourceKey<TrimMaterial>, TrimMaterial> builder(TagKey<TrimMaterial> tagKey);

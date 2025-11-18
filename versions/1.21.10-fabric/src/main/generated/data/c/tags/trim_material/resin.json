@@ -1,12 +1,12 @@
 {
   "values": [
-    "#trimica:generated/minecraft/resin_bricks",
-    "#trimica:generated/minecraft/resin_brick",
-    "#trimica:generated/minecraft/resin_brick_wall",
-    "#trimica:generated/minecraft/resin_block",
-    "#trimica:generated/minecraft/resin_brick_stairs",
     "#trimica:generated/minecraft/chiseled_resin_bricks",
+    "#trimica:generated/minecraft/resin_block",
+    "#trimica:generated/minecraft/resin_brick",
     "#trimica:generated/minecraft/resin_brick_slab",
+    "#trimica:generated/minecraft/resin_brick_stairs",
+    "#trimica:generated/minecraft/resin_brick_wall",
+    "#trimica:generated/minecraft/resin_bricks",
     "#trimica:generated/minecraft/resin_clump"
   ]
 }

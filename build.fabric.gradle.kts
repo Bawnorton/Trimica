@@ -50,6 +50,7 @@ dependencies {
 
   remoteDepBuilder(project, fletchingTable::modrinth)
     .dep("advanced-netherite") { modRuntimeOnly(it) }
+    .dep("oxidizable-copper-gear") { modRuntimeOnly(it) }
     .dep("sodium") { modImplementation(it) }
     .dep("iris") {
       modRuntimeOnly(it)

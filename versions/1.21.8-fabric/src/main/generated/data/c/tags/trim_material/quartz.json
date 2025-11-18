@@ -1,15 +1,15 @@
 {
   "values": [
-    "#trimica:generated/minecraft/smooth_quartz_stairs",
-    "#trimica:generated/minecraft/nether_quartz_ore",
     "#trimica:generated/minecraft/chiseled_quartz_block",
-    "#trimica:generated/minecraft/quartz_slab",
+    "#trimica:generated/minecraft/nether_quartz_ore",
     "#trimica:generated/minecraft/quartz",
-    "#trimica:generated/minecraft/quartz_pillar",
+    "#trimica:generated/minecraft/quartz_block",
     "#trimica:generated/minecraft/quartz_bricks",
+    "#trimica:generated/minecraft/quartz_pillar",
+    "#trimica:generated/minecraft/quartz_slab",
     "#trimica:generated/minecraft/quartz_stairs",
     "#trimica:generated/minecraft/smooth_quartz",
     "#trimica:generated/minecraft/smooth_quartz_slab",
-    "#trimica:generated/minecraft/quartz_block"
+    "#trimica:generated/minecraft/smooth_quartz_stairs"
   ]
 }

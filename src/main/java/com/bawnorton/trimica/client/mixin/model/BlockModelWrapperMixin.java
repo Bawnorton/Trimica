@@ -40,9 +40,9 @@ import java.util.function.Supplier;
 //? if >=1.21.10
 import net.minecraft.world.entity.ItemOwner;
 
-@MixinEnvironment(value = "client")
+@MixinEnvironment("client")
 @Mixin(BlockModelWrapper.class)
-public abstract class BlockModelWrapperMixin {
+abstract class BlockModelWrapperMixin {
 	@Shadow
 	@Final
 	@Mutable

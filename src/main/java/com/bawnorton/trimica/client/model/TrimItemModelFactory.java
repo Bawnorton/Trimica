@@ -5,7 +5,6 @@ import com.bawnorton.trimica.client.TrimicaClient;
 import com.bawnorton.trimica.client.mixin.accessor.*;
 import com.bawnorton.trimica.client.palette.TrimPalette;
 import com.bawnorton.trimica.client.texture.DynamicTrimTextureAtlasSprite;
-import com.bawnorton.trimica.item.component.ComponentUtil;
 import com.bawnorton.trimica.item.component.MaterialAdditions;
 import com.bawnorton.trimica.trim.TrimmedType;
 import com.google.common.collect.ImmutableMap;
@@ -23,9 +22,7 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.ItemTags;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.equipment.ArmorType;
 import net.minecraft.world.item.equipment.EquipmentAsset;
 import net.minecraft.world.item.equipment.Equippable;
 import net.minecraft.world.item.equipment.trim.ArmorTrim;
@@ -37,8 +34,9 @@ import java.util.Map;
 import java.util.Optional;
 
 public final class TrimItemModelFactory {
-	private final Map<ResourceLocation, ItemModel> models = new HashMap<>();
-	private final Map<ResourceLocation, TrimPalette> palettes = new HashMap<>();
+	private final Map<ResourceLocation, ItemModel> modelCache = new HashMap<>();
+	private final Map<ResourceLocation, TrimPalette> paletteCache = new HashMap<>();
+	private final Map<ItemModel, ResourceLocation> baseModelLocations = new HashMap<>();
 	private ModelManager.ResolvedModels resolvedModels;
 
 	public TrimmedItemModelWrapper getOrCreateModel(ItemModel base, ClientLevel level, ItemStack stack, ArmorTrim trim) {
@@ -51,14 +49,19 @@ public final class TrimItemModelFactory {
 			MaterialAdditions addition = stack.getOrDefault(MaterialAdditions.TYPE, MaterialAdditions.NONE);
 			overlayLocation = addition.apply(overlayLocation);
 		}
-		ResourceLocation baseModelLocation = stack.getOrDefault(DataComponents.ITEM_MODEL, BuiltInRegistries.ITEM.getKey(stack.getItem()));
-		ResourceLocation newModelLocation = overlayLocation.withPrefix(baseModelLocation.toString().replace(":", "_") + "/");
-		if (models.containsKey(newModelLocation)) {
-			return new TrimmedItemModelWrapper(models.get(newModelLocation), palettes.get(newModelLocation), newModelLocation);
+		ResourceLocation baseModelLocation = baseModelLocations.computeIfAbsent(base, k ->
+				stack.getOrDefault(DataComponents.ITEM_MODEL, BuiltInRegistries.ITEM.getKey(stack.getItem()))
+						.withPrefix("item/")
+		);
+		ResourceLocation newModelLocation = overlayLocation.withPrefix(
+				baseModelLocation.toString().replace(":", "_") + "/"
+		);
+		if (modelCache.containsKey(newModelLocation)) {
+			return new TrimmedItemModelWrapper(modelCache.get(newModelLocation), paletteCache.get(newModelLocation), newModelLocation);
 		}
 		ItemModel model = createModel(baseModelLocation, newModelLocation, overlayLocation, base, level, stack, trim);
-		models.put(newModelLocation, model);
-		return new TrimmedItemModelWrapper(model, palettes.get(newModelLocation), newModelLocation);
+		modelCache.put(newModelLocation, model);
+		return new TrimmedItemModelWrapper(model, paletteCache.get(newModelLocation), newModelLocation);
 	}
 
 	public static TrimModelId getModelId(ItemStack stack, ArmorTrim trim) {
@@ -70,22 +73,18 @@ public final class TrimItemModelFactory {
 	}
 
 	private ItemModel createModel(ResourceLocation baseModelLocation, ResourceLocation newModelLocation, ResourceLocation overlayLocation, ItemModel base, ClientLevel level, ItemStack stack, ArmorTrim trim) {
-		ResolvedModel baseResolved = resolvedModels.models().get(baseModelLocation.withPrefix("item/"));
+		ResolvedModel baseResolved = resolvedModels.models().get(baseModelLocation);
 		if (baseResolved == null) {
-			Trimica.LOGGER.error("Failed to find base resolved model for trimmed item: {}", baseModelLocation);
+			Trimica.LOGGER.error("Failed to find base resolved model: {}", baseModelLocation);
 			return base;
 		}
 		TextureSlots.Data slots = baseResolved.wrapped().textureSlots();
 		Map<String, TextureSlots.SlotContents> baseContents = slots.values();
-		String largestLayer = baseContents.keySet().stream()
-				.filter(key -> key.startsWith("layer"))
-				.max(Comparator.comparingInt(a -> Integer.parseInt(a.substring("layer".length()))))
-				.orElse("layer0");
-		String nextLayer = "layer" + (Integer.parseInt(largestLayer.substring("layer".length())) + 1);
+		String targetLayer = findTargetLayer(baseContents);
 		Map<String, TextureSlots.SlotContents> contents = ImmutableMap.<String, TextureSlots.SlotContents>builder()
 				.putAll(slots.values())
-				.put(nextLayer, TextureSlots$ValueAccessor.trimica$init(new Material(overlayLocation, overlayLocation)))
-				.build();
+				.put(targetLayer, TextureSlots$ValueAccessor.trimica$init(new Material(overlayLocation, overlayLocation)))
+				.buildKeepingLast();
 		UnbakedModel generatedModel = new BlockModel(
 				null,
 				UnbakedModel.GuiLight.FRONT,
@@ -121,7 +120,7 @@ public final class TrimItemModelFactory {
 		DynamicTrimTextureAtlasSprite sprite = TrimicaClient.getRuntimeAtlases()
 				.getItemAtlas(level, trim.material().value())
 				.getSprite(stack, trim.pattern().value(), overlayLocation);
-		palettes.put(newModelLocation, sprite.getPalette());
+		paletteCache.put(newModelLocation, sprite.getPalette());
 		SpriteGetter spriteGetter = new SpriteGetter() {
 			@Override
 			public @NotNull TextureAtlasSprite get(Material material, @NotNull ModelDebugName modelDebugName) {
@@ -156,17 +155,51 @@ public final class TrimItemModelFactory {
 		return unbaked.bake(bakingContext);
 	}
 
+	private String findTargetLayer(Map<String, TextureSlots.SlotContents> baseContents) {
+		int trimLayerIndex = -1;
+		for (Map.Entry<String, TextureSlots.SlotContents> entry : baseContents.entrySet()) {
+			String key = entry.getKey();
+			TextureSlots.SlotContents content = entry.getValue();
+			if (key.startsWith("layer")) {
+				String texture = switch(content) {
+					case TextureSlots.Value value -> value.material().texture().getPath();
+					case TextureSlots.Reference reference -> reference.target();
+				};
+				if (texture.startsWith("trims/")) {
+					trimLayerIndex = Integer.parseInt(key.substring("layer".length()));
+					break;
+				}
+			}
+		}
+		String targetLayer;
+		if (trimLayerIndex != -1) {
+			targetLayer = "layer" + trimLayerIndex;
+		} else {
+			String largestLayer = baseContents.keySet().stream()
+					.filter(key -> key.startsWith("layer"))
+					.max(Comparator.comparingInt(a -> Integer.parseInt(a.substring("layer".length()))))
+					.orElse("layer0");
+			int largestIndex = Integer.parseInt(largestLayer.substring("layer".length()));
+			targetLayer = "layer" + (largestIndex + 1);
+		}
+		return targetLayer;
+	}
+
 	public void setResolvedModels(ModelManager.ResolvedModels resolvedModels) {
 		this.resolvedModels = resolvedModels;
 	}
 
+	public void registerBakedModel(ItemModel original, ResourceLocation model) {
+		baseModelLocations.put(original, model);
+	}
+
 	public void clearModels() {
-		models.clear();
+		modelCache.clear();
 	}
 
 	public void clear() {
 		clearModels();
 		((GuiRendererAccessor) ((GameRendererAccessor) Minecraft.getInstance().gameRenderer).trimica$guiRenderer()).trimica$invalidateItemAtlas();
-		palettes.clear();
+		paletteCache.clear();
 	}
 }

@@ -1,3 +1,8 @@
+# 1.3.1
+
+- Capture models during resolution to allow item definition derived item models to work correctly with trims
+- Alphabetically sort generated trim material tags
+
 # 1.3.0
 
 - Update to 1.21.10

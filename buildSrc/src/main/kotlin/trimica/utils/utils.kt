@@ -37,7 +37,11 @@ class RemoteDepBuilder(private val project: Project, private val depResolver: (S
     }
 
     fun dep(id: String, version: String = minecraft, handler: (dep: Dependency) -> Unit) : RemoteDepBuilder {
-      handler(depResolver(id, version))
+      try {
+        handler(depResolver(id, version))
+      } catch (e: Exception) {
+        project.logger.warn(e.message)
+      }
       return this
     }
 }

@@ -1,18 +1,18 @@
 {
   "values": [
-    "#trimica:generated/minecraft/diamond_axe",
-    "#trimica:generated/minecraft/diamond",
-    "#trimica:generated/minecraft/diamond_ore",
-    "#trimica:generated/minecraft/diamond_hoe",
-    "#trimica:generated/minecraft/diamond_chestplate",
-    "#trimica:generated/minecraft/diamond_leggings",
     "#trimica:generated/minecraft/deepslate_diamond_ore",
+    "#trimica:generated/minecraft/diamond",
+    "#trimica:generated/minecraft/diamond_axe",
+    "#trimica:generated/minecraft/diamond_block",
     "#trimica:generated/minecraft/diamond_boots",
-    "#trimica:generated/minecraft/diamond_shovel",
-    "#trimica:generated/minecraft/diamond_pickaxe",
+    "#trimica:generated/minecraft/diamond_chestplate",
     "#trimica:generated/minecraft/diamond_helmet",
-    "#trimica:generated/minecraft/diamond_sword",
+    "#trimica:generated/minecraft/diamond_hoe",
     "#trimica:generated/minecraft/diamond_horse_armor",
-    "#trimica:generated/minecraft/diamond_block"
+    "#trimica:generated/minecraft/diamond_leggings",
+    "#trimica:generated/minecraft/diamond_ore",
+    "#trimica:generated/minecraft/diamond_pickaxe",
+    "#trimica:generated/minecraft/diamond_shovel",
+    "#trimica:generated/minecraft/diamond_sword"
   ]
 }

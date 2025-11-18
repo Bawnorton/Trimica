@@ -1,12 +1,12 @@
 {
   "values": [
-    "#trimica:generated/minecraft/redstone_block",
-    "#trimica:generated/minecraft/redstone",
-    "#trimica:generated/minecraft/redstone_ore",
-    "#trimica:generated/minecraft/repeater",
-    "#trimica:generated/minecraft/redstone_torch",
-    "#trimica:generated/minecraft/redstone_lamp",
     "#trimica:generated/minecraft/comparator",
-    "#trimica:generated/minecraft/deepslate_redstone_ore"
+    "#trimica:generated/minecraft/deepslate_redstone_ore",
+    "#trimica:generated/minecraft/redstone",
+    "#trimica:generated/minecraft/redstone_block",
+    "#trimica:generated/minecraft/redstone_lamp",
+    "#trimica:generated/minecraft/redstone_ore",
+    "#trimica:generated/minecraft/redstone_torch",
+    "#trimica:generated/minecraft/repeater"
   ]
 }

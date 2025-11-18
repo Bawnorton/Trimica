@@ -1,8 +1,8 @@
 {
   "values": [
+    "#trimica:generated/minecraft/deepslate_lapis_ore",
     "#trimica:generated/minecraft/lapis_block",
     "#trimica:generated/minecraft/lapis_lazuli",
-    "#trimica:generated/minecraft/lapis_ore",
-    "#trimica:generated/minecraft/deepslate_lapis_ore"
+    "#trimica:generated/minecraft/lapis_ore"
   ]
 }
