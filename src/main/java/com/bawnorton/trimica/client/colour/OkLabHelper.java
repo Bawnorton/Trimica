@@ -47,10 +47,9 @@ public final class OkLabHelper {
 		double m = M1[1][0] * r_linear + M1[1][1] * g_linear + M1[1][2] * b_linear;
 		double s = M1[2][0] * r_linear + M1[2][1] * g_linear + M1[2][2] * b_linear;
 
-		double epsilon = 1e-10;
-		double l_ = Math.cbrt(l + epsilon);
-		double m_ = Math.cbrt(m + epsilon);
-		double s_ = Math.cbrt(s + epsilon);
+		double l_ = Math.cbrt(Math.max(0, l));
+		double m_ = Math.cbrt(Math.max(0, m));
+		double s_ = Math.cbrt(Math.max(0, s));
 
 		double L = M2[0][0] * l_ + M2[0][1] * m_ + M2[0][2] * s_;
 		double a = M2[1][0] * l_ + M2[1][1] * m_ + M2[1][2] * s_;
@@ -74,10 +73,9 @@ public final class OkLabHelper {
 		double b = oklab[2];
 
 		double[] rgb = oklabToRgb(L, a, b);
-		int r = (int) (rgb[0] * 255);
-		int g = (int) (rgb[1] * 255);
-		int b_srgb = (int) (rgb[2] * 255);
-
+		int r = (int) Math.round(rgb[0] * 255);
+		int g = (int) Math.round(rgb[1] * 255);
+		int b_srgb = (int) Math.round(rgb[2] * 255);
 		return (r << 16) | (g << 8) | b_srgb;
 	}
 

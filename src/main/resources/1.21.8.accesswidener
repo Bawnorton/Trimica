@@ -6,3 +6,4 @@ accessible  class   net/minecraft/client/resources/model/ModelDiscovery$ModelWra
 accessible  class   net/minecraft/client/resources/model/ModelManager$ResolvedModels
 accessible  class   net/minecraft/client/renderer/block/model/TextureSlots$Reference
 accessible  class   net/minecraft/client/renderer/block/model/TextureSlots$Value
+extendable  method  net/minecraft/tags/TagEntry <init> (Lnet/minecraft/resources/ResourceLocation;ZZ)V

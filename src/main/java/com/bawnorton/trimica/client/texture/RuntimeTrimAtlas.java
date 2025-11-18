@@ -26,7 +26,7 @@ import net.minecraft.client.resources.model.AtlasManager;
 *///?}
 
 public final class RuntimeTrimAtlas extends TextureAtlas {
-	private final RuntimeTrimSpriteFactory spriteFactory;
+	private final AbstractTrimSpriteFactory spriteFactory;
 	private final RuntimeTrimAtlases.TrimFactory trimFactory;
 	private final RenderType renderType;
 	private final List<SpriteContents> dynamicSprites = new ArrayList<>();
@@ -35,7 +35,7 @@ public final class RuntimeTrimAtlas extends TextureAtlas {
 	//? if >=1.21.10
 	private final AtlasManager.AtlasEntry atlasEntry;
 
-	public RuntimeTrimAtlas(ResourceLocation atlasLocation, RuntimeTrimSpriteFactory spriteFactory, RuntimeTrimAtlases.TrimFactory trimFactory, Consumer<RuntimeTrimAtlas> onModified) {
+	public RuntimeTrimAtlas(ResourceLocation atlasLocation, AbstractTrimSpriteFactory spriteFactory, RuntimeTrimAtlases.TrimFactory trimFactory, Consumer<RuntimeTrimAtlas> onModified) {
 		super(atlasLocation);
 		this.spriteFactory = spriteFactory;
 		this.trimFactory = trimFactory;
@@ -146,6 +146,7 @@ public final class RuntimeTrimAtlas extends TextureAtlas {
 	}
 
 	public void clear() {
+		spriteFactory.clear();
 		dynamicSprites.clear();
 		dynamicSprites.add(createMissing());
 		clearTextureData();

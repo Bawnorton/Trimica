@@ -8,8 +8,6 @@ import com.bawnorton.trimica.client.palette.TrimPalette;
 import com.bawnorton.trimica.item.component.MaterialAdditions;
 import net.minecraft.core.component.DataComponentGetter;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.TriState;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.equipment.trim.ArmorTrim;

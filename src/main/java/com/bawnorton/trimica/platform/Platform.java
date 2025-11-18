@@ -18,8 +18,8 @@ public final class Platform {
     }
 }
 //?} else if neoforge {
-
-/*import net.neoforged.fml.ModList;
+/*
+import net.neoforged.fml.ModList;
 import net.neoforged.fml.loading.LoadingModList;
 import net.neoforged.fml.loading.FMLLoader;
 

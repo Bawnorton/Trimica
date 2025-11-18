@@ -83,8 +83,8 @@ public abstract class EquipmentLayerRendererMixin {
 			ProfilerFiller profiler = Profiler.get();
 			profiler.push("trimica:armour_runtime_atlas");
 			ItemStack stack = TrimArmourSpriteFactory.ITEM_WITH_TRIM_CAPTURE.get();
-			MaterialAdditions addition = stack.get(MaterialAdditions.TYPE);
-			if (!sprite.contents().name().equals(MissingTextureAtlasSprite.getLocation()) && addition == null) return sprite;
+			MaterialAdditions addition = stack.getOrDefault(MaterialAdditions.TYPE, MaterialAdditions.NONE);
+			if (!sprite.contents().name().equals(MissingTextureAtlasSprite.getLocation()) && addition.isEmpty()) return sprite;
 
 			RuntimeTrimAtlases atlases = TrimicaClient.getRuntimeAtlases();
 			TrimMaterial material = trimSpriteKey.trim().material().value();
@@ -92,9 +92,7 @@ public abstract class EquipmentLayerRendererMixin {
 			if (atlas == null) return sprite;
 
 			ResourceLocation overlayLocation = trimSpriteKey.spriteId();
-			if (addition != null) {
-				overlayLocation = addition.apply(overlayLocation);
-			}
+			overlayLocation = addition.apply(overlayLocation);
 			TrimPattern pattern = trimSpriteKey.trim().pattern().value();
 			DynamicTrimTextureAtlasSprite dynamicSprite = atlas.getSprite(stack, pattern, overlayLocation);
 			profiler.pop();

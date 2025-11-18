@@ -1,17 +1,13 @@
 package com.bawnorton.trimica.client.texture;
 
 import com.bawnorton.trimica.client.palette.TrimPalette;
+import com.bawnorton.trimica.trim.TrimmedType;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.equipment.ArmorType;
 import net.minecraft.world.item.equipment.trim.ArmorTrim;
 
 import java.nio.file.Path;
 
-public record TrimSpriteMetadata(ArmorTrim trim, TrimPalette palette, ResourceLocation baseTexture, ArmorType armorType) {
-	public TrimSpriteMetadata(ArmorTrim trim, TrimPalette palette, ResourceLocation baseTexture) {
-		this(trim, palette, baseTexture, null);
-	}
-
+public record TrimSpriteMetadata(ArmorTrim trim, TrimPalette palette, ResourceLocation baseTexture, TrimmedType trimmedType) {
 	public boolean isAnimated() {
 		return palette.isAnimated();
 	}

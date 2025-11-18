@@ -1,7 +1,7 @@
 package com.bawnorton.trimica.mixin.registry;
 
 import com.bawnorton.trimica.Trimica;
-import com.bawnorton.trimica.crafting.MaterialAdditionRecipe;
+import com.bawnorton.trimica.item.crafting.MaterialAdditionRecipe;
 import net.minecraft.core.Registry;
 import net.minecraft.world.item.crafting.display.SlotDisplay;
 import net.minecraft.world.item.crafting.display.SlotDisplays;

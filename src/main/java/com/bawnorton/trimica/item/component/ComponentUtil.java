@@ -67,7 +67,7 @@ public final class ComponentUtil {
 
 		if (type == DataComponents.TRIM) {
 			ArmorTrim trim = (ArmorTrim) object;
-			MaterialAdditions additions = getter.getOrDefault(MaterialAdditions.TYPE, MaterialAdditions.empty());
+			MaterialAdditions additions = getter.getOrDefault(MaterialAdditions.TYPE, MaterialAdditions.NONE);
 			TrimMaterial trimMaterial = trim.material().value();
 			additions = additions.and(Trimica.getMaterialRegistry().getIntrinsicAdditions(trimMaterial));
 			if (additions.isEmpty()) return;
@@ -75,7 +75,7 @@ public final class ComponentUtil {
 			setter.set(MaterialAdditions.TYPE, additions);
 		} else if (AdditionalTrims.enableAdditionalTrims && type == AdditionalTrims.TYPE) {
 			AdditionalTrims additionalTrims = (AdditionalTrims) object;
-			MaterialAdditions additions = getter.getOrDefault(MaterialAdditions.TYPE, MaterialAdditions.empty());
+			MaterialAdditions additions = getter.getOrDefault(MaterialAdditions.TYPE, MaterialAdditions.NONE);
 			for (ArmorTrim trim : additionalTrims.trims()) {
 				TrimMaterial trimMaterial = trim.material().value();
 				additions = additions.and(Trimica.getMaterialRegistry().getIntrinsicAdditions(trimMaterial));

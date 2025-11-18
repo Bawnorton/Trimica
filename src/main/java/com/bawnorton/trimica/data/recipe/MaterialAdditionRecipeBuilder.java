@@ -1,6 +1,6 @@
 package com.bawnorton.trimica.data.recipe;
 
-import com.bawnorton.trimica.crafting.MaterialAdditionRecipe;
+import com.bawnorton.trimica.item.crafting.MaterialAdditionRecipe;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.AdvancementRequirements;
 import net.minecraft.advancements.AdvancementRewards;
@@ -17,16 +17,18 @@ import java.util.Map;
 
 public class MaterialAdditionRecipeBuilder {
 	private final RecipeCategory category;
+	private final Ingredient base;
 	private final Ingredient addition;
 	private final Map<String, Criterion<?>> criteria = new LinkedHashMap<>();
 
-	public MaterialAdditionRecipeBuilder(RecipeCategory recipeCategory, Ingredient addition) {
+	public MaterialAdditionRecipeBuilder(RecipeCategory recipeCategory, Ingredient base, Ingredient addition) {
 		this.category = recipeCategory;
+		this.base = base;
 		this.addition = addition;
 	}
 
-	public static MaterialAdditionRecipeBuilder materialAddition(RecipeCategory recipeCategory, Ingredient addition) {
-		return new MaterialAdditionRecipeBuilder(recipeCategory, addition);
+	public static MaterialAdditionRecipeBuilder materialAddition(RecipeCategory recipeCategory, Ingredient base, Ingredient addition) {
+		return new MaterialAdditionRecipeBuilder(recipeCategory, base, addition);
 	}
 
 	public MaterialAdditionRecipeBuilder unlocks(String string, Criterion<?> criterion) {
@@ -41,7 +43,7 @@ public class MaterialAdditionRecipeBuilder {
 				.rewards(AdvancementRewards.Builder.recipe(resourceKey))
 				.requirements(AdvancementRequirements.Strategy.OR);
 		this.criteria.forEach(builder::addCriterion);
-		MaterialAdditionRecipe materialAdditionRecipe = new MaterialAdditionRecipe(this.addition);
+		MaterialAdditionRecipe materialAdditionRecipe = new MaterialAdditionRecipe(this.base, this.addition);
 		recipeOutput.accept(resourceKey, materialAdditionRecipe, builder.build(resourceKey.location().withPrefix("recipes/" + this.category.getFolderName() + "/")));
 	}
 

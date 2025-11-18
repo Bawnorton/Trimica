@@ -27,7 +27,7 @@ public abstract class PatchedDataComponentMapMixin implements DataComponentMap {
 	}
 
 	@Inject(
-			method = "set",
+			method = "set(Lnet/minecraft/core/component/DataComponentType;Ljava/lang/Object;)Ljava/lang/Object;",
 			at = @At("RETURN")
 	)
 	private <T> void setFakeComponents(DataComponentType<T> type, @Nullable T object, CallbackInfoReturnable<T> cir) {

@@ -3,8 +3,9 @@ package com.bawnorton.trimica;
 import com.bawnorton.configurable.Configurable;
 import com.bawnorton.trimica.api.TrimicaApi;
 import com.bawnorton.trimica.client.TrimicaClient;
-import com.bawnorton.trimica.crafting.DefaultCraftingRecipeInterceptor;
-import com.bawnorton.trimica.tags.TrimicaRuntimeTags;
+import com.bawnorton.trimica.data.TrimicaDataFixer;
+import com.bawnorton.trimica.item.crafting.DefaultCraftingRecipeInterceptor;
+import com.bawnorton.trimica.data.tags.TrimicaRuntimeTags;
 import com.bawnorton.trimica.trim.TrimMaterialRuntimeRegistry;
 import net.minecraft.resources.ResourceLocation;
 import org.slf4j.Logger;
@@ -24,6 +25,7 @@ public class Trimica {
 
 	private static final TrimMaterialRuntimeRegistry MATERIAL_REGISTRY = new TrimMaterialRuntimeRegistry();
 	private static final TrimicaRuntimeTags RUNTIME_TAGS = new TrimicaRuntimeTags();
+	private static final TrimicaDataFixer DATA_FIXER = new TrimicaDataFixer();
 
 	public static void initialize() {
 		LOGGER.info("Trimica Initialized");
@@ -31,6 +33,9 @@ public class Trimica {
 	}
 
 	public static void refreshEverything(Boolean ignored, boolean fromSync) {
+		RUNTIME_TAGS.clear();
+		MATERIAL_REGISTRY.clear();
+
 		if (!fromSync) return;
 
 		TrimicaClient.refreshEverything();
@@ -42,6 +47,10 @@ public class Trimica {
 
 	public static TrimicaRuntimeTags getRuntimeTags() {
 		return RUNTIME_TAGS;
+	}
+
+	public static TrimicaDataFixer getDataFixer() {
+		return DATA_FIXER;
 	}
 
 	public static ResourceLocation rl(String path) {

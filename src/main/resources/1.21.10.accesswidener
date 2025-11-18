@@ -10,3 +10,4 @@ accessible  class   net/minecraft/client/resources/model/AtlasManager$PendingSti
 accessible  method  net/minecraft/client/resources/model/AtlasManager$PendingStitch <init>  (Lnet/minecraft/client/resources/model/AtlasManager$AtlasEntry;Ljava/util/concurrent/CompletableFuture;)V
 accessible  class   net/minecraft/client/resources/model/AtlasManager$AtlasEntry
 accessible  method  net/minecraft/client/resources/model/AtlasManager$AtlasEntry <init> (Lnet/minecraft/client/renderer/texture/TextureAtlas;Lnet/minecraft/client/resources/model/AtlasManager$AtlasConfig;)V
+extendable  method  net/minecraft/tags/TagEntry <init> (Lnet/minecraft/resources/ResourceLocation;ZZ)V

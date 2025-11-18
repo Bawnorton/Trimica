@@ -4,22 +4,24 @@ import com.bawnorton.configurable.Configurable;
 import com.bawnorton.trimica.Trimica;
 import com.bawnorton.trimica.item.component.MaterialAdditions;
 import net.minecraft.core.Holder;
+import net.minecraft.core.component.DataComponentGetter;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.equipment.EquipmentAsset;
 import net.minecraft.world.item.equipment.trim.MaterialAssetGroup;
 import net.minecraft.world.item.equipment.trim.TrimMaterial;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public final class TrimMaterialRuntimeRegistry {
-	private final Map<String, MaterialAdditions> intrinsicAdditions = new HashMap<>();
-	private final Map<String, Item> materialProviders = new HashMap<>();
+	public static final Holder<TrimMaterial> UNKNOWN_HOLDER = Holder.direct(new TrimMaterial(MaterialAssetGroup.create("unknown"), Component.literal("unknown")));
+	private final Map<TrimMaterial, MaterialAdditions> intrinsicAdditions = new HashMap<>();
+	private final Map<TrimMaterial, Item> materialProviders = new HashMap<>();
 	private final Map<ResourceLocation, Holder<TrimMaterial>> materials = new HashMap<>();
 
 	/**
@@ -30,13 +32,14 @@ public final class TrimMaterialRuntimeRegistry {
 	@Configurable(onSet = "com.bawnorton.trimica.Trimica#refreshEverything")
 	public static boolean enableTrimEverything = true;
 
-	public Item getMaterialProvider(String suffix) {
-		return materialProviders.computeIfAbsent(suffix, k -> {
-			int trimicaStartIndex = k.indexOf("trimica/");
+	public Item guessMaterialProvider(TrimMaterial material) {
+		return materialProviders.computeIfAbsent(material, k -> {
+			String suffix = Trimica.getMaterialRegistry().getSuffix(material);
+			int trimicaStartIndex = suffix.indexOf("trimica/");
 			if (trimicaStartIndex == -1) {
 				return null;
 			}
-			String materialId = k.substring(trimicaStartIndex + "trimica/".length()).replace("-", ":");
+			String materialId = suffix.substring(trimicaStartIndex + "trimica/".length()).replaceFirst("/", ":");
 			ResourceLocation id = ResourceLocation.tryParse(materialId);
 			if (id == null) {
 				return null;
@@ -45,29 +48,42 @@ public final class TrimMaterialRuntimeRegistry {
 		});
 	}
 
-	public Holder<TrimMaterial> getOrCreate(ItemStack stack) {
-		ResourceLocation itemKey = stack.getOrDefault(DataComponents.ITEM_MODEL, BuiltInRegistries.ITEM.getKey(stack.getItem()));
+	public Holder<TrimMaterial> getOrCreate(DataComponentGetter getter) {
+		ResourceLocation itemKey = getter.get(DataComponents.ITEM_MODEL);
+		if (itemKey == null) return UNKNOWN_HOLDER;
+
 		ResourceLocation materialKey = Trimica.rl("generated/%s/%s".formatted(itemKey.getNamespace(), itemKey.getPath()));
 		return materials.computeIfAbsent(materialKey, k -> {
-			String suffix = "trimica/%s-%s".formatted(itemKey.getNamespace(), itemKey.getPath());
+			String suffix = "trimica/%s/%s".formatted(itemKey.getNamespace(), itemKey.getPath());
 			MaterialAssetGroup id = MaterialAssetGroup.create(suffix);
-			materialProviders.computeIfAbsent(suffix, material -> stack.getItem());
-			return Holder.direct(new TrimMaterial(id, Component.translatable("trimica.material", stack.getHoverName().getString())));
+			return Holder.direct(new TrimMaterial(id, Component.translatable("trimica.material", getter.getOrDefault(DataComponents.ITEM_NAME, Component.literal("Unknown")))));
 		});
+	}
+
+	public String getSuffix(TrimMaterial material, ResourceKey<EquipmentAsset> assetKey) {
+		return assetKey == null ? material.assets().base().suffix() : material.assets().assetId(assetKey).suffix();
+	}
+
+	public String getSuffix(TrimMaterial material) {
+		return material.assets().base().suffix();
 	}
 
 	public void registerMaterialReference(Holder.Reference<TrimMaterial> reference) {
 		materials.put(reference.key().location(), reference);
 	}
 
-	public void setIntrinsicAdditions(TrimMaterial trimMaterial, MaterialAdditions addition) {
-		if (addition == null) {
-			return;
-		}
-		intrinsicAdditions.put(trimMaterial.assets().base().suffix(), addition);
+	public void setIntrinsicAdditions(TrimMaterial material, MaterialAdditions addition) {
+		if (addition == null) return;
+
+		intrinsicAdditions.put(material, addition);
 	}
 
-	public @Nullable MaterialAdditions getIntrinsicAdditions(TrimMaterial trimMaterial) {
-		return intrinsicAdditions.get(trimMaterial.assets().base().suffix());
+	public MaterialAdditions getIntrinsicAdditions(TrimMaterial trimMaterial) {
+		return intrinsicAdditions.getOrDefault(trimMaterial, MaterialAdditions.NONE);
+	}
+
+	public void clear() {
+		materialProviders.clear();
+		materials.clear();
 	}
 }

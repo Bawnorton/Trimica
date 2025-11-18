@@ -25,7 +25,7 @@ public final class AnimatedTrimPalette extends TrimPalette {
 	}
 
 	@Override
-	public AnimatedTrimPalette asAnimated() {
+	public TrimPalette asAnimated() {
 		return this;
 	}
 
@@ -40,7 +40,7 @@ public final class AnimatedTrimPalette extends TrimPalette {
 
 	@Override
 	public int getTooltipColour() {
-		return ARGB.toABGR(interpolatedColours.get(offset));
+		return interpolatedColours.get(offset);
 	}
 
 	public List<Integer> getAnimationColours() {

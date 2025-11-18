@@ -10,6 +10,10 @@ import net.minecraft.world.item.Items;
 public class DefaultPaletteInterceptor implements PaletteInterceptor {
 	@Override
 	public TrimPalette interceptMaterialAdditions(TrimPalette palette, MaterialAdditions additions) {
+		if(palette == TrimPalette.MISSING || palette == TrimPalette.DISABLED || palette == TrimPalette.DEFAULT) {
+			return palette;
+		}
+
 		if (TrimicaToggles.enableItems && TrimicaToggles.enableAnimator) {
 			if (additions.matches(BuiltInRegistries.ITEM.getKey(TrimicaItems.ANIMATOR))) {
 				palette = palette.asAnimated();

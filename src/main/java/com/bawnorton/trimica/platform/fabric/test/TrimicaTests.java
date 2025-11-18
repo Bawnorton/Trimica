@@ -76,12 +76,12 @@ public class TrimicaTests implements FabricClientGameTest {
             ));
             // validate custom vanilla trim
             applyTrimAndValidate(context, serverContext, Items.BOLT_ARMOR_TRIM_SMITHING_TEMPLATE, Items.DIAMOND_CHESTPLATE, Items.END_CRYSTAL, getValidatorFor(
-                    "trimica/%s".formatted(BuiltInRegistries.ITEM.getKey(Items.END_CRYSTAL).toString().replace(":", "-")),
+                    "trimica/%s".formatted(BuiltInRegistries.ITEM.getKey(Items.END_CRYSTAL).toString().replace(":", "/")),
                     ResourceLocation.withDefaultNamespace("bolt")
             ));
             // validate custom shield trim
             applyTrimAndValidate(context, serverContext, Items.WARD_ARMOR_TRIM_SMITHING_TEMPLATE, Items.SHIELD, Items.ENDER_EYE, getValidatorFor(
-                    "trimica/%s".formatted(BuiltInRegistries.ITEM.getKey(Items.ENDER_EYE).toString().replace(":", "-")),
+                    "trimica/%s".formatted(BuiltInRegistries.ITEM.getKey(Items.ENDER_EYE).toString().replace(":", "/")),
                     ResourceLocation.withDefaultNamespace("ward")
             ));
             // validate rainbow trim

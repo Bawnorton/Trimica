@@ -4,7 +4,10 @@ import com.bawnorton.trimica.Trimica;
 import com.bawnorton.trimica.item.component.MaterialAdditions;
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.mojang.datafixers.kinds.App;
+import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
+import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.Holder;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -28,7 +31,8 @@ public abstract class TrimMaterialMixin {
 	public static Codec<Holder<TrimMaterial>> CODEC;
 
 	static {
-		CODEC = CODEC.xmap(Trimica.getRuntimeTags()::convertHolder, Trimica.getRuntimeTags()::convertHolder);
+		CODEC = CODEC.xmap(Trimica.getDataFixer()::fixDynamicTrimMaterialSuffix, Function.identity())
+				.xmap(Trimica.getRuntimeTags()::convertHolder, Trimica.getRuntimeTags()::convertHolder);
 	}
 
 	@ModifyArg(

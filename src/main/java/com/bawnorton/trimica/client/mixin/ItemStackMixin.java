@@ -2,15 +2,20 @@ package com.bawnorton.trimica.client.mixin;
 
 import com.bawnorton.trimica.client.TrimicaClient;
 import com.bawnorton.trimica.client.palette.TrimPalette;
+import com.bawnorton.trimica.data.tags.TrimicaTags;
 import com.bawnorton.trimica.item.component.AdditionalTrims;
 import com.bawnorton.trimica.item.component.MaterialAdditions;
-import com.bawnorton.trimica.tags.TrimicaTags;
+import com.llamalad7.mixinextras.expression.Definition;
+import com.llamalad7.mixinextras.expression.Expression;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import dev.kikugie.fletching_table.annotation.MixinEnvironment;
 import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.component.DataComponentHolder;
+import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
@@ -18,7 +23,6 @@ import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -27,13 +31,9 @@ import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.item.equipment.trim.ArmorTrim;
 import net.minecraft.world.item.equipment.trim.TrimMaterial;
 import net.minecraft.world.item.equipment.trim.TrimPattern;
-import org.jetbrains.annotations.Nullable;
-import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,15 +45,13 @@ public abstract class ItemStackMixin implements DataComponentHolder {
 	@Shadow
 	public abstract boolean is(TagKey<Item> tag);
 
-	@Inject(
+	@Definition(id = "TRIM", field = "Lnet/minecraft/core/component/DataComponents;TRIM:Lnet/minecraft/core/component/DataComponentType;")
+	@Expression("this.?(TRIM, ?, ?, ?, ?)")
+	@WrapOperation(
 			method = "addDetailsToTooltip",
-			at = @At(
-					value = "FIELD",
-					target = "Lnet/minecraft/core/component/DataComponents;TRIM:Lnet/minecraft/core/component/DataComponentType;",
-					opcode = Opcodes.GETSTATIC
-			)
+			at = @At("MIXINEXTRAS:EXPRESSION")
 	)
-	private void addTrimicaAdditionLines(Item.TooltipContext context, TooltipDisplay tooltipDisplay, @Nullable Player player, TooltipFlag tooltipFlag, Consumer<Component> tooltipAdder, CallbackInfo ci) {
+	private <T> void addTrimicaAdditionLines(ItemStack instance, DataComponentType<T> component, Item.TooltipContext context, TooltipDisplay tooltipDisplay, Consumer<Component> tooltipAdder, TooltipFlag tooltipFlag, Operation<Void> original) {
 		if (AdditionalTrims.enableAdditionalTrims) {
 			List<ArmorTrim> trims = AdditionalTrims.getAllTrims(this).reversed();
 			if (!trims.isEmpty()) {
@@ -75,32 +73,31 @@ public abstract class ItemStackMixin implements DataComponentHolder {
 				tooltipAdder.accept(patternComponent);
 				tooltipAdder.accept(materialComponent);
 			}
+		} else {
+			original.call(instance, component, context, tooltipDisplay, tooltipAdder, tooltipFlag);
 		}
 		if (MaterialAdditions.enableMaterialAdditions) {
-			MaterialAdditions additions = get(MaterialAdditions.TYPE);
-			if (additions != null) {
-				List<Component> additionsList = new ArrayList<>();
-				for (ResourceLocation addition : additions.additionKeys()) {
-					Item additionItem = BuiltInRegistries.ITEM.getValue(addition);
-					if (additionItem != Items.AIR) {
-						additionsList.add(CommonComponents.space().append(additionItem.getName()).withStyle(ChatFormatting.AQUA));
-					}
-				}
-				if (!additionsList.isEmpty()) {
-					tooltipAdder.accept(Component.translatable("trimica.material_addition_list").withStyle(ChatFormatting.GRAY));
-					for (Component addition : additionsList) {
-						tooltipAdder.accept(addition);
-					}
+			MaterialAdditions additions = getOrDefault(MaterialAdditions.TYPE, MaterialAdditions.NONE);
+			List<Component> additionsList = new ArrayList<>();
+			for (ResourceLocation addition : additions.additionKeys()) {
+				Item additionItem = BuiltInRegistries.ITEM.getValue(addition);
+				if (additionItem != Items.AIR) {
+					additionsList.add(CommonComponents.space().append(additionItem.getName()).withStyle(ChatFormatting.AQUA));
 				}
 			}
-
+			if (!additionsList.isEmpty()) {
+				tooltipAdder.accept(Component.translatable("trimica.material_addition_list").withStyle(ChatFormatting.GRAY));
+				for (Component addition : additionsList) {
+					tooltipAdder.accept(addition);
+				}
+			}
 		}
 		if (is(TrimicaTags.MATERIAL_ADDITIONS) && MaterialAdditions.enableMaterialAdditions) {
 			//? if >=1.21.10 {
 			if (Minecraft.getInstance().hasShiftDown()) {
-			//?} else {
-			/*if (Screen.hasShiftDown()) {
-			*///?}
+				//?} else {
+				/*if (Screen.hasShiftDown()) {
+				 *///?}
 				tooltipAdder.accept(Component.translatable("trimica.material_addition.shift").withStyle(ChatFormatting.GOLD));
 				tooltipAdder.accept(CommonComponents.space().append(Component.translatable("trimica.material_addition.details.1").withStyle(ChatFormatting.GRAY)));
 				tooltipAdder.accept(CommonComponents.space().append(Component.translatable("trimica.material_addition.details.2").withStyle(ChatFormatting.RED)));

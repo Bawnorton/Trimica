@@ -1,0 +1,31 @@
+{
+  "values": [
+    "#trimica:generated/minecraft/gilded_blackstone",
+    "#trimica:generated/minecraft/gold_block",
+    "#trimica:generated/minecraft/golden_axe",
+    "#trimica:generated/minecraft/golden_shovel",
+    "#trimica:generated/minecraft/raw_gold",
+    "#trimica:generated/minecraft/clock",
+    "#trimica:generated/minecraft/light_weighted_pressure_plate",
+    "#trimica:generated/minecraft/golden_sword",
+    "#trimica:generated/minecraft/golden_chestplate",
+    "#trimica:generated/minecraft/glistering_melon_slice",
+    "#trimica:generated/minecraft/golden_leggings",
+    "#trimica:generated/minecraft/gold_nugget",
+    "#trimica:generated/minecraft/golden_hoe",
+    "#trimica:generated/minecraft/golden_boots",
+    "#trimica:generated/minecraft/bell",
+    "#trimica:generated/minecraft/golden_helmet",
+    "#trimica:generated/minecraft/golden_carrot",
+    "#trimica:generated/minecraft/powered_rail",
+    "#trimica:generated/minecraft/golden_horse_armor",
+    "#trimica:generated/minecraft/deepslate_gold_ore",
+    "#trimica:generated/minecraft/golden_apple",
+    "#trimica:generated/minecraft/nether_gold_ore",
+    "#trimica:generated/minecraft/gold_ingot",
+    "#trimica:generated/minecraft/enchanted_golden_apple",
+    "#trimica:generated/minecraft/gold_ore",
+    "#trimica:generated/minecraft/golden_pickaxe",
+    "#trimica:generated/minecraft/raw_gold_block"
+  ]
+}

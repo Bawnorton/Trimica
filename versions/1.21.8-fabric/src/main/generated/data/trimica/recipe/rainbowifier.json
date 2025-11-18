@@ -2,15 +2,15 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "B": "minecraft:blue_dye",
-    "C": "minecraft:cyan_dye",
-    "G": "minecraft:lime_dye",
-    "I": "minecraft:purple_dye",
-    "O": "minecraft:orange_dye",
-    "R": "minecraft:red_dye",
-    "V": "minecraft:pink_dye",
+    "B": "#c:dyes/blue",
+    "C": "#c:dyes/cyan",
+    "G": "#c:dyes/lime",
+    "I": "#c:dyes/purple",
+    "O": "#c:dyes/orange",
+    "R": "#c:dyes/red",
+    "V": "#c:dyes/pink",
     "X": "trimica:animator",
-    "Y": "minecraft:yellow_dye"
+    "Y": "#c:dyes/yellow"
   },
   "pattern": [
     "ROY",

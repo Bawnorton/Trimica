@@ -1,6 +1,6 @@
 package com.bawnorton.trimica.mixin.crafting;
 
-import com.bawnorton.trimica.crafting.MaterialAdditionRecipe;
+import com.bawnorton.trimica.item.crafting.MaterialAdditionRecipe;
 import com.bawnorton.trimica.item.component.MaterialAdditions;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;

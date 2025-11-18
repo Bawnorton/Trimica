@@ -5,6 +5,7 @@ import com.bawnorton.trimica.client.TrimicaClient;
 import com.bawnorton.trimica.client.model.TrimModelId;
 import com.bawnorton.trimica.item.component.AdditionalTrims;
 import com.bawnorton.trimica.item.component.MaterialAdditions;
+import com.bawnorton.trimica.trim.TrimmedType;
 import com.bawnorton.trimica.util.Lazy;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.resources.model.EquipmentClientInfo;
@@ -60,7 +61,7 @@ public final class RuntimeTrimAtlases {
 	private Lazy<RuntimeTrimAtlas> createEquipmentAtlas(RegistryAccess registryAccess, TrimMaterial material, EquipmentClientInfo.LayerType layerType) {
 		Registry<TrimMaterial> materials = registryAccess.lookup(Registries.TRIM_MATERIAL).orElseThrow();
 		Registry<TrimPattern> patterns = registryAccess.lookup(Registries.TRIM_PATTERN).orElseThrow();
-		String materialId = material.assets().base().suffix();
+		String materialId = Trimica.getMaterialRegistry().getSuffix(material);
 		return new Lazy<>(() -> new RuntimeTrimAtlas(
 				Trimica.rl("%s/%s.png".formatted(materialId, layerType.getSerializedName())),
 				new TrimArmourSpriteFactory(layerType),
@@ -77,24 +78,32 @@ public final class RuntimeTrimAtlases {
 	private Lazy<RuntimeTrimAtlas> createItemAtlas(RegistryAccess registryAccess, TrimMaterial material) {
 		Registry<TrimMaterial> materials = registryAccess.lookup(Registries.TRIM_MATERIAL).orElseThrow();
 		Registry<TrimPattern> patterns = registryAccess.lookup(Registries.TRIM_PATTERN).orElseThrow();
-		String materialId = material.assets().base().suffix();
+		String materialId = Trimica.getMaterialRegistry().getSuffix(material);
 		return new Lazy<>(() -> new RuntimeTrimAtlas(
 				Trimica.rl("%s/item.png".formatted(materialId)),
 				new TrimItemSpriteFactory(),
 				(p) -> new ArmorTrim(materials.wrapAsHolder(material), patterns.wrapAsHolder(p)),
-				atlas -> TrimicaClient.getItemModelFactory().clearModels()
+				atlas -> {
+					TrimicaClient.getItemModelFactory().clearModels();
+					for (Consumer<RuntimeTrimAtlas> listener : modelAtlasModifiedListeners) {
+						listener.accept(atlas);
+					}
+				}
 		));
 	}
 
 	private Lazy<RuntimeTrimAtlas> createShieldAtlas(RegistryAccess registryAccess, TrimMaterial material) {
 		Registry<TrimMaterial> materials = registryAccess.lookup(Registries.TRIM_MATERIAL).orElseThrow();
 		Registry<TrimPattern> patterns = registryAccess.lookup(Registries.TRIM_PATTERN).orElseThrow();
-		String materialId = material.assets().base().suffix();
+		String materialId = Trimica.getMaterialRegistry().getSuffix(material);
 		return new Lazy<>(() -> new RuntimeTrimAtlas(
 				Trimica.rl("%s/shield.png".formatted(materialId)),
 				new TrimShieldSpriteFactory(),
 				(p) -> new ArmorTrim(materials.wrapAsHolder(material), patterns.wrapAsHolder(p)),
 				atlas -> {
+					for (Consumer<RuntimeTrimAtlas> listener : modelAtlasModifiedListeners) {
+						listener.accept(atlas);
+					}
 				}
 		));
 	}
@@ -118,13 +127,11 @@ public final class RuntimeTrimAtlases {
 		List<ArmorTrim> trims = AdditionalTrims.getAllTrims(getter);
 		for (ArmorTrim trim : trims) {
 
-			TrimModelId trimModelId = TrimModelId.fromTrim("shield", trim, null);
+			TrimModelId trimModelId = TrimModelId.fromTrim(TrimmedType.SHIELD, trim, null);
 			ResourceLocation overlayLocation = trimModelId.asSingle();
 			if (MaterialAdditions.enableMaterialAdditions) {
-				MaterialAdditions addition = getter.get(MaterialAdditions.TYPE);
-				if (addition != null) {
-					overlayLocation = addition.apply(overlayLocation);
-				}
+				MaterialAdditions addition = getter.getOrDefault(MaterialAdditions.TYPE, MaterialAdditions.NONE);
+				overlayLocation = addition.apply(overlayLocation);
 			}
 			sprites.add(getShieldAtlas(level, trim.material().value()).getSprite(getter, trim.pattern().value(), overlayLocation));
 		}
@@ -141,6 +148,9 @@ public final class RuntimeTrimAtlases {
 		);
 		itemAtlases.forEach((pattern, lazy) -> lazy.ifPresent(RuntimeTrimAtlas::clear));
 		shieldAtlases.forEach((pattern, lazy) -> lazy.ifPresent(RuntimeTrimAtlas::clear));
+		equipmentAtlases.clear();
+		itemAtlases.clear();
+		shieldAtlases.clear();
 	}
 
 	public interface TrimFactory {
