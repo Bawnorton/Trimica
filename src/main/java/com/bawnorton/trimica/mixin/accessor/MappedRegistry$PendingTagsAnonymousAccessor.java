@@ -10,6 +10,10 @@ import java.util.Map;
 
 @Mixin(targets = "net/minecraft/core/MappedRegistry$3")
 public interface MappedRegistry$PendingTagsAnonymousAccessor {
+	//? if fabric {
 	@Accessor("val$pendingContents")
+	//?} else {
+	/*@Accessor("val$map")
+	*///?}
 	<T> Map<TagKey<T>, List<Holder<T>>> trimica$val$pendingContents();
 }

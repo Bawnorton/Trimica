@@ -61,8 +61,6 @@ dependencies {
     }
   }
 
-  JvmVendorSpec.JETBRAINS
-
   deps("sodium") {
     compileOnly("maven.modrinth:sodium:$it")
   }
@@ -129,7 +127,7 @@ neoForge {
       serverData()
       programArguments.addAll(
         "--mod", "${mod("id")}",
-        "--output", project.file("src/main/generated").toString()
+        "--output", project.file("src/main/generated/server").toString()
       )
     }
 
@@ -138,7 +136,7 @@ neoForge {
       clientData()
       programArguments.addAll(
         "--mod", "${mod("id")}",
-        "--output", project.file("src/main/generated").toString()
+        "--output", project.file("src/main/generated/client").toString()
       )
     }
 
@@ -166,7 +164,7 @@ fletchingTable {
 }
 
 sourceSets.main {
-  resources.srcDir(project.file("src/main/generated"))
+  resources.srcDirs(project.file("src/main/generated/server"), project.file("src/main/generated/client"))
   resources.exclude(".cache")
 }
 

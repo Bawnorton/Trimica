@@ -1,3 +1,7 @@
+# 1.4.1
+
+- Fix crash on neo related to accessing unloaded tags
+
 # 1.4.0
 
 - Use `trimica:all_trimmables` tag to determine when an item can be trimmed in the default crafting
