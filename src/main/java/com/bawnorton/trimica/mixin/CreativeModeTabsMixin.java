@@ -4,6 +4,7 @@ import com.bawnorton.trimica.TrimicaToggles;
 import com.bawnorton.trimica.item.TrimicaItems;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.CreativeModeTabs;
+import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -19,7 +20,8 @@ public abstract class CreativeModeTabsMixin {
 			*///?}
 			at = @At(
 					value = "FIELD",
-					target = "Lnet/minecraft/world/item/Items;SENTRY_ARMOR_TRIM_SMITHING_TEMPLATE:Lnet/minecraft/world/item/Item;"
+					target = "Lnet/minecraft/world/item/Items;SENTRY_ARMOR_TRIM_SMITHING_TEMPLATE:Lnet/minecraft/world/item/Item;",
+					opcode = Opcodes.GETSTATIC
 			)
 	)
 	private static void addTrimicaItems(CreativeModeTab.ItemDisplayParameters itemDisplayParameters, CreativeModeTab.Output output, CallbackInfo ci) {

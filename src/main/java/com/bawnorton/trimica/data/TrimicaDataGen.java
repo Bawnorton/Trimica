@@ -45,7 +45,7 @@ public final class TrimicaDataGen implements DataGeneratorEntrypoint {
 						*///?}
 				)
 		);
-		mainPack.addProvider(TrimicaRegistriesDataProvider::new);
+		mainPack.addProvider(FabricTrimicaRegistriesDataProvider::new);
 		mainPack.addProvider(FabricTrimicaItemTagProvider::new);
 		mainPack.addProvider(FabricTrimicaTrimMaterialTagProvider::new);
 		mainPack.addProvider(FabricTrimicaRecipeProvider::new);
@@ -77,6 +77,7 @@ public final class TrimicaDataGen {
 		DataGenerator gen = event.getGenerator();
 		CompletableFuture<HolderLookup.Provider> lookupProvider = event.getLookupProvider();
 		PackOutput mainPack = gen.getPackOutput();
+		gen.addProvider(true, new NeoTrimicaRegistriesDataProvider(mainPack, lookupProvider));
 		gen.addProvider(true, new NeoTrimicaAdvancementsProvider(mainPack, lookupProvider));
 		gen.addProvider(true, new NeoTrimicaRecipeProvider.Runner(mainPack, lookupProvider));
 		gen.addProvider(true, new NeoTrimicaItemTagProvider(mainPack, lookupProvider));

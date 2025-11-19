@@ -1,3 +1,7 @@
+# 1.4.2
+
+- Fix missing trim data file in neo distribution
+
 # 1.4.1
 
 - Fix crash on neo related to accessing unloaded tags

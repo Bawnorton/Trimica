@@ -1,0 +1,10 @@
+{
+  "asset_name": "rainbow",
+  "description": {
+    "color": "white",
+    "translate": "trim_material.trimica.rainbow"
+  },
+  "trimica$additions": [
+    "trimica:animator"
+  ]
+}

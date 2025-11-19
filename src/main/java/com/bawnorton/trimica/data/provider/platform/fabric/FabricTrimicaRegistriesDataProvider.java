@@ -1,4 +1,5 @@
-package com.bawnorton.trimica.data.provider;
+//? if fabric {
+package com.bawnorton.trimica.data.provider.platform.fabric;
 
 import com.bawnorton.trimica.item.trim.TrimicaTrimMaterials;
 import net.minecraft.core.HolderLookup;
@@ -10,11 +11,11 @@ import net.minecraft.data.registries.RegistryPatchGenerator;
 
 import java.util.concurrent.CompletableFuture;
 
-public class TrimicaRegistriesDataProvider extends RegistriesDatapackGenerator {
+public class FabricTrimicaRegistriesDataProvider extends RegistriesDatapackGenerator {
 	public static final RegistrySetBuilder BUILDER = new RegistrySetBuilder()
 			.add(Registries.TRIM_MATERIAL, TrimicaTrimMaterials::bootstrap);
 
-	public TrimicaRegistriesDataProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> registries) {
+	public FabricTrimicaRegistriesDataProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> registries) {
 		super(output, addRegistries(registries));
 	}
 
@@ -23,3 +24,4 @@ public class TrimicaRegistriesDataProvider extends RegistriesDatapackGenerator {
 				.thenApply(RegistrySetBuilder.PatchedRegistries::patches);
 	}
 }
+//?}

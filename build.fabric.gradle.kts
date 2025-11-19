@@ -1,7 +1,6 @@
 @file:Suppress("UnstableApiUsage")
 
 import dev.kikugie.fletching_table.annotation.MixinEnvironment
-import org.gradle.kotlin.dsl.main
 import org.gradle.kotlin.dsl.remapJar
 import trimica.utils.*
 
