@@ -1,13 +1,15 @@
-package com.bawnorton.trimica.api.impl;
+package com.bawnorton.trimica.api.client.impl;
 
-import com.bawnorton.trimica.api.*;
+import com.bawnorton.trimica.api.BaseTextureInterceptor;
+import com.bawnorton.trimica.api.PaletteInterceptor;
+import com.bawnorton.trimica.api.client.TrimicaClientApi;
+import com.bawnorton.trimica.api.client.TrimicaRenderer;
 import com.bawnorton.trimica.client.palette.TrimPalette;
 import com.bawnorton.trimica.item.component.MaterialAdditions;
 import com.bawnorton.trimica.util.SortableEndpointHolder;
 import net.minecraft.core.component.DataComponentGetter;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.equipment.trim.ArmorTrim;
 import net.minecraft.world.item.equipment.trim.TrimMaterial;
 import org.jetbrains.annotations.ApiStatus;
@@ -15,21 +17,21 @@ import org.jetbrains.annotations.ApiStatus;
 import java.util.PriorityQueue;
 import java.util.Queue;
 
-@SuppressWarnings("unused")
 @ApiStatus.Internal
-public final class TrimicaApiImpl implements TrimicaApi {
-	public static final TrimicaApiImpl INSTANCE = new TrimicaApiImpl();
+public final class TrimicaClientApiImpl implements TrimicaClientApi {
+	public static final TrimicaClientApiImpl INSTANCE = new TrimicaClientApiImpl();
+
+	private final TrimicaRenderer renderer = new TrimicaRendererImpl();
 
 	private final Queue<SortableEndpointHolder<BaseTextureInterceptor>> baseTextureInterceptors = new PriorityQueue<>();
-	private final Queue<SortableEndpointHolder<CraftingRecipeInterceptor>> craftingRecipeInterceptors = new PriorityQueue<>();
 	private final Queue<SortableEndpointHolder<PaletteInterceptor>> paletteInterceptors = new PriorityQueue<>();
+
+	public TrimicaRenderer getRenderer() {
+		return renderer;
+	}
 
 	public void registerBaseTextureInterceptor(int priority, BaseTextureInterceptor baseTextureInterceptor) {
 		baseTextureInterceptors.add(new SortableEndpointHolder<>(baseTextureInterceptor, priority));
-	}
-
-	public void registerCraftingRecipeInterceptor(int priority, CraftingRecipeInterceptor craftingRecipeInterceptor) {
-		craftingRecipeInterceptors.add(new SortableEndpointHolder<>(craftingRecipeInterceptor, priority));
 	}
 
 	public void registerPaletteInterceptor(int priority, PaletteInterceptor paletteInterceptor) {
@@ -57,33 +59,10 @@ public final class TrimicaApiImpl implements TrimicaApi {
 		return expectedBaseTexture;
 	}
 
-	public Ingredient applyCraftingRecipeInterceptorsForAddition(Ingredient current) {
-		for (SortableEndpointHolder<CraftingRecipeInterceptor> endpointHolder : craftingRecipeInterceptors) {
-			current = endpointHolder.endpoint().getAdditionIngredient(current);
-		}
-		return current;
-	}
-
-	public Ingredient applyCraftingRecipeInterceptorsForBase(Ingredient current) {
-		for (SortableEndpointHolder<CraftingRecipeInterceptor> endpointHolder : craftingRecipeInterceptors) {
-			current = endpointHolder.endpoint().getBaseIngredient(current);
-		}
-		return current;
-	}
-
-	@Deprecated(since = "1.4.0")
-	public TrimPalette applyPaletteInterceptorsForGeneration(TrimPalette generated, TrimMaterial material) {
+	public TrimPalette applyPaletteInterceptorsForGeneration(TrimPalette generated, TrimMaterial material, MaterialAdditions materialAdditions) {
 		for (SortableEndpointHolder<PaletteInterceptor> endpointHolder : paletteInterceptors) {
-			generated = endpointHolder.endpoint().interceptGenerated(generated, material);
+			generated = endpointHolder.endpoint().interceptPaletteGeneration(generated, material, materialAdditions);
 		}
 		return generated;
-	}
-
-	@Deprecated(since = "1.4.0")
-	public TrimPalette applyPaletteInterceptorsForMaterialAdditions(TrimPalette palette, MaterialAdditions additions) {
-		for (SortableEndpointHolder<PaletteInterceptor> endpointHolder : paletteInterceptors) {
-			palette = endpointHolder.endpoint().interceptMaterialAdditions(palette, additions);
-		}
-		return palette;
 	}
 }

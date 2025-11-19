@@ -21,9 +21,9 @@ import java.util.List;
 //? if >=1.21.10
 import net.minecraft.client.renderer.SubmitNodeCollector;
 
-@MixinEnvironment(value = "client")
+@MixinEnvironment("client")
 @Mixin(ItemStackRenderState.LayerRenderState.class)
-public abstract class ItemStackRenderState$LayerRenderStateMixin implements ItemStackRenderState$LayerRenderStateExtender {
+abstract class ItemStackRenderState$LayerRenderStateMixin implements ItemStackRenderState$LayerRenderStateExtender {
 	@Unique
 	private boolean trimica$isTrimOverlayLayer = false;
 

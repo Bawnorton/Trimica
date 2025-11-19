@@ -21,7 +21,7 @@ public interface TrimicaItemTagProvider {
 		addToTag(TrimicaTags.SMITHING_BASE_BLACKLIST, List.of(ItemTags.SKULLS, ItemTags.WOOL_CARPETS, ConventionalTags.EMPTY_BUCKETS));
 		addToTag(TrimicaTags.SMITHING_BASE_BLACKLIST, Items.CARVED_PUMPKIN);
 		addToTag(TrimicaTags.SMITHING_ADDITION_BLACKLIST, Items.AIR);
-		addToTag(TrimicaTags.ALL_TRIMMABLES, ItemTags.TRIMMABLE_ARMOR);
+		addToTag(TrimicaTags.ALL_TRIMMABLES, List.of(ItemTags.TRIMMABLE_ARMOR, ConventionalTags.SHIELD_TOOLS));
 	}
 
 	TagAppender<Item, Item> tag(TagKey<Item> tagKey);

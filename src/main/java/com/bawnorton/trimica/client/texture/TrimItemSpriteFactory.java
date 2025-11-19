@@ -1,6 +1,7 @@
 package com.bawnorton.trimica.client.texture;
 
 import com.bawnorton.trimica.Trimica;
+import com.bawnorton.trimica.api.client.impl.TrimicaClientApiImpl;
 import com.bawnorton.trimica.api.impl.TrimicaApiImpl;
 import com.bawnorton.trimica.client.TrimicaClient;
 import com.bawnorton.trimica.client.palette.TrimPalette;
@@ -41,7 +42,9 @@ public class TrimItemSpriteFactory extends AbstractTrimSpriteFactory {
 				.getOrGeneratePalette(material, assetResourceKey, componentGetter);
 		ResourceLocation basePatternTexture;
 		if (Trimica.enablePerPatternItemTextures) {
+			// TrimicaApiImpl method deprecated for removal in 2.0.0
 			basePatternTexture = TrimicaApiImpl.INSTANCE.applyBaseTextureInterceptorsForItem(getPatternBasedTrimOverlay(trimmedType, trim), stack, trim);
+			basePatternTexture = TrimicaClientApiImpl.INSTANCE.applyBaseTextureInterceptorsForItem(basePatternTexture, stack, trim);
 		} else {
 			basePatternTexture = getDefaultTrimOverlay(trimmedType);
 		}

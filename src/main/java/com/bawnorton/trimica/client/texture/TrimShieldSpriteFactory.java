@@ -1,6 +1,7 @@
 package com.bawnorton.trimica.client.texture;
 
 import com.bawnorton.trimica.Trimica;
+import com.bawnorton.trimica.api.client.impl.TrimicaClientApiImpl;
 import com.bawnorton.trimica.api.impl.TrimicaApiImpl;
 import com.bawnorton.trimica.client.TrimicaClient;
 import com.bawnorton.trimica.client.palette.TrimPalette;
@@ -29,7 +30,9 @@ public class TrimShieldSpriteFactory extends AbstractTrimSpriteFactory {
 		TrimMaterial material = trim.material().value();
 		TrimPalette palette = TrimicaClient.getPalettes().getOrGeneratePalette(material, null, componentGetter);
 		ResourceLocation basePatternTexture = getPatternBasedTrimOverlay(trim);
+		// TrimicaApiImpl method deprecated for removal in 2.0.0
 		basePatternTexture = TrimicaApiImpl.INSTANCE.applyBaseTextureInterceptorsForShield(basePatternTexture, componentGetter, trim);
+		basePatternTexture = TrimicaClientApiImpl.INSTANCE.applyBaseTextureInterceptorsForShield(basePatternTexture, componentGetter, trim);
 		return new TrimSpriteMetadata(trim, palette, basePatternTexture, TrimmedType.SHIELD);
 	}
 

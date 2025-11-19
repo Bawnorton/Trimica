@@ -25,6 +25,10 @@ All in one mod for your item trimming needs.
 ## Resource API
 Trimica provides a resource API for modders / modpack makers to provide additional textures or modify existing ones.
 
+### Allowing Custom Items to be Trimmed
+Simply add your item to the `trimica:all_trimmables` tag to allow it to be trimmed, or if the determination is
+non-trivial, implement the [CraftingRecipeInterceptor](#endpoints) API.
+
 ### Providing Overlay Texutres
 For overlay textures the lightness of a pixel will be used to determine the colour index on the palette. 
 For example if there are 8 distinct colours in the overlay texture, the lightest pixel will be the
@@ -121,6 +125,8 @@ See each of the endpoints below for more information on how to use them.
   - How Trimica determines the palette for a given item. This can be used in conjuction with 
   [Custom Material Additions](#trim-material-addditions) to provide a custom palette for a given
   addition.
+- [TrimRenderer](src/main/java/com/bawnorton/trimica/api/client/TrimicaRenderer.java)
+  - Allows you to use Trimica's trim renderer for shields within your own modded shield renderers.
 
 ## Developing Trimica
 
@@ -135,7 +141,7 @@ Once cloned you can set the active project version to the one you want to work o
 
 #### Running
 To run the mod, set the project version to the one you want to run and run the matchting generated run config.
-For example for `1.21.5-fabric` you would run `Fabric Client 1.21.5`. If you attempt to run a different version,
+For example for `1.21.10-fabric` you would run `Fabric Client 1.21.10`. If you attempt to run a different version,
 it may fail to load the mod and crash.
 
 #### Testing

@@ -1,6 +1,7 @@
 package com.bawnorton.trimica.client.palette;
 
 import com.bawnorton.trimica.Trimica;
+import com.bawnorton.trimica.api.client.impl.TrimicaClientApiImpl;
 import com.bawnorton.trimica.api.impl.TrimicaApiImpl;
 import com.bawnorton.trimica.item.component.MaterialAdditions;
 import net.minecraft.core.component.DataComponentGetter;
@@ -17,6 +18,7 @@ public final class TrimPalettes {
 	private final ConcurrentMap<ResourceLocation, TrimPalette> cache = new ConcurrentHashMap<>();
 	private final TrimPaletteGenerator generator = new TrimPaletteGenerator();
 
+	@SuppressWarnings("deprecation")
 	public TrimPalette getOrGeneratePalette(TrimMaterial material, @Nullable ResourceKey<EquipmentAsset> assetKey, @Nullable DataComponentGetter componentGetter) {
 		ResourceLocation key = Trimica.rl(Trimica.getMaterialRegistry().getSuffix(material, assetKey));
 		MaterialAdditions additions;
@@ -29,8 +31,10 @@ public final class TrimPalettes {
 		}
 		return cache.computeIfAbsent(key, k -> {
 			TrimPalette palette = generator.generatePalette(material, assetKey);
+			// TrimicaApiImpl method deprecated for removal in 2.0.0
 			palette = TrimicaApiImpl.INSTANCE.applyPaletteInterceptorsForMaterialAdditions(palette, additions);
-			return TrimicaApiImpl.INSTANCE.applyPaletteInterceptorsForGeneration(palette, material);
+			palette = TrimicaApiImpl.INSTANCE.applyPaletteInterceptorsForGeneration(palette, material);
+			return TrimicaClientApiImpl.INSTANCE.applyPaletteInterceptorsForGeneration(palette, material, additions);
 		});
 	}
 

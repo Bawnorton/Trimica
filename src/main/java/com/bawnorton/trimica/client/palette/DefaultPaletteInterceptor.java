@@ -6,10 +6,11 @@ import com.bawnorton.trimica.item.TrimicaItems;
 import com.bawnorton.trimica.item.component.MaterialAdditions;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.equipment.trim.TrimMaterial;
 
 public class DefaultPaletteInterceptor implements PaletteInterceptor {
 	@Override
-	public TrimPalette interceptMaterialAdditions(TrimPalette palette, MaterialAdditions additions) {
+	public TrimPalette interceptPaletteGeneration(TrimPalette palette, TrimMaterial material, MaterialAdditions additions) {
 		if(palette == TrimPalette.MISSING || palette == TrimPalette.DISABLED || palette == TrimPalette.DEFAULT) {
 			return palette;
 		}

@@ -30,15 +30,17 @@ public class DefaultCraftingRecipeInterceptor implements CraftingRecipeIntercept
 	}
 
 	private boolean allowAsBase(Item item) {
+		HolderSet<Item> blacklisted = getTag(TrimicaTags.SMITHING_BASE_BLACKLIST);
+		if (blacklisted.contains(item.builtInRegistryHolder())) return false;
+
+		HolderSet<Item> allTrimmables = getTag(TrimicaTags.ALL_TRIMMABLES);
+		if (allTrimmables.contains(item.builtInRegistryHolder())) return true;
+		if (!Platform.isModLoaded("elytratrims") && item == Items.ELYTRA) return false;
+
 		DataComponentMap components = item.components();
 		Equippable equippable = components.get(DataComponents.EQUIPPABLE);
 		if (equippable == null) return false;
 
-		HolderSet<Item> blacklisted = getTag(TrimicaTags.SMITHING_BASE_BLACKLIST);
-		if (blacklisted.contains(item.builtInRegistryHolder())) return false;
-		if (!Platform.isModLoaded("elytratrims") && item == Items.ELYTRA) return false;
-
-		EquipmentSlot slot = equippable.slot();
-		return slot == EquipmentSlot.HEAD || slot == EquipmentSlot.CHEST || slot == EquipmentSlot.LEGS || slot == EquipmentSlot.FEET || item == Items.SHIELD;
+		return equippable.slot().getType() == EquipmentSlot.Type.HUMANOID_ARMOR;
 	}
 }

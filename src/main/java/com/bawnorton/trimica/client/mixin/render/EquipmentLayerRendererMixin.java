@@ -56,9 +56,9 @@ import java.util.function.Function;
 //? if >=1.21.10
 import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
 
-@MixinEnvironment(value = "client")
+@MixinEnvironment("client")
 @Mixin(EquipmentLayerRenderer.class)
-public abstract class EquipmentLayerRendererMixin {
+abstract class EquipmentLayerRendererMixin {
 	@Shadow
 	@Final
 	private Function<EquipmentLayerRenderer.TrimSpriteKey, TextureAtlasSprite> trimSpriteLookup;

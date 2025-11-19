@@ -1,3 +1,12 @@
+# 1.4.0
+
+- Use `trimica:all_trimmables` tag to determine when an item can be trimmed in the default crafting
+- Migrate shield trim rendering to api to ease compat with mods that add custom shields
+- Migrate client-side api endpoints to new client api
+  - Old endpoints are now deprecated but will still work until 2.0.0
+- Consolidate PalleteInterceptor methods into a single method that provides the material and additions
+  - Old methods are now deprecated but will still work until 2.0.0
+
 # 1.3.2
 
 - Whoops I broke the material addition recipe (its fixed now)
