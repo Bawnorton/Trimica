@@ -2,7 +2,7 @@ package com.bawnorton.trimica.client.mixin.model;
 
 import com.bawnorton.trimica.Trimica;
 import com.bawnorton.trimica.client.TrimicaClient;
-import com.bawnorton.trimica.client.extend.ItemStackRenderState$LayerRenderStateExtender;
+import com.bawnorton.trimica.client.extend.ItemStackRenderState$LayerRenderStateExtension;
 import com.bawnorton.trimica.client.mixin.accessor.BlockModelWrapperAccessor;
 import com.bawnorton.trimica.client.model.TrimItemModelFactory;
 import com.bawnorton.trimica.client.model.TrimmedItemModelWrapper;
@@ -23,7 +23,6 @@ import net.minecraft.client.renderer.item.ModelRenderProperties;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.profiling.Profiler;
 import net.minecraft.util.profiling.ProfilerFiller;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.equipment.trim.ArmorTrim;
@@ -79,8 +78,9 @@ abstract class BlockModelWrapperMixin {
 			callOriginal.run();
 			return;
 		}
-		ProfilerFiller profiler = Profiler.get();
 
+		ProfilerFiller profiler = Profiler.get();
+		profiler.push("trimica:overlay");
 		boolean isEmissive = false;
 		boolean isAnimated = false;
 		List<TrimmedItemModelWrapper> trimModelWrappers = new ArrayList<>();
@@ -150,7 +150,7 @@ abstract class BlockModelWrapperMixin {
 			callOriginal.run();
 
 			ItemStackRenderState.LayerRenderState overlayRenderState = renderState.newLayer();
-			ItemStackRenderState$LayerRenderStateExtender extender = (ItemStackRenderState$LayerRenderStateExtender) overlayRenderState;
+			ItemStackRenderState$LayerRenderStateExtension extender = (ItemStackRenderState$LayerRenderStateExtension) overlayRenderState;
 			extender.trimica$markAsTrimOverlay();
 			ResourceLocation modelLocation = newModel.location();
 			renderState.appendModelIdentityElement(modelLocation);

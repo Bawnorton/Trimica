@@ -17,9 +17,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.List;
 
-@MixinEnvironment(value = "client")
+@MixinEnvironment("client")
 @Mixin(SpecialModelWrapper.class)
-public abstract class SpecialModelWrapperMixin {
+abstract class SpecialModelWrapperMixin {
 	@Inject(
 			method = "update",
 			at = @At(

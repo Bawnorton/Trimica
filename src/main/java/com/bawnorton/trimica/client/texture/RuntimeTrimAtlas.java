@@ -59,25 +59,27 @@ public final class RuntimeTrimAtlas extends TextureAtlas {
 	}
 
 	public @NotNull DynamicTrimTextureAtlasSprite getSprite(DataComponentGetter componentGetter, TrimPattern pattern, ResourceLocation texture) {
+		Trimica.LOGGER.info("Getting sprite for {}", texture);
 		Map<ResourceLocation, TextureAtlasSprite> texturesByName = asAccessor().trimica$texturesByName();
 		TextureAtlasSprite sprite = texturesByName.get(texture);
-		if (sprite == null) {
-			TrimTextureAtlasSprite trimTextureAtlasSprite = createSprite(componentGetter, pattern, texture);
-			sprite = trimTextureAtlasSprite.sprite();
-			TrimPalette palette = trimTextureAtlasSprite.palette();
-			palettes.put(texture, palette);
-		}
+		if (sprite == null) sprite = createSprite(componentGetter, pattern, texture);
+
+		float width = sprite.getU1() - sprite.getU0();
+		float height = sprite.getV1() - sprite.getV0();
+		Trimica.LOGGER.info("Sprite Dimensions: {}wx{}h", width * asAccessor().trimica$width(), height * asAccessor().trimica$height());
+		Trimica.LOGGER.info("Sprite UV: x={}, y={}", sprite.getU0() * asAccessor().trimica$width(), sprite.getV0() * asAccessor().trimica$height());
 		return new DynamicTrimTextureAtlasSprite(sprite, renderType, palettes.get(texture));
 	}
 
-	private TrimTextureAtlasSprite createSprite(DataComponentGetter componentGetter, TrimPattern pattern, ResourceLocation texture) {
+	private DynamicTrimTextureAtlasSprite createSprite(DataComponentGetter componentGetter, TrimPattern pattern, ResourceLocation texture) {
 		TrimSpriteContents sprite = spriteFactory.create(texture, trimFactory.create(pattern), componentGetter);
 		dynamicSprites.add(sprite.spriteContents());
 		stitchAndUpload();
 		onModified.accept(this);
 		Minecraft client = Minecraft.getInstance();
 		client.getTextureManager().register(location(), this);
-		return new TrimTextureAtlasSprite(asAccessor().trimica$texturesByName().get(texture), sprite.palette());
+		palettes.put(texture, sprite.palette());
+		return new DynamicTrimTextureAtlasSprite(asAccessor().trimica$texturesByName().get(texture), renderType, sprite.palette());
 	}
 
 	//? if >=1.21.10 {
@@ -150,8 +152,5 @@ public final class RuntimeTrimAtlas extends TextureAtlas {
 		dynamicSprites.clear();
 		dynamicSprites.add(createMissing());
 		clearTextureData();
-	}
-
-	private record TrimTextureAtlasSprite(TextureAtlasSprite sprite, TrimPalette palette) {
 	}
 }

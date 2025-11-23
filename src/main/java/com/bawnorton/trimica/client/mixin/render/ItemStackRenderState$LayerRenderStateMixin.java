@@ -1,12 +1,12 @@
 package com.bawnorton.trimica.client.mixin.render;
 
-import com.bawnorton.trimica.client.extend.ItemStackRenderState$LayerRenderStateExtender;
+import com.bawnorton.trimica.client.extend.ItemStackRenderState$LayerRenderStateExtension;
+import com.bawnorton.trimica.compat.Compat;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.mojang.blaze3d.vertex.PoseStack;
 import dev.kikugie.fletching_table.annotation.MixinEnvironment;
 import net.minecraft.client.renderer.LightTexture;
-import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.item.ItemStackRenderState;
@@ -23,7 +23,7 @@ import net.minecraft.client.renderer.SubmitNodeCollector;
 
 @MixinEnvironment("client")
 @Mixin(ItemStackRenderState.LayerRenderState.class)
-abstract class ItemStackRenderState$LayerRenderStateMixin implements ItemStackRenderState$LayerRenderStateExtender {
+abstract class ItemStackRenderState$LayerRenderStateMixin implements ItemStackRenderState$LayerRenderStateExtension {
 	@Unique
 	private boolean trimica$isTrimOverlayLayer = false;
 
@@ -45,13 +45,21 @@ abstract class ItemStackRenderState$LayerRenderStateMixin implements ItemStackRe
 			Matrix4f pose = lastPose.pose();
 			Vector3f translation = pose.getTranslation(new Vector3f());
 			pose.setTranslation(0, 0, 0);
-			float margin = 0.0015f;
-			float zMargin = 0.01f;
-			float scale = 1 + margin;
-			float zScale = 1 + zMargin;
-			pose.scale(scale, scale, zScale);
-			pose.setTranslation(translation);
-			pose.translate(-margin / 2, -margin / 2, -zMargin / 2);
+			Compat.ifSodiumPresentElse(() -> {
+				float margin = 0.0015f;
+				float zMargin = 0.01f;
+				float scale = 1 + margin;
+				float zScale = 1 + zMargin;
+				pose.scale(scale, scale, zScale);
+				pose.setTranslation(translation);
+				pose.translate(-margin / 2, -margin / 2, -zMargin / 2);
+			}, () -> {
+				float zMargin = 0.01f;
+				float zScale = 1 + zMargin;
+				pose.scale(0.942f, 0.938f, zScale);
+				pose.setTranslation(translation);
+				pose.translate(0.031f, 0.0327f, -zMargin / 2);
+			});
 			int light = trimica$emissive ? LightTexture.FULL_BRIGHT : packedLight;
 			original.call(instance, poseStack, itemDisplayContext, light, packedOverlay, outlineColor, tintLayers, list, renderType, foilType);
 			poseStack.popPose();

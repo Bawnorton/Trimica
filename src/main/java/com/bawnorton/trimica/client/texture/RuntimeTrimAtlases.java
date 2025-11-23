@@ -31,6 +31,8 @@ public final class RuntimeTrimAtlases {
 
 	private final List<Consumer<RuntimeTrimAtlas>> modelAtlasModifiedListeners = new ArrayList<>();
 
+	private boolean shouldResetUVs = false;
+
 	public void init(RegistryAccess registryAccess) {
 		equipmentAtlases.values().forEach(Map::clear);
 		equipmentAtlases.clear();
@@ -141,6 +143,15 @@ public final class RuntimeTrimAtlases {
 	public void addModelAtlasModifiedListener(Consumer<RuntimeTrimAtlas> listener) {
 		modelAtlasModifiedListeners.add(listener);
 	}
+
+	public boolean shouldResetUVs() {
+		return shouldResetUVs;
+	}
+
+	public void setShouldResetUVs(boolean shouldResetUVs) {
+		this.shouldResetUVs = shouldResetUVs;
+	}
+
 
 	public void clear() {
 		equipmentAtlases.forEach((pattern, lazyMap) ->

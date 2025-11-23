@@ -12,6 +12,14 @@ public class Compat {
 		}
 	}
 
+	public static void ifSodiumPresentElse(Runnable ifPresent, Runnable ifAbsent) {
+		if (Platform.isModLoaded("sodium")) {
+			ifPresent.run();
+		} else {
+			ifAbsent.run();
+		}
+	}
+
 	public static void ifElytraTrimsPresent(Runnable runnable) {
 		if (Platform.isModLoaded("elytratrims")) {
 			runnable.run();

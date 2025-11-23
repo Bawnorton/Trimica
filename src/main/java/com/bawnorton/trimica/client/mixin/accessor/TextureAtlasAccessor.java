@@ -31,4 +31,10 @@ public interface TextureAtlasAccessor {
 
 	@Accessor("animatedTextures")
 	void trimica$animatedTextures(List<TextureAtlasSprite.Ticker> animatedTextures);
+
+	@Accessor("height")
+	int trimica$height();
+
+	@Accessor("width")
+	int trimica$width();
 }

@@ -1,5 +1,7 @@
 package com.bawnorton.trimica.client.mixin;
 
+import com.bawnorton.trimica.client.TrimicaClient;
+import com.bawnorton.trimica.client.texture.RuntimeTrimAtlas;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import dev.kikugie.fletching_table.annotation.MixinEnvironment;
@@ -12,9 +14,9 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 
-@MixinEnvironment(value = "client")
+@MixinEnvironment("client")
 @Mixin(TextureAtlas.class)
-public abstract class TextureAtlasMixin {
+abstract class TextureAtlasMixin {
 	@Shadow
 	@Final
 	private ResourceLocation location;
@@ -44,6 +46,7 @@ public abstract class TextureAtlasMixin {
 			trimica$lastHeight = height;
 			trimica$lastWidth = width;
 			instance.info("Increased: {}x{}x{} {}-atlas", width, height, mipLevel, location);
+			TrimicaClient.getRuntimeAtlases().setShouldResetUVs(true);
 		}
 	}
 }
