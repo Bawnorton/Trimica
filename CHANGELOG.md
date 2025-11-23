@@ -1,3 +1,7 @@
+# 1.4.3
+
+- Fix overlay rendering using cached UVs when atlas resizes before the next frame can be drawn (#8)
+
 # 1.4.2
 
 - Fix missing trim data file in neo distribution
