@@ -74,7 +74,7 @@ public class ElytraTrimsClientEntrypoint implements ETClientInitializer {
 									null
 							));
 		}
-		return true;
+		return false;
 	}
 
 	//?} else {
@@ -94,7 +94,7 @@ public class ElytraTrimsClientEntrypoint implements ETClientInitializer {
 				elytra.renderToBuffer(parameters.matrices(), vertexConsumer, light, OverlayTexture.NO_OVERLAY, parameters.color());
 			});
 		}
-		return true;
+		return false;
 	}
 	*///?}
 
@@ -130,6 +130,7 @@ public class ElytraTrimsClientEntrypoint implements ETClientInitializer {
 			Compat.ifSodiumPresent(compat -> compat.markSpriteAsActive(newSprite));
 		}
 		int light = palette.isEmissive() ? LightTexture.FULL_BRIGHT : ETRenderingAPIUtils.getEffectiveLight(parameters);
+		renderer.render(newSprite, light);
 	}
 
 	interface Renderer {

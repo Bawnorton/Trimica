@@ -1,3 +1,8 @@
+# 1.4.4
+
+- Probably Fix ET Compat
+- Whoops I forgot to delete the log spam
+
 # 1.4.3
 
 - Fix overlay rendering using cached UVs when atlas resizes before the next frame can be drawn (#8)

@@ -62,6 +62,8 @@ public class LootTableReader {
 				case NestedLootTableAccessor nestedLootTable -> {
 					Either<ResourceKey<LootTable>, LootTable> value = nestedLootTable.trimica$contents();
 					LootTable table = value.map(key -> getter.get(key.location()), Function.identity());
+					if (table == null) yield List.of();
+
 					yield read(getter, table);
 				}
 				case TagEntryAccessor tagEntry -> {

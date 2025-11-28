@@ -59,15 +59,10 @@ public final class RuntimeTrimAtlas extends TextureAtlas {
 	}
 
 	public @NotNull DynamicTrimTextureAtlasSprite getSprite(DataComponentGetter componentGetter, TrimPattern pattern, ResourceLocation texture) {
-		Trimica.LOGGER.info("Getting sprite for {}", texture);
 		Map<ResourceLocation, TextureAtlasSprite> texturesByName = asAccessor().trimica$texturesByName();
 		TextureAtlasSprite sprite = texturesByName.get(texture);
 		if (sprite == null) sprite = createSprite(componentGetter, pattern, texture);
 
-		float width = sprite.getU1() - sprite.getU0();
-		float height = sprite.getV1() - sprite.getV0();
-		Trimica.LOGGER.info("Sprite Dimensions: {}wx{}h", width * asAccessor().trimica$width(), height * asAccessor().trimica$height());
-		Trimica.LOGGER.info("Sprite UV: x={}, y={}", sprite.getU0() * asAccessor().trimica$width(), sprite.getV0() * asAccessor().trimica$height());
 		return new DynamicTrimTextureAtlasSprite(sprite, renderType, palettes.get(texture));
 	}
 

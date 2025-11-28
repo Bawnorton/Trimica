@@ -26,7 +26,7 @@ import java.util.Map;
 import java.util.function.BiConsumer;
 
 @Mixin(ReloadableServerRegistries.class)
-public abstract class ReloadableServerRegistriesMixin {
+abstract class ReloadableServerRegistriesMixin {
 	@SuppressWarnings({"unchecked", "ConstantValue"})
 	@ModifyReceiver(
 			//? if fabric {
